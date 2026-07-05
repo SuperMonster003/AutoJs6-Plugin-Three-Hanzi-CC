@@ -1,6 +1,21 @@
-plugins {
-    id("com.android.application") version "9.0.0" apply false
-    id("com.android.library") version "9.0.0" apply false
-    id("org.jetbrains.kotlin.android") version "2.3.21" apply false
-    id("org.jetbrains.kotlin.plugin.parcelize") version "2.3.21" apply false
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+allprojects {
+    repositories {
+        mavenCentral()
+        google()
+        gradlePluginPortal()
+        maven("https://jitpack.io")
+        maven("https://maven.aliyun.com/repository/central")
+        maven("https://maven.aliyun.com/repository/google")
+        maven("https://maven.aliyun.com/repository/gradle-plugin")
+        maven("https://maven.aliyun.com/repository/jcenter")
+        maven("https://maven.aliyun.com/repository/public")
+    }
+}
+
+tasks {
+    register<Delete>("clean").configure {
+        delete(rootProject.layout.buildDirectory)
+    }
 }
