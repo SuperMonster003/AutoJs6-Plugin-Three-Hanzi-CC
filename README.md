@@ -44,6 +44,16 @@ JP2T
 
 AutoJs6 还提供若干组合快捷方法, 例如 `s2jp`/`hk2tw`/`tw2hk`/`jp2s` 等.
 
+### 发行历史
+
+###### 2026/07/14
+
+* `新增` OpenCC 插件服务, 插件 ID 为 `opencc`, 引擎为 `opencc`
+* `新增` 支持通过 `org.autojs.plugin.OPENCC` 发现并调用插件
+* `新增` 支持 OpenCC 常用转换类型: `S2T`/`S2TW`/`S2TWP`/`S2HK`/`T2S`/`T2TW`/`T2HK`/`T2JP`/`TW2S`/`TW2T`/`TW2SP`/`HK2S`/`HK2T`/`JP2T`
+* `新增` 插件信息和使用说明的多语言资源: 西班牙语/法语/俄语/阿拉伯语/日语/韩语/英语/简体中文/香港繁体/台湾繁体
+* `新增` 中英双语 README, 包含用法示例/构建说明和相关链接
+
 ### 构建
 
 ```powershell
@@ -114,6 +124,16 @@ JP2T
 ```
 
 AutoJs6 also provides composed shortcut methods such as `s2jp`, `hk2tw`, `tw2hk`, and `jp2s`.
+
+### Release History
+
+###### 2026/07/14
+
+* `Feature` Added the OpenCC plugin service with plugin ID `opencc` and engine `opencc`.
+* `Feature` Added host discovery and invocation through `org.autojs.plugin.OPENCC`.
+* `Feature` Supported common OpenCC conversion types: `S2T`, `S2TW`, `S2TWP`, `S2HK`, `T2S`, `T2TW`, `T2HK`, `T2JP`, `TW2S`, `TW2T`, `TW2SP`, `HK2S`, `HK2T`, and `JP2T`.
+* `Feature` Added localized plugin metadata and usage instructions for Spanish, French, Russian, Arabic, Japanese, Korean, English, Simplified Chinese, Hong Kong Traditional Chinese, and Taiwan Traditional Chinese.
+* `Feature` Added a bilingual Chinese/English README with usage examples, build instructions, and related links.
 
 ### Build
 
