@@ -1,4 +1,4 @@
-import java.util.Properties
+import java.util.*
 
 plugins {
     id("org.autojs.build.utils")
@@ -72,6 +72,15 @@ android {
         }
     }
 
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
+            isUniversalApk = true
+        }
+    }
+
     buildFeatures {
         aidl = true
         resValues = true
@@ -105,8 +114,10 @@ tasks {
         from(src); into(dst); include("*.$ext")
 
         rename { name ->
+            val abi = name.replace(Regex("^app-(.+?)-$src(\\.$ext)$"), "$1")
+            val releasedFileNamePrefix = "${rootProject.name}-v${versions.appVersionName}-$abi"
             utils.digestCRC32(file("${src}/$name")).let { digest ->
-                name.replace(Regex("^(.+?)(\\.$ext)$"), "$1-$digest$2")
+                "$releasedFileNamePrefix-$digest.$ext"
             }
         }
 
