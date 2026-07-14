@@ -1,29 +1,37 @@
 import java.util.Properties
 
 plugins {
+    id("org.autojs.build.utils")
+    id("org.autojs.build.versions")
+    id("org.autojs.build.signs")
     id("org.autojs.build.jvm-convention")
     id("com.android.application")
+    id("org.jetbrains.kotlin.android")
 }
+
+val globalApplicationId = "io.github.supermonster003.autojs6.plugin.opencc"
 
 var isSignsValid = false
 
 android {
-    namespace = "io.github.supermonster003.autojs6.plugin.opencc"
-    compileSdk = 36
+    namespace = globalApplicationId
+    compileSdk = versions.sdkVersionCompile
 
     defaultConfig {
-        applicationId = namespace
-        minSdk = 24
-        targetSdk = 36
-        versionCode = 1
-        versionName = "0.1.0"
+        applicationId = globalApplicationId
 
-        resValue("string", "app_name", "OpenCC Plugin")
+        minSdk = versions.sdkVersionMin
+        targetSdk = versions.sdkVersionTarget
+
+        versionCode = versions.appVersionCode
+        versionName = versions.appVersionName
+
+        resValue("string", "app_name", "OpenCC")
+        resValue("string", "plugin_author", "SuperMonster003")
         resValue("string", "plugin_id", "opencc")
         resValue("string", "plugin_engine", "opencc")
         resValue("string", "plugin_variant", "default")
-        resValue("string", "plugin_author", "SuperMonster003")
-        resValue("string", "plugin_version_date", "Jul 5, 2026")
+        resValue("string", "plugin_version_date", utils.getDateString("MMM d, yyyy", "GMT+08:00"))
     }
 
     signingConfigs {
@@ -76,7 +84,7 @@ android {
 }
 
 dependencies {
-    implementation(files("../../AutoJs6/plugin-api/common-plugin-api/build/outputs/aar/common-plugin-api-debug.aar"))
-    implementation(files("../../AutoJs6/plugin-api/opencc-api/build/outputs/aar/opencc-api-debug.aar"))
+    implementation(files("$rootDir/libs/common-plugin-api.aar"))
+    implementation(files("$rootDir/libs/opencc-api.aar"))
     implementation(libs.opencc)
 }

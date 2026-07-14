@@ -17,7 +17,7 @@ class OpenccPluginService : Service() {
         override fun getInfo(): PluginInfo {
             return pluginInfo(
                 name = "OpenCC",
-                description = "OpenCC conversion provider for AutoJs6.",
+                description = "OpenCC conversion provider.",
             )
         }
 
