@@ -87,3 +87,29 @@ dependencies {
     implementation(files("$rootDir/libs/opencc-api.aar"))
     implementation(libs.opencc)
 }
+
+tasks {
+    withType(JavaCompile::class.java) {
+        options.encoding = "UTF-8"
+    }
+
+    register<Copy>("appendDigestToReleasedFiles") {
+        val src = "release"
+        val dst = "${src}s"
+        val ext = utils.FILE_EXTENSION_APK
+
+        if (!file(src).isDirectory) {
+            return@register
+        }
+
+        from(src); into(dst); include("*.$ext")
+
+        rename { name ->
+            utils.digestCRC32(file("${src}/$name")).let { digest ->
+                name.replace(Regex("^(.+?)(\\.$ext)$"), "$1-$digest$2")
+            }
+        }
+
+        doLast { println("Destination: ${file(dst)}") }
+    }
+}
