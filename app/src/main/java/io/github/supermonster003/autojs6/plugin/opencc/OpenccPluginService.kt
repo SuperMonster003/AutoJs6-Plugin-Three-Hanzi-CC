@@ -16,15 +16,20 @@ class OpenccPluginService : Service() {
     private val binder = object : IOpenccPlugin.Stub() {
         override fun getInfo(): PluginInfo {
             return pluginInfo(
-                name = "OpenCC",
-                description = "OpenCC conversion provider.",
+                name = getString(R.string.app_name),
+                description = getString(R.string.plugin_description),
             )
         }
 
         override fun convert(text: String?, conversionType: String?): String {
             val typeName = conversionType.orEmpty().trim().uppercase(Locale.US)
             val type = runCatching { ConversionType.valueOf(typeName) }
-                .getOrElse { throw IllegalArgumentException("Unsupported OpenCC conversion type: $conversionType", it) }
+                .getOrElse {
+                    throw IllegalArgumentException(
+                        getString(R.string.error_unsupported_conversion_type, conversionType),
+                        it,
+                    )
+                }
             return ChineseConverter.convert(text.orEmpty(), type, this@OpenccPluginService)
         }
     }

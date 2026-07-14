@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_description">用于中文文本转换的 OpenCC 插件</string>
+    <string name="error_unsupported_conversion_type">不支持的 OpenCC 转换类型: %1$s</string>
+</resources>

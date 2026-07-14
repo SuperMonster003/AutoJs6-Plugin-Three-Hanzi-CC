@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_description">مكون OpenCC الإضافي لتحويل النص الصيني.</string>
+    <string name="error_unsupported_conversion_type">نوع تحويل OpenCC غير مدعوم: %1$s</string>
+</resources>
