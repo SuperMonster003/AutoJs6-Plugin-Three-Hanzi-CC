@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_description">중국어 텍스트 변환용 OpenCC 플러그인</string>
+    <string name="error_unsupported_conversion_type">지원되지 않는 OpenCC 변환 유형: %1$s</string>
+</resources>
