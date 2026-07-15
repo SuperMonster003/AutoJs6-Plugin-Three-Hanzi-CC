@@ -1,0 +1,32 @@
+{
+  "$name": "日本語",
+  "text_current_lowercase": "現在",
+  "text_plugin_synopsis": "中国語テキスト変換用 OpenCC プラグイン",
+  "h3_languages_with_ascii": "言語 (Languages)",
+  "p_languages_all_supported_for_readme": "現在の README.md は次の言語に対応しています",
+  "h3_introduction": "概要",
+  "p_introduction": "AutoJs6 OpenCC プラグインは、AutoJs6 に OpenCC ベースの中国語テキスト変換機能を提供します。簡体字、繁体字、香港繁体字、台湾繁体字、日本語新字体に関連する変換に対応しています。",
+  "h3_functions": "機能",
+  "features": [
+    "プラグイン ID `opencc` の `opencc` プラグインサービスを提供します。",
+    "`opencc.convert(text, type)` や `opencc.s2t(text)` / `opencc.t2s(text)` などの AutoJs6 API に対応します。",
+    "プラグインメタデータ、使用説明、README、CHANGELOG はスペイン語、フランス語、ロシア語、アラビア語、日本語、韓国語、英語、簡体字中国語、香港繁体字、台湾繁体字にローカライズされています。",
+    "`com.github.brooklet:android-opencc` を基盤にしています。"
+  ],
+  "h3_usage": "使用例",
+  "p_usage_shortcut_intro": "ショートカットメソッドも使用できます",
+  "h3_conversion_types": "変換タイプ",
+  "p_conversion_types": "よく使う OpenCC 変換タイプには次のものがあります",
+  "p_conversion_shortcuts": "AutoJs6 には `s2jp`、`hk2tw`、`tw2hk`、`jp2s` などの組み合わせショートカットも用意されています",
+  "h3_release_history": "リリース履歴",
+  "h5_for_more_release_history": "その他のリリース履歴",
+  "h3_build": "ビルド",
+  "text_release_build": "Release ビルド",
+  "p_build_params": "ビルドパラメータは `version.properties` から取得されます。現在の最小 SDK は 24、ターゲット SDK は 36 です",
+  "h3_resource_layout": "リソース構成",
+  "p_resource_layout": "`strings.xml` にはローカライズされたプラグイン説明とエラーメッセージが含まれます。`plugin_instruction.md` にはホスト側で表示される使用説明が含まれます。README と CHANGELOG は `.python/generate_markdown.py` により JSON ソースから生成されます",
+  "h3_links": "リンク",
+  "text_link_autojs6_opencc_docs": "AutoJs6 OpenCC ドキュメント",
+  "text_link_opencc_official": "OpenCC 公式プロジェクト",
+  "text_link_android_opencc": "Android OpenCC プロジェクト"
+}

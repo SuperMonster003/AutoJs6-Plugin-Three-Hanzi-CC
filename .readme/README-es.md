@@ -8,7 +8,7 @@
     </picture>
   </p>
 
-  <p>OpenCC plugin for Chinese text conversion</p>
+  <p>Complemento OpenCC para la conversión de texto chino</p>
 
   <p>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/SuperMonster003/AutoJs6-Plugin-OpenCC?label=Release"/></a>
@@ -23,18 +23,18 @@
 
 ******
 
-### Languages
+### Idiomas (Languages)
 
 ******
 
-The current README.md supports the following languages:
+El README.md actual admite los siguientes idiomas:
 
 - [简体中文 [zh-Hans]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-zh-Hans.md)
 - [繁體中文 (香港) [zh-Hant-HK]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-zh-Hant-HK.md)
 - [繁體中文 (台灣) [zh-Hant-TW]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-zh-Hant-TW.md)
-- English [en] # current
+- [English [en]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-en.md)
 - [Français [fr]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-fr.md)
-- [Español [es]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-es.md)
+- Español [es] # actual
 - [日本語 [ja]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-ja.md)
 - [한국어 [ko]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-ko.md)
 - [Русский [ru]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-ru.md)
@@ -42,26 +42,26 @@ The current README.md supports the following languages:
 
 ******
 
-### Introduction
+### Introducción
 
 ******
 
-The AutoJs6 OpenCC Plugin provides OpenCC-powered Chinese text conversion for AutoJs6. It supports conversions between Simplified Chinese, Traditional Chinese, Hong Kong Traditional Chinese, Taiwan Traditional Chinese, and Japanese Shinjitai related forms.
+El complemento AutoJs6 OpenCC proporciona conversión de texto chino basada en OpenCC para AutoJs6. Admite conversiones entre chino simplificado, chino tradicional, chino tradicional de Hong Kong, chino tradicional de Taiwán y formas relacionadas con el shinjitai japonés.
 
 ******
 
-### Features
+### Funciones
 
 ******
 
-- Provides the `opencc` plugin service with plugin ID `opencc`.
-- Supports AutoJs6 APIs such as `opencc.convert(text, type)` and shortcuts like `opencc.s2t(text)` / `opencc.t2s(text)`.
-- Plugin metadata, usage instructions, README, and changelog are localized for Spanish, French, Russian, Arabic, Japanese, Korean, English, Simplified Chinese, Hong Kong Traditional Chinese, and Taiwan Traditional Chinese.
-- Built on `com.github.brooklet:android-opencc`.
+- Proporciona el servicio de complemento `opencc` con el ID de complemento `opencc`.
+- Admite API de AutoJs6 como `opencc.convert(text, type)` y accesos directos como `opencc.s2t(text)` / `opencc.t2s(text)`.
+- Los metadatos del complemento, las instrucciones de uso, el README y el CHANGELOG están localizados en español, francés, ruso, árabe, japonés, coreano, inglés, chino simplificado, chino tradicional de Hong Kong y chino tradicional de Taiwán.
+- Basado en `com.github.brooklet:android-opencc`.
 
 ******
 
-### Usage
+### Uso
 
 ******
 
@@ -71,7 +71,7 @@ let converted = opencc.convert(text, "S2T");
 console.log(converted);
 ```
 
-Shortcut methods are also available:
+También hay métodos abreviados disponibles:
 
 ```js
 console.log(opencc.s2t("汉字转换"));
@@ -80,11 +80,11 @@ console.log(opencc.t2s("漢字轉換"));
 
 ******
 
-### Conversion Types
+### Tipos de conversión
 
 ******
 
-Common OpenCC conversion types include:
+Los tipos de conversión OpenCC comunes incluyen:
 
 ```text
 S2T, S2TW, S2TWP, S2HK,
@@ -94,11 +94,11 @@ HK2S, HK2T,
 JP2T
 ```
 
-AutoJs6 also provides composed shortcut methods such as `s2jp`, `hk2tw`, `tw2hk`, and `jp2s`.
+AutoJs6 también proporciona métodos abreviados compuestos como `s2jp`, `hk2tw`, `tw2hk` y `jp2s`.
 
 ******
 
-### Release History
+### Historial de versiones
 
 ******
 
@@ -106,27 +106,27 @@ AutoJs6 also provides composed shortcut methods such as `s2jp`, `hk2tw`, `tw2hk`
 
 ###### 2026/07/14
 
-* `Improvement` Added ABI split APK builds for `arm64-v8a`, `armeabi-v7a`, `x86_64`, `x86`, and a `universal` APK
-* `Improvement` Added supported ABI metadata to plugin runtime info so the host can identify compatible variants
-* `Improvement` Release APK filenames now include the version, ABI variant, and CRC32 digest
+* `Mejora` Se añadieron compilaciones APK divididas por ABI para `arm64-v8a`, `armeabi-v7a`, `x86_64`, `x86` y un APK `universal`
+* `Mejora` Se añadieron metadatos de ABI compatibles a la información de ejecución del complemento para que el host pueda identificar variantes compatibles
+* `Mejora` Los nombres de los APK publicados ahora incluyen la versión, la variante ABI y el resumen CRC32
 
 # v1.0.0
 
 ###### 2026/07/14
 
-* `Feature` Added the OpenCC plugin service with plugin ID `opencc` and engine `opencc`
-* `Feature` Added host discovery and invocation through `org.autojs.plugin.OPENCC`
-* `Feature` Supported common OpenCC conversion types: `S2T`, `S2TW`, `S2TWP`, `S2HK`, `T2S`, `T2TW`, `T2HK`, `T2JP`, `TW2S`, `TW2T`, `TW2SP`, `HK2S`, `HK2T`, and `JP2T`
-* `Feature` Added localized plugin metadata and usage instructions for Spanish, French, Russian, Arabic, Japanese, Korean, English, Simplified Chinese, Hong Kong Traditional Chinese, and Taiwan Traditional Chinese
-* `Feature` Added a bilingual Chinese/English README with usage examples, build instructions, and related links
+* `Función` Se añadió el servicio del complemento OpenCC con ID `opencc` y motor `opencc`
+* `Función` Se añadió descubrimiento e invocación desde el host mediante `org.autojs.plugin.OPENCC`
+* `Función` Se admitieron tipos de conversión OpenCC comunes: `S2T`, `S2TW`, `S2TWP`, `S2HK`, `T2S`, `T2TW`, `T2HK`, `T2JP`, `TW2S`, `TW2T`, `TW2SP`, `HK2S`, `HK2T` y `JP2T`
+* `Función` Se añadieron metadatos e instrucciones de uso localizados para español, francés, ruso, árabe, japonés, coreano, inglés, chino simplificado, chino tradicional de Hong Kong y chino tradicional de Taiwán
+* `Función` Se añadió un README bilingüe chino/inglés con ejemplos de uso, instrucciones de compilación y enlaces relacionados
 
-##### For more release history
+##### Para ver más historial de versiones
 
-* [CHANGELOG.md](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.changelog/CHANGELOG-en.md)
+* [CHANGELOG.md](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.changelog/CHANGELOG-es.md)
 
 ******
 
-### Build
+### Compilación
 
 ******
 
@@ -134,17 +134,17 @@ AutoJs6 also provides composed shortcut methods such as `s2jp`, `hk2tw`, `tw2hk`
 .\gradlew.bat :app:assembleDebug
 ```
 
-Release build:
+Compilación Release:
 
 ```powershell
 .\gradlew.bat :app:assembleRelease
 ```
 
-Build parameters come from `version.properties`; the current minimum SDK is 24 and target SDK is 36.
+Los parámetros de compilación provienen de `version.properties`; el SDK mínimo actual es 24 y el SDK de destino es 36.
 
 ******
 
-### Resource Layout
+### Estructura de recursos
 
 ******
 
@@ -156,14 +156,14 @@ app/src/main/res/values-*/strings.xml
 app/src/main/res/raw-*/plugin_instruction.md
 ```
 
-`strings.xml` contains localized plugin descriptions and error messages; `plugin_instruction.md` contains usage instructions displayed by the host. README and CHANGELOG files are generated from JSON sources by `.python/generate_markdown.py`.
+`strings.xml` contiene descripciones localizadas del complemento y mensajes de error; `plugin_instruction.md` contiene las instrucciones de uso que muestra el host. README y CHANGELOG se generan desde fuentes JSON mediante `.python/generate_markdown.py`.
 
 ******
 
-### Links
+### Enlaces
 
 ******
 
-- AutoJs6 OpenCC documentation: https://docs.autojs6.com/#/opencc
-- OpenCC official project: https://github.com/BYVoid/OpenCC
-- Android OpenCC project: https://github.com/qichuan/android-opencc
+- Documentación de AutoJs6 OpenCC: https://docs.autojs6.com/#/opencc
+- Proyecto oficial OpenCC: https://github.com/BYVoid/OpenCC
+- Proyecto Android OpenCC: https://github.com/qichuan/android-opencc

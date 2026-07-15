@@ -8,7 +8,7 @@
     </picture>
   </p>
 
-  <p>OpenCC plugin for Chinese text conversion</p>
+  <p>用於中文文字轉換的 OpenCC 外掛</p>
 
   <p>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/SuperMonster003/AutoJs6-Plugin-OpenCC?label=Release"/></a>
@@ -23,16 +23,16 @@
 
 ******
 
-### Languages
+### 語言 (Languages)
 
 ******
 
-The current README.md supports the following languages:
+目前 README.md 支援以下語言:
 
 - [简体中文 [zh-Hans]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-zh-Hans.md)
 - [繁體中文 (香港) [zh-Hant-HK]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-zh-Hant-HK.md)
-- [繁體中文 (台灣) [zh-Hant-TW]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-zh-Hant-TW.md)
-- English [en] # current
+- 繁體中文 (台灣) [zh-Hant-TW] # 目前
+- [English [en]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-en.md)
 - [Français [fr]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-fr.md)
 - [Español [es]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-es.md)
 - [日本語 [ja]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-ja.md)
@@ -42,26 +42,26 @@ The current README.md supports the following languages:
 
 ******
 
-### Introduction
+### 簡介
 
 ******
 
-The AutoJs6 OpenCC Plugin provides OpenCC-powered Chinese text conversion for AutoJs6. It supports conversions between Simplified Chinese, Traditional Chinese, Hong Kong Traditional Chinese, Taiwan Traditional Chinese, and Japanese Shinjitai related forms.
+AutoJs6 OpenCC 外掛為 AutoJs6 提供基於 OpenCC 的中文文字轉換能力，支援簡體/繁體/香港繁體/台灣繁體和日文新字體相關轉換。
 
 ******
 
-### Features
+### 功能
 
 ******
 
-- Provides the `opencc` plugin service with plugin ID `opencc`.
-- Supports AutoJs6 APIs such as `opencc.convert(text, type)` and shortcuts like `opencc.s2t(text)` / `opencc.t2s(text)`.
-- Plugin metadata, usage instructions, README, and changelog are localized for Spanish, French, Russian, Arabic, Japanese, Korean, English, Simplified Chinese, Hong Kong Traditional Chinese, and Taiwan Traditional Chinese.
-- Built on `com.github.brooklet:android-opencc`.
+- 提供 `opencc` 外掛服務，外掛 ID 為 `opencc`。
+- 支援 AutoJs6 中的 `opencc.convert(text, type)` 和 `opencc.s2t(text)` / `opencc.t2s(text)` 等快捷方法。
+- 外掛資訊、使用說明、README 與 CHANGELOG 均支援西班牙文/法文/俄文/阿拉伯文/日文/韓文/英文/簡體中文/香港繁體/台灣繁體。
+- 基於 `com.github.brooklet:android-opencc`。
 
 ******
 
-### Usage
+### 使用範例
 
 ******
 
@@ -71,7 +71,7 @@ let converted = opencc.convert(text, "S2T");
 console.log(converted);
 ```
 
-Shortcut methods are also available:
+也可以使用快捷方法:
 
 ```js
 console.log(opencc.s2t("汉字转换"));
@@ -80,11 +80,11 @@ console.log(opencc.t2s("漢字轉換"));
 
 ******
 
-### Conversion Types
+### 轉換類型
 
 ******
 
-Common OpenCC conversion types include:
+常用 OpenCC 轉換類型包括:
 
 ```text
 S2T, S2TW, S2TWP, S2HK,
@@ -94,11 +94,11 @@ HK2S, HK2T,
 JP2T
 ```
 
-AutoJs6 also provides composed shortcut methods such as `s2jp`, `hk2tw`, `tw2hk`, and `jp2s`.
+AutoJs6 也提供若干組合快捷方法，例如 `s2jp`/`hk2tw`/`tw2hk`/`jp2s` 等.
 
 ******
 
-### Release History
+### 發行歷史
 
 ******
 
@@ -106,27 +106,27 @@ AutoJs6 also provides composed shortcut methods such as `s2jp`, `hk2tw`, `tw2hk`
 
 ###### 2026/07/14
 
-* `Improvement` Added ABI split APK builds for `arm64-v8a`, `armeabi-v7a`, `x86_64`, `x86`, and a `universal` APK
-* `Improvement` Added supported ABI metadata to plugin runtime info so the host can identify compatible variants
-* `Improvement` Release APK filenames now include the version, ABI variant, and CRC32 digest
+* `優化` 支援依 ABI 建置 APK，包括 `arm64-v8a`/`armeabi-v7a`/`x86_64`/`x86` 以及 `universal` 通用套件
+* `優化` 外掛執行時資訊上報支援的 ABI 清單，方便宿主辨識可用變體
+* `優化` 發佈 APK 檔名包含版本號/ABI 變體和 CRC32 摘要
 
 # v1.0.0
 
 ###### 2026/07/14
 
-* `Feature` Added the OpenCC plugin service with plugin ID `opencc` and engine `opencc`
-* `Feature` Added host discovery and invocation through `org.autojs.plugin.OPENCC`
-* `Feature` Supported common OpenCC conversion types: `S2T`, `S2TW`, `S2TWP`, `S2HK`, `T2S`, `T2TW`, `T2HK`, `T2JP`, `TW2S`, `TW2T`, `TW2SP`, `HK2S`, `HK2T`, and `JP2T`
-* `Feature` Added localized plugin metadata and usage instructions for Spanish, French, Russian, Arabic, Japanese, Korean, English, Simplified Chinese, Hong Kong Traditional Chinese, and Taiwan Traditional Chinese
-* `Feature` Added a bilingual Chinese/English README with usage examples, build instructions, and related links
+* `新增` OpenCC 外掛服務，外掛 ID 為 `opencc`，引擎為 `opencc`
+* `新增` 支援透過 `org.autojs.plugin.OPENCC` 發現並呼叫外掛
+* `新增` 支援 OpenCC 常用轉換類型：`S2T`/`S2TW`/`S2TWP`/`S2HK`/`T2S`/`T2TW`/`T2HK`/`T2JP`/`TW2S`/`TW2T`/`TW2SP`/`HK2S`/`HK2T`/`JP2T`
+* `新增` 外掛資訊和使用說明的多語言資源：西班牙文/法文/俄文/阿拉伯文/日文/韓文/英文/簡體中文/香港繁體/台灣繁體
+* `新增` 中英雙語 README，包含用法範例/建置說明和相關連結
 
-##### For more release history
+##### 更多發行歷史可參閱
 
-* [CHANGELOG.md](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.changelog/CHANGELOG-en.md)
+* [CHANGELOG.md](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.changelog/CHANGELOG-zh-Hant-TW.md)
 
 ******
 
-### Build
+### 建置
 
 ******
 
@@ -134,17 +134,17 @@ AutoJs6 also provides composed shortcut methods such as `s2jp`, `hk2tw`, `tw2hk`
 .\gradlew.bat :app:assembleDebug
 ```
 
-Release build:
+Release 建置:
 
 ```powershell
 .\gradlew.bat :app:assembleRelease
 ```
 
-Build parameters come from `version.properties`; the current minimum SDK is 24 and target SDK is 36.
+建置參數來自 `version.properties`，目前最低 SDK 為 24，目標 SDK 為 36.
 
 ******
 
-### Resource Layout
+### 資源結構
 
 ******
 
@@ -156,14 +156,14 @@ app/src/main/res/values-*/strings.xml
 app/src/main/res/raw-*/plugin_instruction.md
 ```
 
-`strings.xml` contains localized plugin descriptions and error messages; `plugin_instruction.md` contains usage instructions displayed by the host. README and CHANGELOG files are generated from JSON sources by `.python/generate_markdown.py`.
+`strings.xml` 提供外掛描述和錯誤訊息在地化；`plugin_instruction.md` 提供宿主端展示的外掛使用說明。README 與 CHANGELOG 由 `.python/generate_markdown.py` 根據 JSON 來源檔產生.
 
 ******
 
-### Links
+### 相關連結
 
 ******
 
-- AutoJs6 OpenCC documentation: https://docs.autojs6.com/#/opencc
-- OpenCC official project: https://github.com/BYVoid/OpenCC
-- Android OpenCC project: https://github.com/qichuan/android-opencc
+- AutoJs6 OpenCC 文件: https://docs.autojs6.com/#/opencc
+- OpenCC 官方專案: https://github.com/BYVoid/OpenCC
+- Android OpenCC 專案: https://github.com/qichuan/android-opencc

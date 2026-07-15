@@ -1,0 +1,27 @@
+{
+  "changelog_label_hint": "Hint",
+  "changelog_label_feature": "Feature",
+  "changelog_label_fix": "Fix",
+  "changelog_label_improvement": "Improvement",
+  "changelog_label_dependency": "Dependency",
+  "$data": {
+    "v1.0.1": {
+      "released_date": "2026/07/14",
+      "improvement": [
+        "Added ABI split APK builds for `arm64-v8a`, `armeabi-v7a`, `x86_64`, `x86`, and a `universal` APK",
+        "Added supported ABI metadata to plugin runtime info so the host can identify compatible variants",
+        "Release APK filenames now include the version, ABI variant, and CRC32 digest"
+      ]
+    },
+    "v1.0.0": {
+      "released_date": "2026/07/14",
+      "feature": [
+        "Added the OpenCC plugin service with plugin ID `opencc` and engine `opencc`",
+        "Added host discovery and invocation through `org.autojs.plugin.OPENCC`",
+        "Supported common OpenCC conversion types: `S2T`, `S2TW`, `S2TWP`, `S2HK`, `T2S`, `T2TW`, `T2HK`, `T2JP`, `TW2S`, `TW2T`, `TW2SP`, `HK2S`, `HK2T`, and `JP2T`",
+        "Added localized plugin metadata and usage instructions for Spanish, French, Russian, Arabic, Japanese, Korean, English, Simplified Chinese, Hong Kong Traditional Chinese, and Taiwan Traditional Chinese",
+        "Added a bilingual Chinese/English README with usage examples, build instructions, and related links"
+      ]
+    }
+  }
+}

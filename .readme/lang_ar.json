@@ -1,0 +1,32 @@
+{
+  "$name": "العربية",
+  "text_current_lowercase": "الحالي",
+  "text_plugin_synopsis": "مكون OpenCC الإضافي لتحويل النص الصيني",
+  "h3_languages_with_ascii": "اللغات (Languages)",
+  "p_languages_all_supported_for_readme": "يدعم README.md الحالي اللغات التالية",
+  "h3_introduction": "مقدمة",
+  "p_introduction": "يوفر مكون AutoJs6 OpenCC الإضافي تحويل النص الصيني في AutoJs6 بالاعتماد على OpenCC. وهو يدعم التحويل بين الصينية المبسطة والصينية التقليدية والصينية التقليدية في هونغ كونغ والصينية التقليدية في تايوان والأشكال المرتبطة بالشينجيتاي اليابانية.",
+  "h3_functions": "الميزات",
+  "features": [
+    "يوفر خدمة المكون الإضافي `opencc` بمعرف المكون `opencc`.",
+    "يدعم واجهات AutoJs6 مثل `opencc.convert(text, type)` والاختصارات مثل `opencc.s2t(text)` / `opencc.t2s(text)`.",
+    "تمت ترجمة بيانات المكون الإضافي وتعليمات الاستخدام وREADME وCHANGELOG إلى الإسبانية والفرنسية والروسية والعربية واليابانية والكورية والإنجليزية والصينية المبسطة والصينية التقليدية في هونغ كونغ والصينية التقليدية في تايوان.",
+    "مبني على `com.github.brooklet:android-opencc`."
+  ],
+  "h3_usage": "الاستخدام",
+  "p_usage_shortcut_intro": "تتوفر أيضا طرق مختصرة",
+  "h3_conversion_types": "أنواع التحويل",
+  "p_conversion_types": "تشمل أنواع تحويل OpenCC الشائعة",
+  "p_conversion_shortcuts": "يوفر AutoJs6 أيضا طرقا مختصرة مركبة مثل `s2jp` و`hk2tw` و`tw2hk` و`jp2s`",
+  "h3_release_history": "سجل الإصدارات",
+  "h5_for_more_release_history": "لمزيد من سجل الإصدارات",
+  "h3_build": "البناء",
+  "text_release_build": "بناء Release",
+  "p_build_params": "تأتي معلمات البناء من `version.properties`؛ الحد الأدنى الحالي لـ SDK هو 24 والـ SDK المستهدف هو 36",
+  "h3_resource_layout": "بنية الموارد",
+  "p_resource_layout": "يحتوي `strings.xml` على أوصاف المكون الإضافي ورسائل الخطأ المترجمة؛ ويحتوي `plugin_instruction.md` على تعليمات الاستخدام التي يعرضها المضيف. يتم إنشاء README وCHANGELOG من مصادر JSON بواسطة `.python/generate_markdown.py`",
+  "h3_links": "الروابط",
+  "text_link_autojs6_opencc_docs": "وثائق AutoJs6 OpenCC",
+  "text_link_opencc_official": "مشروع OpenCC الرسمي",
+  "text_link_android_opencc": "مشروع Android OpenCC"
+}

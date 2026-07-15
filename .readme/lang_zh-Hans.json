@@ -1,0 +1,32 @@
+{
+  "$name": "简体中文",
+  "text_current_lowercase": "当前",
+  "text_plugin_synopsis": "用于中文文本转换的 OpenCC 插件",
+  "h3_languages_with_ascii": "语言 (Languages)",
+  "p_languages_all_supported_for_readme": "当前 README.md 支持以下语言",
+  "h3_introduction": "简介",
+  "p_introduction": "AutoJs6 OpenCC 插件为 AutoJs6 提供基于 OpenCC 的中文文本转换能力, 支持简体/繁体/香港繁体/台湾繁体和日文新字体相关转换.",
+  "h3_functions": "功能",
+  "features": [
+    "提供 `opencc` 插件服务, 插件 ID 为 `opencc`.",
+    "支持 AutoJs6 中的 `opencc.convert(text, type)` 和 `opencc.s2t(text)` / `opencc.t2s(text)` 等快捷方法.",
+    "插件信息、使用说明、README 与 CHANGELOG 均支持西班牙语/法语/俄语/阿拉伯语/日语/韩语/英语/简体中文/香港繁体/台湾繁体.",
+    "基于 `com.github.brooklet:android-opencc`."
+  ],
+  "h3_usage": "使用示例",
+  "p_usage_shortcut_intro": "也可以使用快捷方法",
+  "h3_conversion_types": "转换类型",
+  "p_conversion_types": "常用 OpenCC 转换类型包括",
+  "p_conversion_shortcuts": "AutoJs6 还提供若干组合快捷方法, 例如 `s2jp`/`hk2tw`/`tw2hk`/`jp2s` 等",
+  "h3_release_history": "发行历史",
+  "h5_for_more_release_history": "更多发行历史可参阅",
+  "h3_build": "构建",
+  "text_release_build": "Release 构建",
+  "p_build_params": "构建参数来自 `version.properties`, 当前最低 SDK 为 24, 目标 SDK 为 36",
+  "h3_resource_layout": "资源结构",
+  "p_resource_layout": "`strings.xml` 提供插件描述和错误信息本地化; `plugin_instruction.md` 提供宿主侧展示的插件使用说明. README 与 CHANGELOG 由 `.python/generate_markdown.py` 根据 JSON 源文件生成",
+  "h3_links": "相关链接",
+  "text_link_autojs6_opencc_docs": "AutoJs6 OpenCC 文档",
+  "text_link_opencc_official": "OpenCC 官方项目",
+  "text_link_android_opencc": "Android OpenCC 项目"
+}

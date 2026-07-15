@@ -1,0 +1,32 @@
+{
+  "$name": "Français",
+  "text_current_lowercase": "actuel",
+  "text_plugin_synopsis": "Plugin OpenCC pour la conversion de texte chinois",
+  "h3_languages_with_ascii": "Langues (Languages)",
+  "p_languages_all_supported_for_readme": "Le README.md actuel prend en charge les langues suivantes",
+  "h3_introduction": "Introduction",
+  "p_introduction": "Le plugin AutoJs6 OpenCC fournit à AutoJs6 une conversion de texte chinois basée sur OpenCC. Il prend en charge les conversions entre chinois simplifié, chinois traditionnel, chinois traditionnel de Hong Kong, chinois traditionnel de Taïwan et formes liées au shinjitai japonais.",
+  "h3_functions": "Fonctions",
+  "features": [
+    "Fournit le service de plugin `opencc` avec l'ID de plugin `opencc`.",
+    "Prend en charge les API AutoJs6 telles que `opencc.convert(text, type)` et les raccourcis comme `opencc.s2t(text)` / `opencc.t2s(text)`.",
+    "Les métadonnées du plugin, les instructions d'utilisation, le README et le CHANGELOG sont localisés en espagnol, français, russe, arabe, japonais, coréen, anglais, chinois simplifié, chinois traditionnel de Hong Kong et chinois traditionnel de Taïwan.",
+    "Basé sur `com.github.brooklet:android-opencc`."
+  ],
+  "h3_usage": "Utilisation",
+  "p_usage_shortcut_intro": "Des méthodes raccourcies sont aussi disponibles",
+  "h3_conversion_types": "Types de conversion",
+  "p_conversion_types": "Les types de conversion OpenCC courants incluent",
+  "p_conversion_shortcuts": "AutoJs6 fournit aussi des méthodes raccourcies composées comme `s2jp`, `hk2tw`, `tw2hk` et `jp2s`",
+  "h3_release_history": "Historique des versions",
+  "h5_for_more_release_history": "Pour plus d'historique des versions",
+  "h3_build": "Compilation",
+  "text_release_build": "Compilation Release",
+  "p_build_params": "Les paramètres de compilation proviennent de `version.properties`; le SDK minimal actuel est 24 et le SDK cible est 36",
+  "h3_resource_layout": "Structure des ressources",
+  "p_resource_layout": "`strings.xml` contient les descriptions localisées du plugin et les messages d'erreur; `plugin_instruction.md` contient les instructions d'utilisation affichées par l'hôte. README et CHANGELOG sont générés depuis des sources JSON par `.python/generate_markdown.py`",
+  "h3_links": "Liens",
+  "text_link_autojs6_opencc_docs": "Documentation AutoJs6 OpenCC",
+  "text_link_opencc_official": "Projet officiel OpenCC",
+  "text_link_android_opencc": "Projet Android OpenCC"
+}

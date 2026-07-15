@@ -1,0 +1,27 @@
+{
+  "changelog_label_hint": "提示",
+  "changelog_label_feature": "新增",
+  "changelog_label_fix": "修復",
+  "changelog_label_improvement": "優化",
+  "changelog_label_dependency": "依賴",
+  "$data": {
+    "v1.0.1": {
+      "released_date": "2026/07/14",
+      "improvement": [
+        "支援按 ABI 構建 APK, 包括 `arm64-v8a`/`armeabi-v7a`/`x86_64`/`x86` 以及 `universal` 通用包",
+        "插件運行時資訊上報支援的 ABI 列表, 便於宿主識別可用變體",
+        "發佈 APK 文件名包含版本號/ABI 變體和 CRC32 摘要"
+      ]
+    },
+    "v1.0.0": {
+      "released_date": "2026/07/14",
+      "feature": [
+        "OpenCC 插件服務, 插件 ID 為 `opencc`, 引擎為 `opencc`",
+        "支援通過 `org.autojs.plugin.OPENCC` 發現並調用插件",
+        "支援 OpenCC 常用轉換類型: `S2T`/`S2TW`/`S2TWP`/`S2HK`/`T2S`/`T2TW`/`T2HK`/`T2JP`/`TW2S`/`TW2T`/`TW2SP`/`HK2S`/`HK2T`/`JP2T`",
+        "插件資訊和使用說明的多語言資源: 西班牙語/法語/俄語/阿拉伯語/日語/韓語/英語/簡體中文/香港繁體/台灣繁體",
+        "中英雙語 README, 包含用法示例/構建說明和相關連結"
+      ]
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "$name": "English",
+  "text_current_lowercase": "current",
+  "text_plugin_synopsis": "OpenCC plugin for Chinese text conversion",
+  "h3_languages_with_ascii": "Languages",
+  "p_languages_all_supported_for_readme": "The current README.md supports the following languages",
+  "h3_introduction": "Introduction",
+  "p_introduction": "The AutoJs6 OpenCC Plugin provides OpenCC-powered Chinese text conversion for AutoJs6. It supports conversions between Simplified Chinese, Traditional Chinese, Hong Kong Traditional Chinese, Taiwan Traditional Chinese, and Japanese Shinjitai related forms.",
+  "h3_functions": "Features",
+  "features": [
+    "Provides the `opencc` plugin service with plugin ID `opencc`.",
+    "Supports AutoJs6 APIs such as `opencc.convert(text, type)` and shortcuts like `opencc.s2t(text)` / `opencc.t2s(text)`.",
+    "Plugin metadata, usage instructions, README, and changelog are localized for Spanish, French, Russian, Arabic, Japanese, Korean, English, Simplified Chinese, Hong Kong Traditional Chinese, and Taiwan Traditional Chinese.",
+    "Built on `com.github.brooklet:android-opencc`."
+  ],
+  "h3_usage": "Usage",
+  "p_usage_shortcut_intro": "Shortcut methods are also available",
+  "h3_conversion_types": "Conversion Types",
+  "p_conversion_types": "Common OpenCC conversion types include",
+  "p_conversion_shortcuts": "AutoJs6 also provides composed shortcut methods such as `s2jp`, `hk2tw`, `tw2hk`, and `jp2s`",
+  "h3_release_history": "Release History",
+  "h5_for_more_release_history": "For more release history",
+  "h3_build": "Build",
+  "text_release_build": "Release build",
+  "p_build_params": "Build parameters come from `version.properties`; the current minimum SDK is 24 and target SDK is 36",
+  "h3_resource_layout": "Resource Layout",
+  "p_resource_layout": "`strings.xml` contains localized plugin descriptions and error messages; `plugin_instruction.md` contains usage instructions displayed by the host. README and CHANGELOG files are generated from JSON sources by `.python/generate_markdown.py`",
+  "h3_links": "Links",
+  "text_link_autojs6_opencc_docs": "AutoJs6 OpenCC documentation",
+  "text_link_opencc_official": "OpenCC official project",
+  "text_link_android_opencc": "Android OpenCC project"
+}

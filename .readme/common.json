@@ -1,0 +1,7 @@
+{
+  "repo_url": "https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC",
+  "docs_opencc_url": "https://docs.autojs6.com/#/opencc",
+  "opencc_official_url": "https://github.com/BYVoid/OpenCC",
+  "android_opencc_url": "https://github.com/qichuan/android-opencc",
+  "conversion_types": "S2T, S2TW, S2TWP, S2HK,\nT2S, T2TW, T2HK, T2JP,\nTW2S, TW2T, TW2SP,\nHK2S, HK2T,\nJP2T"
+}
