@@ -103,6 +103,8 @@ tasks {
     }
 
     register<Copy>("appendDigestToReleasedFiles") {
+        description = "Appends CRC32 digest to released APK files"
+
         val src = "release"
         val dst = "${src}s"
         val ext = utils.FILE_EXTENSION_APK

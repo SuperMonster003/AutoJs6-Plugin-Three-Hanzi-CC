@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="plugin_description">Complemento OpenCC para la conversión de texto chino.</string>
+    <string name="plugin_description">Complemento OpenCC para la conversión de texto chino</string>
     <string name="error_unsupported_conversion_type">Tipo de conversión OpenCC no compatible: %1$s</string>
 </resources>
