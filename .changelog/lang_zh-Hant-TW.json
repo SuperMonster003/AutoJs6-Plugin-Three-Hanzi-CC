@@ -5,6 +5,19 @@
   "changelog_label_improvement": "優化",
   "changelog_label_dependency": "相依性",
   "$data": {
+    "v1.0.2": {
+      "released_date": "2026/08/31",
+      "hint": [
+        "此版本僅改善文件與建置流程, OpenCC 轉換行為及 14 種核心轉換類型維持不變"
+      ],
+      "improvement": [
+        "重構 10 種語言的 README, 新增安裝步驟, 套件選擇指南, 快速自我檢查, 33 個腳本方法清單, 常見問題與權限安全說明",
+        "將外掛中心使用說明納入同一套多語言 JSON 產生流程, 讓 README, CHANGELOG 與 Android 資源由單一來源同步產生",
+        "強化文件檢查腳本並接入 GitHub Actions, 自動偵測跨語言結構不一致, 產生物漂移, 孤立檔案, 版本未對齊與殘留預留位置標記",
+        "新增 ROADMAP.md, 以可驗收的里程碑清單公開維護文件, 工程化, 轉換能力與執行階段演進計畫",
+        "將 Gradle 建置設定遷移至 `org.autojs.build.platform-versions` 1.4.1, 並透過 foojay 自動解析 JDK, 簡化並統一建置環境"
+      ]
+    },
     "v1.0.1": {
       "released_date": "2026/07/14",
       "improvement": [

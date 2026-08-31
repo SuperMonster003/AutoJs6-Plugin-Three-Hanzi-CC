@@ -280,6 +280,17 @@ conversion library: com.github.brooklet:android-opencc:1.2.2
 
 ******
 
+#### v1.0.2
+
+_2026/08/31_
+
+- `提示` 本版本只改进文档与构建流程, OpenCC 转换行为和 14 种核心转换类型保持不变
+- `优化` 重构 10 种语言的 README, 新增安装步骤, 选包指南, 快速自检, 33 个脚本方法清单, 常见问题与权限安全说明
+- `优化` 将插件中心使用说明纳入同一套多语言 JSON 生成链路, 让 README, CHANGELOG 与 Android 资源由单一来源同步生成
+- `优化` 增强文档校验脚本并接入 GitHub Actions, 自动检测跨语言结构不一致, 生成产物漂移, 孤儿文件, 版本不对齐与残留占位符
+- `优化` 新增 ROADMAP.md, 以可验收的里程碑清单公开维护文档, 工程化, 转换能力与运行时演进计划
+- `优化` 迁移 Gradle 构建配置到 `org.autojs.build.platform-versions` 1.4.1, 并通过 foojay 自动解析 JDK, 简化并统一构建环境
+
 #### v1.0.1
 
 _2026/07/14_

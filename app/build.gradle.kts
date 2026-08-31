@@ -105,24 +105,44 @@ tasks {
     register<Copy>("appendDigestToReleasedFiles") {
         description = "Appends CRC32 digest to released APK files"
 
-        val src = "release"
-        val dst = "${src}s"
         val ext = utils.FILE_EXTENSION_APK
+        val src = layout.buildDirectory.dir("outputs/apk/release")
+        val dst = layout.projectDirectory.dir("releases")
+        val expectedInputFiles = setOf(
+            "app-arm64-v8a-release.$ext",
+            "app-armeabi-v7a-release.$ext",
+            "app-universal-release.$ext",
+            "app-x86_64-release.$ext",
+            "app-x86-release.$ext",
+        )
 
-        if (!file(src).isDirectory) {
-            return@register
+        dependsOn("assembleRelease")
+        inputs.property("versionName", versions.appVersionName)
+
+        doFirst {
+            check(isSignsValid) {
+                "Release signing configuration is missing or incomplete; refusing to collect unsigned APKs"
+            }
+            val actualInputFiles = src.get().asFile.listFiles { file ->
+                file.isFile && file.extension == ext
+            }.orEmpty().mapTo(mutableSetOf()) { it.name }
+            check(actualInputFiles == expectedInputFiles) {
+                "Expected exactly ${expectedInputFiles.sorted()}, but found ${actualInputFiles.sorted()}"
+            }
         }
 
-        from(src); into(dst); include("*.$ext")
+        from(src)
+        into(dst)
+        include("*.$ext")
 
         rename { name ->
-            val abi = name.replace(Regex("^app-(.+?)-$src(\\.$ext)$"), "$1")
+            val abi = name.replace(Regex("^app-(.+?)-release(\\.$ext)$"), "$1")
             val releasedFileNamePrefix = "${rootProject.name}-v${versions.appVersionName}-$abi"
-            utils.digestCRC32(file("${src}/$name")).let { digest ->
+            utils.digestCRC32(src.get().file(name).asFile).let { digest ->
                 "$releasedFileNamePrefix-$digest.$ext"
             }
         }
 
-        doLast { println("Destination: ${file(dst)}") }
+        doLast { println("Destination: ${dst.asFile}") }
     }
 }

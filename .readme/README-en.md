@@ -280,6 +280,17 @@ The plugin's plans and progress are maintained as a checkable list in ROADMAP.md
 
 ******
 
+#### v1.0.2
+
+_2026/08/31_
+
+- `Hint` This release improves documentation and the build workflow only; OpenCC conversion behavior and all 14 core conversion types remain unchanged
+- `Improvement` Restructure the README in all 10 languages with installation steps, package selection guidance, a quick self-check, the full list of 33 script methods, FAQ, and permission and security details
+- `Improvement` Generate plugin-center instructions from the same localized JSON source as the README and CHANGELOG, keeping all Android documentation artifacts synchronized from one source
+- `Improvement` Strengthen documentation validation and run it in GitHub Actions, automatically detecting cross-language shape mismatches, generated-file drift, orphan artifacts, version misalignment, and leftover placeholders
+- `Improvement` Add ROADMAP.md with verifiable milestone checklists for documentation, engineering, conversion capabilities, and runtime evolution
+- `Improvement` Migrate Gradle configuration to `org.autojs.build.platform-versions` 1.4.1 and use foojay for automatic JDK resolution, simplifying and standardizing the build environment
+
 #### v1.0.1
 
 _2026/07/14_

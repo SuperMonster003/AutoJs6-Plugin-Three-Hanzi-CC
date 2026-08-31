@@ -5,6 +5,19 @@
   "changelog_label_improvement": "개선",
   "changelog_label_dependency": "의존성",
   "$data": {
+    "v1.0.2": {
+      "released_date": "2026/08/31",
+      "hint": [
+        "이 버전은 문서와 빌드 과정만 개선합니다. OpenCC 변환 동작과 14가지 핵심 변환 유형은 변경되지 않습니다"
+      ],
+      "improvement": [
+        "10개 언어의 README를 재구성하고 설치 단계, 패키지 선택 안내, 빠른 자체 점검, 33개 스크립트 메서드 전체 목록, FAQ, 권한 및 보안 설명을 추가했습니다",
+        "플러그인 센터 사용 설명을 README 및 CHANGELOG와 같은 다국어 JSON 소스에서 생성하여 모든 Android 문서 산출물을 단일 소스로 동기화했습니다",
+        "문서 검증을 강화하고 GitHub Actions에 통합하여 언어 간 구조 불일치, 생성 파일 드리프트, 고아 산출물, 버전 불일치, 남은 자리표시자를 자동으로 감지합니다",
+        "ROADMAP.md를 추가하여 문서, 엔지니어링, 변환 기능, 런타임 발전 계획을 검증 가능한 마일스톤 목록으로 공개했습니다",
+        "Gradle 구성을 `org.autojs.build.platform-versions` 1.4.1로 이전하고 foojay로 JDK를 자동 해석하여 빌드 환경을 단순화하고 표준화했습니다"
+      ]
+    },
     "v1.0.1": {
       "released_date": "2026/07/14",
       "improvement": [
