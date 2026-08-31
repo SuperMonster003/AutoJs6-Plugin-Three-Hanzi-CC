@@ -56,6 +56,7 @@ M0 ──> M1 ──> M2 ──> M3 (契约条目需宿主先行)
 - [x] (测试) 单元测试基础设施与首批 JVM 用例 (2026-08-31): `ConversionTypeContractTest` 双向核对 opencc-api 的 14 个常量与 `android-opencc` 的 `ConversionType` 枚举; `PluginRuntimeInfoTest` 断言版本, 作者, id/engine/variant, `REQUIRES_HOST_VERSION` 与四种 `supportedAbis` 的字段拼装.
 - [x] (测试) instrumentation 用例: `OpenccPluginServiceTest` 通过 `org.autojs.plugin.OPENCC` 发现并绑定真实 Binder 服务, 断言 `getInfo()` 运行时字段, 对 14 种类型逐一执行 `convert`, 校验 S2T/T2S 结果并覆盖未知类型报错; 本地已在 API 35 arm64-v8a 真机和 API 36 x86_64 模拟器通过, CI 使用 API 35 Google APIs 模拟器分别安装并运行 arm64-v8a 与 x86_64 单架构 APK.
 - [x] (测试) GitHub Actions 构建流水线 `.github/workflows/build.yml`: push/PR/手动运行 `:app:testDebugUnitTest`, `:app:assembleDebug` 与 `:app:assembleDebugAndroidTest`; `scripts/ci/verify_apk_variants.py` 校验 5 个 APK 清单及其内部原生 ABI 集合, 上传构建产物后执行双 ABI Binder 往返矩阵.
+- [x] (CI) 清洁环境可复现性修复: 将仅能从开发机 Maven Local 解析的 `org.autojs.build.platform-versions` 1.4.1 替换为 Maven Central 可解析的 `io.github.supermonster003.autojs6-platform-versions` 1.6.0; 使用全新 `GRADLE_USER_HOME` 与空 Maven Local 冷启动验证 Gradle 9.5 / Kotlin 2.3.20 / AGP 9.2.1 组合, 77 个 Gradle 任务及 5 个 APK 变体全部通过.
 - [x] (发布) Release 产物脚本化: `scripts/release/prepare_release.py` 一键构建并归集 5 个已签名 APK, 校验版本集合, CRC32, APK/ABI 内容, 签名与签名证书连续性, 原子生成 `SHA256SUMS.txt` 及基于英文 CHANGELOG 的 `RELEASE_NOTES.md`; 7 个标准库测试覆盖完整流程, 缺包, 重复/混包, 错误 ABI, CRC 不一致与跨版本隔离.
 
 验收条件: 主分支每次提交自动完成构建, 单元测试与 APK 变体校验; 发布产物由脚本生成且哈希可追溯. (已满足)

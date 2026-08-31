@@ -128,7 +128,7 @@
   "p_build_digest": "Сбор артефактов выпуска с добавлением версии, ABI и дайджеста CRC32 к имени каждого файла",
   "p_build_release_bundle": "Сборка и проверка 5 подписанных APK одной командой с созданием `SHA256SUMS.txt` и `RELEASE_NOTES.md` на основе английского CHANGELOG",
   "p_build_docs_check": "Проверка синхронности многоязычных источников документации и сгенерированных файлов (также контролируется CI)",
-  "p_build_requirements": "Для сборки требуются JDK 17 или новее и Android SDK 36; версии Gradle и плагинов централизованно управляются через `version.properties` и `org.autojs.build.platform-versions`.",
+  "p_build_requirements": "Для сборки требуются JDK 17 или новее и Android SDK 36; версии Gradle и плагинов централизованно управляются через `version.properties` и `io.github.supermonster003.autojs6-platform-versions`.",
   "h3_resource_layout": "Локализация и генерация документов",
   "p_resource_layout": "`strings.xml` содержит локализованное описание плагина и сообщения об ошибках, а `plugin_instruction.md` содержит инструкции, отображаемые в центре плагинов хоста. README и changelog всегда правятся через JSON-источники в `.readme/` и `.changelog/` с последующим запуском `py .python/generate_markdown.py`; сгенерированные файлы вручную не редактируются. Команда `py .python/generate_markdown.py --check` проверяет синхронность источников и сгенерированных файлов.",
   "h3_license": "Лицензия",

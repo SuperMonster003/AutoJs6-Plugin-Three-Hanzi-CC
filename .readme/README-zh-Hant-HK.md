@@ -376,7 +376,7 @@ py scripts\release\prepare_release.py
 py .python\generate_markdown.py --check
 ```
 
-構建需要 JDK 17 及以上與 Android SDK 36; Gradle 與各插件版本由 `version.properties` 及 `org.autojs.build.platform-versions` 統一管理.
+構建需要 JDK 17 及以上與 Android SDK 36; Gradle 與各插件版本由 `version.properties` 及 `io.github.supermonster003.autojs6-platform-versions` 統一管理.
 
 ******
 

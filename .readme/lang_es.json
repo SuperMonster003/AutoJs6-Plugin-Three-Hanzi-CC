@@ -128,7 +128,7 @@
   "p_build_digest": "Recopilar los artefactos de publicación y añadir la versión, la ABI y la suma de comprobación CRC32 al nombre de cada archivo",
   "p_build_release_bundle": "Compilar y verificar los 5 APK firmados con un solo comando, y generar `SHA256SUMS.txt` y `RELEASE_NOTES.md` a partir del CHANGELOG en inglés",
   "p_build_docs_check": "Comprobar que las fuentes de la documentación multilingüe y los archivos generados están sincronizados (la integración continua también lo comprueba)",
-  "p_build_requirements": "La compilación requiere JDK 17 o superior y el SDK de Android 36; las versiones de Gradle y de los plugins se gestionan de forma centralizada mediante `version.properties` y `org.autojs.build.platform-versions`.",
+  "p_build_requirements": "La compilación requiere JDK 17 o superior y el SDK de Android 36; las versiones de Gradle y de los plugins se gestionan de forma centralizada mediante `version.properties` y `io.github.supermonster003.autojs6-platform-versions`.",
   "h3_resource_layout": "Localización y generación de documentos",
   "p_resource_layout": "`strings.xml` contiene la descripción localizada del complemento y los mensajes de error, y `plugin_instruction.md` contiene las instrucciones de uso que se muestran en el centro de complementos del host. Para el README y el changelog, edite siempre las fuentes JSON bajo `.readme/` y `.changelog/` y vuelva a ejecutar `py .python/generate_markdown.py`; los archivos generados nunca se editan a mano. Ejecute `py .python/generate_markdown.py --check` para comprobar que las fuentes y los archivos generados están sincronizados.",
   "h3_license": "Licencia",

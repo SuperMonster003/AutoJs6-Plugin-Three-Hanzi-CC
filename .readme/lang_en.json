@@ -128,7 +128,7 @@
   "p_build_digest": "Collect release artifacts and append the version, ABI, and CRC32 digest to each file name",
   "p_build_release_bundle": "Build and verify all 5 signed APKs in one command, then generate `SHA256SUMS.txt` and `RELEASE_NOTES.md` from the English CHANGELOG",
   "p_build_docs_check": "Verify that the multilingual documentation sources and generated artifacts are in sync (also enforced by CI)",
-  "p_build_requirements": "Building requires JDK 17 or later and Android SDK 36; Gradle and plugin versions are managed centrally by `version.properties` and `org.autojs.build.platform-versions`.",
+  "p_build_requirements": "Building requires JDK 17 or later and Android SDK 36; Gradle and plugin versions are managed centrally by `version.properties` and `io.github.supermonster003.autojs6-platform-versions`.",
   "h3_resource_layout": "Localization and Docs Generation",
   "p_resource_layout": "`strings.xml` holds the localized plugin description and error messages, and `plugin_instruction.md` holds the usage instructions shown inside the host plugin center. For README and changelog, always edit the JSON sources under `.readme/` and `.changelog/` and rerun `py .python/generate_markdown.py`; generated artifacts are never edited by hand. Run `py .python/generate_markdown.py --check` to verify sources and artifacts are in sync.",
   "h3_license": "License",

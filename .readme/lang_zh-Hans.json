@@ -128,7 +128,7 @@
   "p_build_digest": "归集发布产物并在文件名中附加版本号, 架构与 CRC32 校验码",
   "p_build_release_bundle": "一键构建并校验 5 个已签名 APK, 生成 `SHA256SUMS.txt` 与基于英文 CHANGELOG 的 `RELEASE_NOTES.md`",
   "p_build_docs_check": "校验多语言文档源与生成产物是否同步 (持续集成亦会执行)",
-  "p_build_requirements": "构建需要 JDK 17 及以上与 Android SDK 36; Gradle 与各插件版本由 `version.properties` 及 `org.autojs.build.platform-versions` 统一管理.",
+  "p_build_requirements": "构建需要 JDK 17 及以上与 Android SDK 36; Gradle 与各插件版本由 `version.properties` 及 `io.github.supermonster003.autojs6-platform-versions` 统一管理.",
   "h3_resource_layout": "本地化与文档生成",
   "p_resource_layout": "`strings.xml` 提供本地化插件描述与错误信息, `plugin_instruction.md` 提供宿主插件中心内展示的使用说明. README 与更新日志一律修改 `.readme/` 与 `.changelog/` 下的 JSON 源文件, 再运行 `py .python/generate_markdown.py` 重新生成, 生成产物不手工编辑; 运行 `py .python/generate_markdown.py --check` 可校验源文件与生成产物是否同步.",
   "h3_license": "许可",

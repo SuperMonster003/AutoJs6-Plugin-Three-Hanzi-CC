@@ -376,7 +376,7 @@ py scripts\release\prepare_release.py
 py .python\generate_markdown.py --check
 ```
 
-يتطلب البناء JDK 17 أو أحدث وAndroid SDK 36; وتدار إصدارات Gradle والمكونات الإضافية مركزيا عبر `version.properties` و`org.autojs.build.platform-versions`.
+يتطلب البناء JDK 17 أو أحدث وAndroid SDK 36; وتدار إصدارات Gradle والمكونات الإضافية مركزيا عبر `version.properties` و`io.github.supermonster003.autojs6-platform-versions`.
 
 ******
 

@@ -376,7 +376,7 @@ py scripts\release\prepare_release.py
 py .python\generate_markdown.py --check
 ```
 
-Для сборки требуются JDK 17 или новее и Android SDK 36; версии Gradle и плагинов централизованно управляются через `version.properties` и `org.autojs.build.platform-versions`.
+Для сборки требуются JDK 17 или новее и Android SDK 36; версии Gradle и плагинов централизованно управляются через `version.properties` и `io.github.supermonster003.autojs6-platform-versions`.
 
 ******
 

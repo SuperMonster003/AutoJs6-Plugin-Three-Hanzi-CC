@@ -376,7 +376,7 @@ Verify that the multilingual documentation sources and generated artifacts are i
 py .python\generate_markdown.py --check
 ```
 
-Building requires JDK 17 or later and Android SDK 36; Gradle and plugin versions are managed centrally by `version.properties` and `org.autojs.build.platform-versions`.
+Building requires JDK 17 or later and Android SDK 36; Gradle and plugin versions are managed centrally by `version.properties` and `io.github.supermonster003.autojs6-platform-versions`.
 
 ******
 

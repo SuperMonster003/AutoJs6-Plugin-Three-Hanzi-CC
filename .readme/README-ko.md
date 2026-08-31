@@ -376,7 +376,7 @@ py scripts\release\prepare_release.py
 py .python\generate_markdown.py --check
 ```
 
-빌드에는 JDK 17 이상과 Android SDK 36이 필요합니다; Gradle과 각 플러그인의 버전은 `version.properties`와 `org.autojs.build.platform-versions`로 일원 관리됩니다.
+빌드에는 JDK 17 이상과 Android SDK 36이 필요합니다; Gradle과 각 플러그인의 버전은 `version.properties`와 `io.github.supermonster003.autojs6-platform-versions`로 일원 관리됩니다.
 
 ******
 

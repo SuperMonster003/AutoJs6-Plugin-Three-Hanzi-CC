@@ -376,7 +376,7 @@ Comprobar que las fuentes de la documentación multilingüe y los archivos gener
 py .python\generate_markdown.py --check
 ```
 
-La compilación requiere JDK 17 o superior y el SDK de Android 36; las versiones de Gradle y de los plugins se gestionan de forma centralizada mediante `version.properties` y `org.autojs.build.platform-versions`.
+La compilación requiere JDK 17 o superior y el SDK de Android 36; las versiones de Gradle y de los plugins se gestionan de forma centralizada mediante `version.properties` y `io.github.supermonster003.autojs6-platform-versions`.
 
 ******
 
