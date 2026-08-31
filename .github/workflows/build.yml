@@ -86,7 +86,7 @@ jobs:
           arch: x86_64
           profile: pixel_7
           script: |
-            set -euo pipefail
+            set -eu
             target_package="io.github.supermonster003.autojs6.plugin.opencc"
             test_package="${target_package}.test"
             target_apk="ci-apks/debug/app-${{ matrix.abi }}-debug.apk"
@@ -104,4 +104,4 @@ jobs:
               -e class io.github.supermonster003.autojs6.plugin.opencc.OpenccPluginServiceTest \
               "${test_package}/androidx.test.runner.AndroidJUnitRunner")"
             printf '%s\n' "${output}"
-            grep -F "OK (1 test)" <<<"${output}"
+            printf '%s\n' "${output}" | grep -F "OK (1 test)"
