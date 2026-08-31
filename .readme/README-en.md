@@ -346,6 +346,12 @@ Build a debug APK:
 .\gradlew.bat :app:assembleDebug
 ```
 
+Run JVM unit tests and build the instrumentation test APK:
+
+```powershell
+.\gradlew.bat :app:testDebugUnitTest :app:assembleDebugAndroidTest
+```
+
 Build release APKs; they are signed automatically once a signing identity is configured in the untracked `sign.properties`, and unsigned artifacts must not be published:
 
 ```powershell
@@ -356,6 +362,12 @@ Collect release artifacts and append the version, ABI, and CRC32 digest to each 
 
 ```powershell
 .\gradlew.bat :app:appendDigestToReleasedFiles
+```
+
+Build and verify all 5 signed APKs in one command, then generate `SHA256SUMS.txt` and `RELEASE_NOTES.md` from the English CHANGELOG:
+
+```powershell
+py scripts\release\prepare_release.py
 ```
 
 Verify that the multilingual documentation sources and generated artifacts are in sync (also enforced by CI):

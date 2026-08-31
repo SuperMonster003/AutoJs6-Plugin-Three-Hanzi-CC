@@ -272,6 +272,12 @@ conversion library: {{ opencc_library_coordinates }}
 .\gradlew.bat :app:assembleDebug
 ```
 
+{{ p_build_test }}:
+
+```powershell
+.\gradlew.bat :app:testDebugUnitTest :app:assembleDebugAndroidTest
+```
+
 {{ p_build_release }}:
 
 ```powershell
@@ -282,6 +288,12 @@ conversion library: {{ opencc_library_coordinates }}
 
 ```powershell
 .\gradlew.bat :app:appendDigestToReleasedFiles
+```
+
+{{ p_build_release_bundle }}:
+
+```powershell
+py scripts\release\prepare_release.py
 ```
 
 {{ p_build_docs_check }}:

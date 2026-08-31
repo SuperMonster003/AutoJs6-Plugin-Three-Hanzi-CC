@@ -346,6 +346,12 @@ Compilar un APK debug:
 .\gradlew.bat :app:assembleDebug
 ```
 
+Ejecutar las pruebas unitarias JVM y compilar el APK de pruebas instrumentation:
+
+```powershell
+.\gradlew.bat :app:testDebugUnitTest :app:assembleDebugAndroidTest
+```
+
 Compilar los APK release; se firman automáticamente cuando se configura una identidad de firma en `sign.properties`, ignorado por Git, y los artefactos sin firmar no deben publicarse:
 
 ```powershell
@@ -356,6 +362,12 @@ Recopilar los artefactos de publicación y añadir la versión, la ABI y la suma
 
 ```powershell
 .\gradlew.bat :app:appendDigestToReleasedFiles
+```
+
+Compilar y verificar los 5 APK firmados con un solo comando, y generar `SHA256SUMS.txt` y `RELEASE_NOTES.md` a partir del CHANGELOG en inglés:
+
+```powershell
+py scripts\release\prepare_release.py
 ```
 
 Comprobar que las fuentes de la documentación multilingüe y los archivos generados están sincronizados (la integración continua también lo comprueba):

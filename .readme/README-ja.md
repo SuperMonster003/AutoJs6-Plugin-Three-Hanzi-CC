@@ -346,6 +346,12 @@ debug APK をビルド:
 .\gradlew.bat :app:assembleDebug
 ```
 
+JVM 単体テストを実行し instrumentation テスト APK をビルド:
+
+```powershell
+.\gradlew.bat :app:testDebugUnitTest :app:assembleDebugAndroidTest
+```
+
 release APK をビルド; バージョン管理対象外の `sign.properties` に署名情報を設定すると自動的に署名されます. 未署名の成果物は公開できません:
 
 ```powershell
@@ -356,6 +362,12 @@ release APK をビルド; バージョン管理対象外の `sign.properties` �
 
 ```powershell
 .\gradlew.bat :app:appendDigestToReleasedFiles
+```
+
+1 つのコマンドで署名済み APK 5 種をビルドして検証し, 英語 CHANGELOG から `SHA256SUMS.txt` と `RELEASE_NOTES.md` を生成:
+
+```powershell
+py scripts\release\prepare_release.py
 ```
 
 多言語ドキュメントのソースと生成物が同期しているかを検証 (CI でも実行されます):

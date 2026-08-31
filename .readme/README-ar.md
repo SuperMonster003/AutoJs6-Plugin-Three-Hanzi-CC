@@ -346,6 +346,12 @@ _2026/07/14_
 .\gradlew.bat :app:assembleDebug
 ```
 
+تشغيل اختبارات JVM الوحدوية وبناء ملف APK لاختبارات instrumentation:
+
+```powershell
+.\gradlew.bat :app:testDebugUnitTest :app:assembleDebugAndroidTest
+```
+
 بناء ملفات APK من نوع release; وتوقع تلقائيا متى ضبطت هوية توقيع في ملف `sign.properties` غير المتتبع, ويجب عدم نشر النواتج غير الموقعة:
 
 ```powershell
@@ -356,6 +362,12 @@ _2026/07/14_
 
 ```powershell
 .\gradlew.bat :app:appendDigestToReleasedFiles
+```
+
+بناء ملفات APK الخمسة الموقعة والتحقق منها بأمر واحد, ثم إنشاء `SHA256SUMS.txt` و`RELEASE_NOTES.md` من CHANGELOG الإنجليزي:
+
+```powershell
+py scripts\release\prepare_release.py
 ```
 
 التحقق من تزامن مصادر الوثائق متعددة اللغات مع النواتج المولدة (يفرضه CI أيضا):

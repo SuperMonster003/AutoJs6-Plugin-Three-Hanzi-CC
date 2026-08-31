@@ -346,6 +346,12 @@ debug APK 빌드:
 .\gradlew.bat :app:assembleDebug
 ```
 
+JVM 단위 테스트를 실행하고 instrumentation 테스트 APK 빌드:
+
+```powershell
+.\gradlew.bat :app:testDebugUnitTest :app:assembleDebugAndroidTest
+```
+
 release APK 빌드; 버전 관리에서 제외된 `sign.properties`에 서명 정보를 설정하면 자동으로 서명됩니다. 서명되지 않은 산출물은 배포할 수 없습니다:
 
 ```powershell
@@ -356,6 +362,12 @@ release APK 빌드; 버전 관리에서 제외된 `sign.properties`에 서명 �
 
 ```powershell
 .\gradlew.bat :app:appendDigestToReleasedFiles
+```
+
+하나의 명령으로 서명된 APK 5개를 빌드하고 검증한 뒤 영어 CHANGELOG에서 `SHA256SUMS.txt`와 `RELEASE_NOTES.md` 생성:
+
+```powershell
+py scripts\release\prepare_release.py
 ```
 
 다국어 문서 소스와 생성물이 동기화되어 있는지 검증 (CI에서도 실행됩니다):

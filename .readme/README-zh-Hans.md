@@ -346,6 +346,12 @@ _2026/07/14_
 .\gradlew.bat :app:assembleDebug
 ```
 
+运行 JVM 单元测试并构建 instrumentation 测试 APK:
+
+```powershell
+.\gradlew.bat :app:testDebugUnitTest :app:assembleDebugAndroidTest
+```
+
 构建 release APK; 在不入库的 `sign.properties` 中配置签名身份后自动签名, 未配置签名时产物不可发布:
 
 ```powershell
@@ -356,6 +362,12 @@ _2026/07/14_
 
 ```powershell
 .\gradlew.bat :app:appendDigestToReleasedFiles
+```
+
+一键构建并校验 5 个已签名 APK, 生成 `SHA256SUMS.txt` 与基于英文 CHANGELOG 的 `RELEASE_NOTES.md`:
+
+```powershell
+py scripts\release\prepare_release.py
 ```
 
 校验多语言文档源与生成产物是否同步 (持续集成亦会执行):

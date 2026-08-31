@@ -4,6 +4,7 @@
 *.iml
 *.jks
 *.log
+*.pyc
 *.ffs_db
 *.patch
 *.salive
@@ -20,6 +21,7 @@ desktop.ini
 .git/
 .gradle/
 .hprof/
+__pycache__/
 
 !.run
 

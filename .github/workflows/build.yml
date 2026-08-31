@@ -1,0 +1,107 @@
+name: Build integrity
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-build:
+    name: Unit tests and debug APKs
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Test release tooling
+        run: python -m unittest discover -s scripts/release/tests -p "test_*.py"
+
+      - name: Run unit tests and assemble debug APKs
+        run: |
+          chmod +x gradlew
+          ./gradlew :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest --stacktrace
+
+      - name: Verify all ABI variants
+        run: python scripts/ci/verify_apk_variants.py app/build/outputs/apk/debug
+
+      - name: Upload debug and test APKs
+        uses: actions/upload-artifact@v7
+        with:
+          name: debug-test-apks
+          path: app/build/outputs/apk
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+
+  verify-service:
+    name: Binder round trip (${{ matrix.abi }})
+    needs: verify-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        abi:
+          - arm64-v8a
+          - x86_64
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Download debug and test APKs
+        uses: actions/download-artifact@v8
+        with:
+          name: debug-test-apks
+          path: ci-apks
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Verify discovery and Binder conversions
+        uses: reactivecircus/android-emulator-runner@v2.38.0
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_7
+          script: |
+            set -euo pipefail
+            target_package="io.github.supermonster003.autojs6.plugin.opencc"
+            test_package="${target_package}.test"
+            target_apk="ci-apks/debug/app-${{ matrix.abi }}-debug.apk"
+            test_apk="ci-apks/androidTest/debug/app-debug-androidTest.apk"
+            cleanup() {
+              adb uninstall "${test_package}" >/dev/null 2>&1 || true
+              adb uninstall "${target_package}" >/dev/null 2>&1 || true
+            }
+            trap cleanup EXIT
+            test -f "${target_apk}"
+            test -f "${test_apk}"
+            adb install -r -t "${target_apk}"
+            adb install -r -t "${test_apk}"
+            output="$(adb shell am instrument -w -r \
+              -e class io.github.supermonster003.autojs6.plugin.opencc.OpenccPluginServiceTest \
+              "${test_package}/androidx.test.runner.AndroidJUnitRunner")"
+            printf '%s\n' "${output}"
+            grep -F "OK (1 test)" <<<"${output}"

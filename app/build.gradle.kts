@@ -22,6 +22,8 @@ android {
         minSdk = versions.sdkVersionMin
         targetSdk = versions.sdkVersionTarget
 
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
         versionCode = versions.appVersionCode
         versionName = versions.appVersionName
 
@@ -95,6 +97,10 @@ dependencies {
     implementation(files("$rootDir/libs/common-plugin-api.aar"))
     implementation(files("$rootDir/libs/opencc-api.aar"))
     implementation(libs.opencc)
+
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.test.ext.junit)
+    androidTestImplementation(libs.test.runner)
 }
 
 tasks {

@@ -346,6 +346,12 @@ _2026/07/14_
 .\gradlew.bat :app:assembleDebug
 ```
 
+Запуск модульных тестов JVM и сборка APK для instrumentation-тестов:
+
+```powershell
+.\gradlew.bat :app:testDebugUnitTest :app:assembleDebugAndroidTest
+```
+
 Сборка release APK; они подписываются автоматически, если идентификатор подписи настроен в неотслеживаемом `sign.properties`, а неподписанные артефакты публиковать нельзя:
 
 ```powershell
@@ -356,6 +362,12 @@ _2026/07/14_
 
 ```powershell
 .\gradlew.bat :app:appendDigestToReleasedFiles
+```
+
+Сборка и проверка 5 подписанных APK одной командой с созданием `SHA256SUMS.txt` и `RELEASE_NOTES.md` на основе английского CHANGELOG:
+
+```powershell
+py scripts\release\prepare_release.py
 ```
 
 Проверка синхронности многоязычных источников документации и сгенерированных файлов (также контролируется CI):

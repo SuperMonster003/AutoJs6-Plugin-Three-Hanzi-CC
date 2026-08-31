@@ -18,9 +18,7 @@ class OpenccPluginService : Service() {
             return pluginInfo(
                 name = getString(R.string.app_name),
                 description = getString(R.string.plugin_description),
-            ).apply {
-                supportedAbis = arrayOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
-            }
+            )
         }
 
         override fun convert(text: String?, conversionType: String?): String {
