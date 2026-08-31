@@ -29,5 +29,6 @@ private val libs = emptyList<String>()
 
 include(
     ":app",
+    ":opencc-native",
     *libs.map { ":libs:$it" }.toTypedArray(),
 )

@@ -3,8 +3,8 @@ package io.github.supermonster003.autojs6.plugin.opencc
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
-import com.zqc.opencc.android.lib.ChineseConverter
-import com.zqc.opencc.android.lib.ConversionType
+import io.github.supermonster003.autojs6.plugin.opencc.nativebridge.OpenccConversionType
+import io.github.supermonster003.autojs6.plugin.opencc.nativebridge.OpenccNativeEngine
 import org.autojs.plugin.common.api.PluginInfo
 import org.autojs.plugin.opencc.api.IOpenccPlugin
 import org.autojs.plugin.opencc.api.OpenccConversionTypes
@@ -14,8 +14,21 @@ import java.util.Locale
 class OpenccPluginService : Service() {
 
     private val conversionLock = Any()
+    private val engineDelegate = lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
+        OpenccNativeEngine(applicationContext)
+    }
+    private val engine by engineDelegate
 
     override fun onBind(intent: Intent?): IBinder = binder
+
+    override fun onDestroy() {
+        if (engineDelegate.isInitialized()) {
+            synchronized(conversionLock) {
+                engine.close()
+            }
+        }
+        super.onDestroy()
+    }
 
     private val binder = object : IOpenccPlugin.Stub() {
         override fun getInfo(): PluginInfo {
@@ -69,9 +82,9 @@ class OpenccPluginService : Service() {
         }
     }
 
-    private fun requireConversionType(conversionType: String?): ConversionType {
+    private fun requireConversionType(conversionType: String?): OpenccConversionType {
         val typeName = conversionType.orEmpty().trim().uppercase(Locale.US)
-        return runCatching { ConversionType.valueOf(typeName) }
+        return runCatching { OpenccConversionType.valueOf(typeName) }
             .getOrElse {
                 throw IllegalArgumentException(
                     getString(R.string.error_unsupported_conversion_type, conversionType),
@@ -80,7 +93,7 @@ class OpenccPluginService : Service() {
             }
     }
 
-    private fun convert(text: String, conversionType: ConversionType): String {
-        return ChineseConverter.convert(text, conversionType, this)
+    private fun convert(text: String, conversionType: OpenccConversionType): String {
+        return engine.convert(text, conversionType)
     }
 }

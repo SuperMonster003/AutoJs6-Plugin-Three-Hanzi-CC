@@ -1,0 +1,3 @@
+[submodule "opencc"]
+	path = opencc-native/src/main/cpp/third_party/OpenCC
+	url = https://github.com/BYVoid/OpenCC.git

@@ -24,6 +24,7 @@ desktop.ini
 __pycache__/
 
 !.run
+!opencc-native/src/main/assets/opencc/*.zip
 
 .idea/*
 
@@ -48,5 +49,6 @@ __pycache__/
 **/assets-app/sample/declarations/
 
 app/build/
+opencc-native/build/
 build-logic/build/
 build-logic/*/build/

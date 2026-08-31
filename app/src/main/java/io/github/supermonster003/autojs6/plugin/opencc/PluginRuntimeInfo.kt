@@ -2,6 +2,7 @@ package io.github.supermonster003.autojs6.plugin.opencc
 
 import android.content.Context
 import android.os.Build
+import io.github.supermonster003.autojs6.plugin.opencc.nativebridge.OpenccUpstream
 import org.autojs.plugin.common.api.PluginCapabilityKeys
 import org.autojs.plugin.common.api.PluginInfo
 import org.autojs.plugin.opencc.api.OpenccConversionTypes
@@ -11,6 +12,12 @@ import org.autojs.plugin.opencc.api.OpenccPluginIds
 
 internal const val REQUIRED_HOST_VERSION = 3923
 internal const val PLUGIN_INSTRUCTION_REFERENCE = "@raw/plugin_instruction"
+
+internal object OpenccEngineCapabilityKeys {
+    const val VERSION = "org.autojs.plugin.opencc.OPENCC_VERSION"
+    const val COMMIT = "org.autojs.plugin.opencc.OPENCC_COMMIT"
+    const val RESOURCE_SHA256 = "org.autojs.plugin.opencc.OPENCC_RESOURCE_SHA256"
+}
 
 internal val SUPPORTED_ABIS = listOf(
     "arm64-v8a",
@@ -34,6 +41,9 @@ internal data class PluginRuntimeFields(
     val requiredHostVersion: Int,
     val contractVersion: Int,
     val supportedConversionTypes: List<String>,
+    val openccVersion: String,
+    val openccCommit: String,
+    val openccResourceSha256: String,
 )
 
 internal fun pluginRuntimeFields(
@@ -61,6 +71,9 @@ internal fun pluginRuntimeFields(
     requiredHostVersion = REQUIRED_HOST_VERSION,
     contractVersion = OpenccPluginContract.VERSION_CURRENT,
     supportedConversionTypes = OpenccConversionTypes.ALL,
+    openccVersion = OpenccUpstream.version(),
+    openccCommit = OpenccUpstream.commit(),
+    openccResourceSha256 = OpenccUpstream.resourceSha256(),
 )
 
 internal fun Context.pluginInfo(name: String, description: String): PluginInfo {
@@ -96,6 +109,9 @@ internal fun Context.pluginInfo(name: String, description: String): PluginInfo {
                 OpenccPluginCapabilityKeys.SUPPORTED_CONVERSION_TYPES,
                 ArrayList(fields.supportedConversionTypes),
             )
+            putString(OpenccEngineCapabilityKeys.VERSION, fields.openccVersion)
+            putString(OpenccEngineCapabilityKeys.COMMIT, fields.openccCommit)
+            putString(OpenccEngineCapabilityKeys.RESOURCE_SHA256, fields.openccResourceSha256)
         }
     }
 }

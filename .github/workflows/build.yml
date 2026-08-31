@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
+        with:
+          submodules: recursive
 
       - name: Set up Java
         uses: actions/setup-java@v6
@@ -30,8 +32,13 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Test release tooling
-        run: python -m unittest discover -s scripts/release/tests -p "test_*.py"
+      - name: Test Python tooling
+        run: |
+          python -m unittest discover -s scripts/release/tests -p "test_*.py"
+          python -m unittest discover -s scripts/opencc/tests -p "test_*.py"
+
+      - name: Verify pinned OpenCC source and resources
+        run: python scripts/opencc/verify_upstream.py --root .
 
       - name: Run unit tests and assemble debug APKs
         run: |

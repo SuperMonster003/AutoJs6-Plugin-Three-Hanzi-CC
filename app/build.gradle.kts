@@ -88,17 +88,19 @@ android {
         resValues = true
     }
 
-    packaging {
-        jniLibs.useLegacyPackaging = true
-    }
 }
 
 dependencies {
     implementation(files("$rootDir/libs/common-plugin-api.aar"))
     implementation(files("$rootDir/libs/opencc-api.aar"))
-    implementation(libs.opencc)
+    implementation(project(":opencc-native"))
 
     testImplementation(libs.junit)
+    // Migration-only enum baseline. This AAR is not packaged into application APKs.
+    testImplementation(libs.opencc)
+    // Migration-only behavior baseline. It is packaged into the instrumentation APK,
+    // never into the plugin APK verified by scripts/ci/verify_apk_variants.py.
+    androidTestImplementation(libs.opencc)
     androidTestImplementation(libs.test.ext.junit)
     androidTestImplementation(libs.test.runner)
 }

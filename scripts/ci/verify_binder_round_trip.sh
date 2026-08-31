@@ -32,8 +32,22 @@ test -f "${test_apk}"
 adb install -r -t "${target_apk}"
 adb install -r -t "${test_apk}"
 
-output="$(adb shell am instrument -w -r \
-  -e class io.github.supermonster003.autojs6.plugin.opencc.OpenccPluginServiceTest \
-  "${test_package}/androidx.test.runner.AndroidJUnitRunner")"
-printf '%s\n' "${output}"
-printf '%s\n' "${output}" | grep -F "OK (1 test)"
+run_instrumentation() {
+  class_name="$1"
+  shift
+  output="$(adb shell am instrument -w -r \
+    -e class "${class_name}" \
+    "$@" \
+    "${test_package}/androidx.test.runner.AndroidJUnitRunner")"
+  printf '%s\n' "${output}"
+  printf '%s\n' "${output}" | grep -F "OK (1 test)"
+}
+
+run_instrumentation \
+  io.github.supermonster003.autojs6.plugin.opencc.OpenccPluginServiceTest
+run_instrumentation \
+  io.github.supermonster003.autojs6.plugin.opencc.OpenccResourceRestartTest \
+  -e opencc_resource_restart_phase prepare
+run_instrumentation \
+  io.github.supermonster003.autojs6.plugin.opencc.OpenccResourceRestartTest \
+  -e opencc_resource_restart_phase verify

@@ -1,0 +1,33 @@
+name: OpenCC upstream watch
+
+on:
+  schedule:
+    - cron: "17 2 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: opencc-upstream-watch
+  cancel-in-progress: true
+
+jobs:
+  check-release:
+    name: Validate latest official release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Compare pinned and latest OpenCC releases
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/opencc/check_upstream.py --root . --fail-on-update
