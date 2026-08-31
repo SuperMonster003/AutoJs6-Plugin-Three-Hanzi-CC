@@ -12,6 +12,8 @@ import androidx.test.platform.app.InstrumentationRegistry
 import org.autojs.plugin.common.api.PluginCapabilityKeys
 import org.autojs.plugin.opencc.api.IOpenccPlugin
 import org.autojs.plugin.opencc.api.OpenccConversionTypes
+import org.autojs.plugin.opencc.api.OpenccPluginCapabilityKeys
+import org.autojs.plugin.opencc.api.OpenccPluginContract
 import org.autojs.plugin.opencc.api.OpenccPluginActions
 import org.autojs.plugin.opencc.api.OpenccPluginIds
 import org.junit.Assert.assertEquals
@@ -43,6 +45,29 @@ class OpenccPluginServiceTest {
             assertEquals("漢字", plugin.convert("汉字", OpenccConversionTypes.S2T))
             assertEquals("汉字", plugin.convert("漢字", OpenccConversionTypes.T2S))
 
+            assertEquals(OpenccConversionTypes.ALL, plugin.supportedConversionTypes)
+            val batchInput = listOf("汉字", "软件")
+            assertEquals(
+                batchInput.map { plugin.convert(it, OpenccConversionTypes.S2T) },
+                plugin.convertBatch(
+                    batchInput.toMutableList(),
+                    OpenccConversionTypes.S2T,
+                ),
+            )
+            assertTrue(
+                plugin.convertBatch(mutableListOf(), OpenccConversionTypes.S2T).isEmpty(),
+            )
+
+            val chainTypes = mutableListOf(
+                OpenccConversionTypes.S2T,
+                OpenccConversionTypes.T2JP,
+            )
+            val sequential = chainTypes.fold("鼠标软件") { text, conversionType ->
+                plugin.convert(text, conversionType)
+            }
+            assertEquals(sequential, plugin.convertChain("鼠标软件", chainTypes))
+            assertEquals("identity", plugin.convertChain("identity", mutableListOf()))
+
             try {
                 plugin.convert("汉字", "NOT_A_CONVERSION")
                 fail("Unknown conversion type must be rejected")
@@ -51,6 +76,28 @@ class OpenccPluginServiceTest {
                     "Unexpected unknown-type message: ${error.message}",
                     error.message.orEmpty().contains("NOT_A_CONVERSION"),
                 )
+            }
+
+            try {
+                plugin.convertBatch(
+                    MutableList(OpenccPluginContract.MAX_BATCH_SIZE + 1) { "汉" },
+                    OpenccConversionTypes.S2T,
+                )
+                fail("Oversized conversion batch must be rejected")
+            } catch (error: IllegalArgumentException) {
+                assertTrue(error.message.orEmpty().contains("1024"))
+            }
+
+            try {
+                plugin.convertChain(
+                    "汉字",
+                    MutableList(OpenccPluginContract.MAX_CHAIN_LENGTH + 1) {
+                        OpenccConversionTypes.S2T
+                    },
+                )
+                fail("Oversized conversion chain must be rejected")
+            } catch (error: IllegalArgumentException) {
+                assertTrue(error.message.orEmpty().contains("32"))
             }
         }
     }
@@ -61,6 +108,7 @@ class OpenccPluginServiceTest {
 
         assertEquals("OpenCC", info.name)
         assertTrue(info.description?.isNotBlank() == true)
+        assertEquals("@raw/plugin_instruction", info.instruction)
         assertEquals("SuperMonster003", info.author)
         assertEquals(OpenccPluginIds.ID, info.id)
         assertEquals(OpenccPluginIds.ENGINE, info.engine)
@@ -83,6 +131,14 @@ class OpenccPluginServiceTest {
 
         val capabilities = requireNotNull(info.capabilities) { "Plugin capabilities are missing" }
         assertEquals(3923, capabilities.getInt(PluginCapabilityKeys.REQUIRES_HOST_VERSION))
+        assertEquals(
+            OpenccPluginContract.VERSION_CURRENT,
+            capabilities.getInt(OpenccPluginCapabilityKeys.CONTRACT_VERSION),
+        )
+        assertEquals(
+            OpenccConversionTypes.ALL,
+            capabilities.getStringArrayList(OpenccPluginCapabilityKeys.SUPPORTED_CONVERSION_TYPES),
+        )
     }
 
     private fun withBoundPlugin(block: (IOpenccPlugin) -> Unit) {
@@ -137,21 +193,6 @@ class OpenccPluginServiceTest {
     }
 
     private companion object {
-        val CONVERSION_TYPES = listOf(
-            OpenccConversionTypes.HK2S,
-            OpenccConversionTypes.HK2T,
-            OpenccConversionTypes.JP2T,
-            OpenccConversionTypes.S2HK,
-            OpenccConversionTypes.S2T,
-            OpenccConversionTypes.S2TW,
-            OpenccConversionTypes.S2TWP,
-            OpenccConversionTypes.T2HK,
-            OpenccConversionTypes.T2S,
-            OpenccConversionTypes.T2TW,
-            OpenccConversionTypes.T2JP,
-            OpenccConversionTypes.TW2S,
-            OpenccConversionTypes.TW2T,
-            OpenccConversionTypes.TW2SP,
-        )
+        val CONVERSION_TYPES = OpenccConversionTypes.ALL
     }
 }

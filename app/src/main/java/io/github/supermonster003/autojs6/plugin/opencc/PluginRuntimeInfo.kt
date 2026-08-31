@@ -4,9 +4,13 @@ import android.content.Context
 import android.os.Build
 import org.autojs.plugin.common.api.PluginCapabilityKeys
 import org.autojs.plugin.common.api.PluginInfo
+import org.autojs.plugin.opencc.api.OpenccConversionTypes
+import org.autojs.plugin.opencc.api.OpenccPluginCapabilityKeys
+import org.autojs.plugin.opencc.api.OpenccPluginContract
 import org.autojs.plugin.opencc.api.OpenccPluginIds
 
 internal const val REQUIRED_HOST_VERSION = 3923
+internal const val PLUGIN_INSTRUCTION_REFERENCE = "@raw/plugin_instruction"
 
 internal val SUPPORTED_ABIS = listOf(
     "arm64-v8a",
@@ -18,6 +22,7 @@ internal val SUPPORTED_ABIS = listOf(
 internal data class PluginRuntimeFields(
     val name: String,
     val description: String,
+    val instruction: String,
     val author: String,
     val id: String,
     val engine: String,
@@ -27,6 +32,8 @@ internal data class PluginRuntimeFields(
     val versionDate: String,
     val supportedAbis: List<String>,
     val requiredHostVersion: Int,
+    val contractVersion: Int,
+    val supportedConversionTypes: List<String>,
 )
 
 internal fun pluginRuntimeFields(
@@ -42,6 +49,7 @@ internal fun pluginRuntimeFields(
 ): PluginRuntimeFields = PluginRuntimeFields(
     name = name,
     description = description,
+    instruction = PLUGIN_INSTRUCTION_REFERENCE,
     author = author,
     id = id,
     engine = engine,
@@ -51,6 +59,8 @@ internal fun pluginRuntimeFields(
     versionDate = versionDate,
     supportedAbis = SUPPORTED_ABIS,
     requiredHostVersion = REQUIRED_HOST_VERSION,
+    contractVersion = OpenccPluginContract.VERSION_CURRENT,
+    supportedConversionTypes = OpenccConversionTypes.ALL,
 )
 
 internal fun Context.pluginInfo(name: String, description: String): PluginInfo {
@@ -70,6 +80,7 @@ internal fun Context.pluginInfo(name: String, description: String): PluginInfo {
     return PluginInfo().apply {
         this.name = fields.name
         this.description = fields.description
+        instruction = fields.instruction
         author = fields.author
         id = fields.id
         engine = fields.engine
@@ -80,6 +91,11 @@ internal fun Context.pluginInfo(name: String, description: String): PluginInfo {
         supportedAbis = fields.supportedAbis.toTypedArray()
         capabilities = android.os.Bundle().apply {
             putInt(PluginCapabilityKeys.REQUIRES_HOST_VERSION, fields.requiredHostVersion)
+            putInt(OpenccPluginCapabilityKeys.CONTRACT_VERSION, fields.contractVersion)
+            putStringArrayList(
+                OpenccPluginCapabilityKeys.SUPPORTED_CONVERSION_TYPES,
+                ArrayList(fields.supportedConversionTypes),
+            )
         }
     }
 }

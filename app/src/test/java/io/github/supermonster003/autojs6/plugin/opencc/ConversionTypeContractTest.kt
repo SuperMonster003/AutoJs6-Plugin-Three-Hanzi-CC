@@ -9,23 +9,8 @@ class ConversionTypeContractTest {
 
     @Test
     fun apiConstantsAndConversionEngineExposeTheSameFourteenTypes() {
-        val apiTypes = setOf(
-            OpenccConversionTypes.HK2S,
-            OpenccConversionTypes.HK2T,
-            OpenccConversionTypes.JP2T,
-            OpenccConversionTypes.S2HK,
-            OpenccConversionTypes.S2T,
-            OpenccConversionTypes.S2TW,
-            OpenccConversionTypes.S2TWP,
-            OpenccConversionTypes.T2HK,
-            OpenccConversionTypes.T2S,
-            OpenccConversionTypes.T2TW,
-            OpenccConversionTypes.T2JP,
-            OpenccConversionTypes.TW2S,
-            OpenccConversionTypes.TW2T,
-            OpenccConversionTypes.TW2SP,
-        )
-        val engineTypes = ConversionType.entries.mapTo(mutableSetOf()) { it.name }
+        val apiTypes = OpenccConversionTypes.ALL
+        val engineTypes = ConversionType.entries.map { it.name }
 
         assertEquals(14, apiTypes.size)
         assertEquals(14, engineTypes.size)
