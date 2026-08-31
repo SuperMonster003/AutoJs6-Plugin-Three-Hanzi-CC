@@ -1,18 +1,35 @@
-OpenCC で中国語テキストを変換します:
+OpenCC プラグイン (OpenCC Plugin) は, [OpenCC](https://github.com/BYVoid/OpenCC) ベースの中国語テキスト変換機能を AutoJs6 に提供します. 本プラグインをインストールすると, AutoJs6 スクリプトのグローバルオブジェクト `opencc` がそのまま利用可能になり, 簡体字, 繁体字, 香港繁体字, 台湾正体字, 日本語新字体の間の変換が 1 行のコードで完結します. モジュールのインポートもネットワーク接続も不要です.
 
-```js
-let text = "汉字转换";
-let converted = opencc.convert(text, "S2T");
-console.log(converted);
+### クイックスタート
+
+インストール後, 以下のスクリプトはそのまま実行できます. コメントは期待される出力です:
+
+```javascript
+console.log(opencc.s2t("汉字转换"));     // => 漢字轉換
+console.log(opencc.t2s("漢字轉換"));     // => 汉字转换
+console.log(opencc.s2twp("鼠标和软件")); // => 滑鼠和軟體
+console.log(opencc.convert("汉字转换", "S2T")); // => 漢字轉換
 ```
 
-ショートカットメソッドも使用できます:
+### 変換タイプ
 
-```js
+`convert` メソッドと同名のショートカットは以下の 14 種類の OpenCC 標準変換タイプに対応しています. タイプ名の S は簡体字, T は繁体字 (OpenCC 標準), HK は香港繁体字, TW は台湾正体字, JP は日本語新字体を表します:
+
+```text
+S2T   T2S   S2TW  TW2S  S2TWP  TW2SP  S2HK
+HK2S  T2TW  TW2T  T2HK  HK2T   T2JP   JP2T
+```
+
+`P` サフィックス付きのタイプは, 文字単位の変換に加えて語彙の置換も行い, 現地の表現習慣により適した結果を生成します; `P` なしのタイプは字形のみを変換し, 語彙には手を加えません.
+
+### クイックセルフチェック
+
+プラグインがインストールされ, プラグインセンターで有効になっていることを確認したら, 以下の 1 行スクリプトを実行するとエンドツーエンドの検証ができます:
+
+```javascript
 console.log(opencc.s2t("汉字转换"));
-console.log(opencc.t2s("漢字轉換"));
 ```
 
-よく使う変換タイプには `S2T`、`T2S`、`S2HK`、`S2TW`、`S2TWP`、`T2HK`、`T2TW`、`HK2S`、`HK2T`、`TW2S`、`TW2SP` があります。
+`漢字轉換` が出力されればプラグインの連携は完全に機能しています. スクリプトがエラーになった場合はメッセージに従って対処してください: プラグインの欠落と表示されたら本プラグインをインストールし, 無効または未承認と表示されたらプラグインセンターで該当スイッチをオンにし, より新しいホストが必要と表示されたら AutoJs6 を更新します.
 
-その他の使用例は、AutoJs6 ドキュメントの [OpenCC](https://docs.autojs6.com/#/opencc) セクションを参照してください。
+メソッドの一覧と変換タイプの完全なリファレンスは [AutoJs6 OpenCC ドキュメント](https://docs.autojs6.com/#/opencc) と [プロジェクト README](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC) を参照してください.

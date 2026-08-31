@@ -3,21 +3,17 @@
 <div align="center">
   <p>
     <picture>
-      <source srcset="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/app/src/main/res/mipmap-night/ic_launcher.png?raw=true" media="(prefers-color-scheme: dark)" />
-      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/app/src/main/res/mipmap/ic_launcher.png?raw=true" alt="autojs6-plugin-opencc-ic-launcher" border="0" width="128" />
+      <source srcset="{{ repo_url }}/blob/master/app/src/main/res/mipmap-night/ic_launcher.png?raw=true" media="(prefers-color-scheme: dark)" />
+      <img src="{{ repo_url }}/blob/master/app/src/main/res/mipmap/ic_launcher.png?raw=true" alt="{{ icon_alt }}" border="0" width="128" />
     </picture>
   </p>
 
   <p>{{ text_plugin_synopsis }}</p>
 
   <p>
-    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/SuperMonster003/AutoJs6-Plugin-OpenCC?label=Release"/></a>
-    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/issues"><img alt="GitHub closed issues" src="https://img.shields.io/github/issues/SuperMonster003/AutoJs6-Plugin-OpenCC?color=A24232&label=Issues"/></a>
-    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/commit/ac15c8492f78b0bb9c06f2b1e9b70d7ba87be81f"><img alt="Created" src="https://img.shields.io/date/1784032100?color=2e7d32&label=Created"/></a>
-    <br>
-    <a href="https://developer.android.com/studio/archive"><img alt="Android Studio" src="https://img.shields.io/badge/Android%20Studio-2023.3+-B64FC8"/></a>
-    <a href="https://www.jetbrains.com/idea/download/other.html"><img alt="IntelliJ IDEA" src="https://img.shields.io/badge/IntelliJ%20IDEA-2023.3+-EE4677"/></a>
-    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/LICENSE"><img alt="GitHub License" src="https://img.shields.io/github/license/SuperMonster003/AutoJs6-Plugin-OpenCC?color=534BAE&label=License"/></a>
+    <a href="{{ repo_url }}/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/{{ repo_slug }}?label=Release"/></a>
+    <a href="{{ repo_url }}/issues"><img alt="GitHub closed issues" src="https://img.shields.io/github/issues/{{ repo_slug }}?color=A24232&label=Issues"/></a>
+    <a href="{{ license_url }}"><img alt="GitHub License" src="https://img.shields.io/github/license/{{ repo_slug }}?color=534BAE&label=License"/></a>
   </p>
 </div>
 
@@ -37,11 +33,13 @@
 
 ******
 
-{{ p_introduction }}
+{{ p_introduction_what }}
+
+{{ p_introduction_how }}
 
 ******
 
-### {{ h3_functions }}
+### {{ h3_features }}
 
 ******
 
@@ -53,18 +51,33 @@
 
 ******
 
-```js
-let text = "汉字转换";
-let converted = opencc.convert(text, "S2T");
-console.log(converted);
+{{ placeholder_usage_steps }}
+
+> {{ p_usage_note }}
+
+******
+
+### {{ h3_quick_start }}
+
+******
+
+{{ p_quick_start_intro }}:
+
+```javascript
+console.log(opencc.s2t("汉字转换"));     // => 漢字轉換
+console.log(opencc.t2s("漢字轉換"));     // => 汉字转换
+console.log(opencc.s2twp("鼠标和软件")); // => 滑鼠和軟體
+console.log(opencc.t2jp("圖書館"));      // => 図書館
 ```
 
-{{ placeholder_usage_shortcut_intro }}:
+{{ p_quick_start_convert }}:
 
-```js
-console.log(opencc.s2t("汉字转换"));
-console.log(opencc.t2s("漢字轉換"));
+```javascript
+console.log(opencc.convert("汉字转换", "S2T")); // => 漢字轉換
+console.log(opencc("汉字转换", "s2t"));         // => 漢字轉換
 ```
+
+{{ p_quick_start_note }}
 
 ******
 
@@ -72,13 +85,147 @@ console.log(opencc.t2s("漢字轉換"));
 
 ******
 
-{{ p_conversion_types }}:
+{{ p_conversion_types_intro }}:
+
+| {{ th_type_code }} | {{ th_type_direction }} |
+|---|---|
+| `S2T` | {{ td_type_s2t }} |
+| `T2S` | {{ td_type_t2s }} |
+| `S2TW` | {{ td_type_s2tw }} |
+| `TW2S` | {{ td_type_tw2s }} |
+| `S2TWP` | {{ td_type_s2twp }} |
+| `TW2SP` | {{ td_type_tw2sp }} |
+| `S2HK` | {{ td_type_s2hk }} |
+| `HK2S` | {{ td_type_hk2s }} |
+| `T2TW` | {{ td_type_t2tw }} |
+| `TW2T` | {{ td_type_tw2t }} |
+| `T2HK` | {{ td_type_t2hk }} |
+| `HK2T` | {{ td_type_hk2t }} |
+| `T2JP` | {{ td_type_t2jp }} |
+| `JP2T` | {{ td_type_jp2t }} |
+
+{{ p_conversion_types_phrase_note }}
+
+{{ p_conversion_types_jp_note }}
+
+******
+
+### {{ h3_script_methods }}
+
+******
+
+{{ p_methods_intro }}
+
+{{ p_methods_core }}:
 
 ```text
-{{ conversion_types }}
+s2t   t2s   s2tw  tw2s  s2twp  tw2sp  s2hk
+hk2s  t2tw  tw2t  t2hk  hk2t   t2jp   jp2t
 ```
 
-{{ placeholder_conversion_shortcuts }}.
+{{ p_methods_alias }}
+
+{{ p_methods_composed }}:
+
+```text
+s2jp   = s2t  + t2jp          jp2s   = jp2t + t2s
+hk2tw  = hk2t + t2tw          tw2hk  = tw2t + t2hk
+hk2jp  = hk2t + t2jp          tw2jp  = tw2t + t2jp
+t2twi  = t2s  + s2twi         twi2t  = twi2s + s2t
+hk2twi = hk2s + s2twi         twi2hk = twi2s + s2hk
+tw2twi = tw2s + s2twi         twi2tw = twi2s + s2tw
+jp2hk  = jp2t + t2hk          jp2tw  = jp2t + t2tw
+twi2jp = twi2s + s2t + t2jp   jp2twi = jp2t + t2s + s2twi
+```
+
+{{ p_methods_composed_note }}
+
+******
+
+### {{ h3_choose_apk }}
+
+******
+
+{{ p_choose_apk_intro }}:
+
+| {{ th_apk_variant }} | {{ th_apk_target }} |
+|---|---|
+| `arm64-v8a` | {{ td_abi_arm64 }} |
+| `armeabi-v7a` | {{ td_abi_arm32 }} |
+| `x86_64` | {{ td_abi_x86_64 }} |
+| `x86` | {{ td_abi_x86 }} |
+| `universal` | {{ td_abi_universal }} |
+
+{{ p_choose_apk_note }}
+
+******
+
+### {{ h3_self_check }}
+
+******
+
+{{ p_self_check_intro }}:
+
+```javascript
+console.log(opencc.s2t("汉字转换"));
+```
+
+{{ p_self_check_result }}
+
+******
+
+### {{ h3_faq }}
+
+******
+
+{{ placeholder_faq }}
+
+******
+
+### {{ h3_security }}
+
+******
+
+{{ p_security_intro }}
+
+{{ placeholder_security_points }}
+
+{{ p_security_permission }}
+
+******
+
+### {{ h3_plugin_interface }}
+
+******
+
+{{ p_plugin_interface }}:
+
+```text
+application id: {{ plugin_application_id }}
+plugin id: {{ plugin_id }}
+engine: {{ plugin_engine }}
+variant: {{ plugin_variant }}
+service action: {{ plugin_service_action }}
+service category: {{ plugin_service_category }}
+aidl interface: {{ plugin_aidl_interface }}
+aidl methods: getInfo(), convert(text, conversionType)
+minimum host build: {{ required_host_version_code }} ({{ required_host_version_name }})
+conversion library: {{ opencc_library_coordinates }}
+```
+
+{{ p_contract_service }}
+
+{{ p_abi_reporting }}
+
+******
+
+### {{ h3_roadmap }}
+
+******
+
+{{ p_roadmap }}
+
+- [{{ text_link_roadmap }}]({{ roadmap_url }})
 
 ******
 
@@ -98,17 +245,33 @@ console.log(opencc.t2s("漢字轉換"));
 
 ******
 
+{{ p_build_intro }}
+
+{{ p_build_debug }}:
+
 ```powershell
 .\gradlew.bat :app:assembleDebug
 ```
 
-{{ text_release_build }}:
+{{ p_build_release }}:
 
 ```powershell
 .\gradlew.bat :app:assembleRelease
 ```
 
-{{ p_build_params }}.
+{{ p_build_digest }}:
+
+```powershell
+.\gradlew.bat :app:appendDigestToReleasedFiles
+```
+
+{{ p_build_docs_check }}:
+
+```powershell
+py .python\generate_markdown.py --check
+```
+
+{{ p_build_requirements }}
 
 ******
 
@@ -117,14 +280,27 @@ console.log(opencc.t2s("漢字轉換"));
 ******
 
 ```text
+.readme/common.json
 .readme/lang_*.json
+.readme/template_readme.md
+.readme/template_plugin_instruction.md
 .changelog/lang_*.json
+.changelog/template_changelog.md
 .python/generate_markdown.py
+app/src/main/assets/doc/CHANGELOG-*.md
 app/src/main/res/values-*/strings.xml
 app/src/main/res/raw-*/plugin_instruction.md
 ```
 
-{{ p_resource_layout }}.
+{{ p_resource_layout }}
+
+******
+
+### {{ h3_license }}
+
+******
+
+{{ p_license }}
 
 ******
 
@@ -133,5 +309,6 @@ app/src/main/res/raw-*/plugin_instruction.md
 ******
 
 - {{ text_link_autojs6_opencc_docs }}: {{ docs_opencc_url }}
+- {{ text_link_autojs6 }}: {{ autojs6_url }}
 - {{ text_link_opencc_official }}: {{ opencc_official_url }}
 - {{ text_link_android_opencc }}: {{ android_opencc_url }}

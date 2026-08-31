@@ -1,7 +1,23 @@
+******
+
+### Historique des versions
+
+******
+
 # v1.0.1
 
 ###### 2026/07/14
 
-* `Amélioration` Ajout de builds APK divisés par ABI pour `arm64-v8a`, `armeabi-v7a`, `x86_64`, `x86` et un APK `universal`
-* `Amélioration` Ajout des métadonnées ABI prises en charge aux informations d'exécution du plugin afin que l'hôte puisse identifier les variantes compatibles
-* `Amélioration` Les noms des APK publiés incluent maintenant la version, la variante ABI et le résumé CRC32
+* `Amélioration` Distribution de paquets séparés par architecture de processeur (ABI): paquets à ABI unique pour `arm64-v8a`, `armeabi-v7a`, `x86_64` et `x86`, plus un paquet `universal` regroupant toutes les architectures, afin que chaque appareil n'installe que le nécessaire et que les téléchargements restent légers
+* `Amélioration` Signalement de la liste des ABI prises en charge dans les informations du plugin, afin qu'AutoJs6 et le centre de plugins puissent identifier les variantes du plugin adaptées à l'appareil actuel
+* `Amélioration` Ajout de la version, de l'ABI et de la somme de contrôle CRC32 aux noms des fichiers APK publiés, ce qui facilite la vérification de l'intégrité des fichiers téléchargés
+
+# v1.0.0
+
+###### 2026/07/14
+
+* `Fonctionnalité` Première version stable: fournit à AutoJs6 la conversion de chinois OpenCC sous forme de plugin autonome, l'ID du plugin et le moteur étant tous deux `opencc`
+* `Fonctionnalité` Découverte et appel automatiques du plugin par AutoJs6 via `org.autojs.plugin.OPENCC`; il fonctionne dès l'installation, sans configuration ni redémarrage
+* `Fonctionnalité` Prise en charge des 14 types de conversion standard OpenCC, couvrant la conversion simplifié-traditionnel, les variantes de Hong Kong et de Taïwan ainsi que le shinjitai japonais: `S2T`/`S2TW`/`S2TWP`/`S2HK`/`T2S`/`T2TW`/`T2HK`/`T2JP`/`TW2S`/`TW2T`/`TW2SP`/`HK2S`/`HK2T`/`JP2T`
+* `Fonctionnalité` Métadonnées du plugin et instructions d'utilisation localisées en 10 langues: chinois simplifié, chinois traditionnel de Hong Kong, chinois traditionnel de Taïwan, anglais, français, espagnol, japonais, coréen, russe et arabe
+* `Fonctionnalité` README multilingue avec des exemples d'utilisation, des instructions de compilation et des liens associés

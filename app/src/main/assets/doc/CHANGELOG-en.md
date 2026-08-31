@@ -1,7 +1,23 @@
+******
+
+### Release History
+
+******
+
 # v1.0.1
 
 ###### 2026/07/14
 
-* `Improvement` Added ABI split APK builds for `arm64-v8a`, `armeabi-v7a`, `x86_64`, `x86`, and a `universal` APK
-* `Improvement` Added supported ABI metadata to plugin runtime info so the host can identify compatible variants
-* `Improvement` Release APK filenames now include the version, ABI variant, and CRC32 digest
+* `Improvement` Ship packages split by processor architecture (ABI): single-ABI packages for `arm64-v8a`, `armeabi-v7a`, `x86_64`, and `x86` plus a `universal` package with all architectures, so devices install only what they need and downloads stay small
+* `Improvement` Report the supported ABI list in the plugin info so AutoJs6 and the plugin center can identify which plugin variants fit the current device
+* `Improvement` Append the version, ABI, and CRC32 digest to release APK file names, making it easy to verify the integrity of downloaded files
+
+# v1.0.0
+
+###### 2026/07/14
+
+* `Feature` First stable release: provides OpenCC Chinese conversion for AutoJs6 as a standalone plugin, with both plugin ID and engine set to `opencc`
+* `Feature` AutoJs6 discovers and calls the plugin automatically via `org.autojs.plugin.OPENCC`; it works right after installation with no configuration or restart
+* `Feature` Support all 14 standard OpenCC conversion types, covering Simplified-Traditional conversion, Hong Kong and Taiwan variants, and Japanese Shinjitai: `S2T`/`S2TW`/`S2TWP`/`S2HK`/`T2S`/`T2TW`/`T2HK`/`T2JP`/`TW2S`/`TW2T`/`TW2SP`/`HK2S`/`HK2T`/`JP2T`
+* `Feature` Localized plugin metadata and usage instructions in 10 languages: Simplified Chinese, Hong Kong Traditional, Taiwan Traditional, English, French, Spanish, Japanese, Korean, Russian, and Arabic
+* `Feature` Multilingual README with usage examples, build instructions, and related links

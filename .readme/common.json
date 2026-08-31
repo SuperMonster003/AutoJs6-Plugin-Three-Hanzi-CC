@@ -1,7 +1,23 @@
 {
   "repo_url": "https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC",
+  "repo_slug": "SuperMonster003/AutoJs6-Plugin-OpenCC",
+  "icon_alt": "autojs6-plugin-opencc-ic-launcher",
+  "autojs6_url": "https://github.com/SuperMonster003/AutoJs6",
   "docs_opencc_url": "https://docs.autojs6.com/#/opencc",
   "opencc_official_url": "https://github.com/BYVoid/OpenCC",
   "android_opencc_url": "https://github.com/qichuan/android-opencc",
-  "conversion_types": "S2T, S2TW, S2TWP, S2HK,\nT2S, T2TW, T2HK, T2JP,\nTW2S, TW2T, TW2SP,\nHK2S, HK2T,\nJP2T"
+  "license_url": "https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/LICENSE",
+  "roadmap_url": "https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/ROADMAP.md",
+  "plugin_application_id": "io.github.supermonster003.autojs6.plugin.opencc",
+  "plugin_id": "opencc",
+  "plugin_engine": "opencc",
+  "plugin_variant": "default",
+  "plugin_service_action": "org.autojs.plugin.OPENCC",
+  "plugin_service_category": "opencc",
+  "plugin_aidl_interface": "org.autojs.plugin.opencc.api.IOpenccPlugin",
+  "required_host_version_code": "3923",
+  "required_host_version_name": "6.7.1 Alpha4",
+  "opencc_library_coordinates": "com.github.brooklet:android-opencc:1.2.2",
+  "android_min_sdk": "24",
+  "min_android_version": "7.0"
 }
