@@ -46,7 +46,7 @@ M0 ──> M1 ──> M2 ──> M3 (契约条目需宿主先行)
 - [x] (发布) 新增 `.python/check_markdown.bat` 与 GitHub Actions 工作流 `.github/workflows/markdown.yml`, push/PR 自动校验文档源与生成产物同步.
 - [x] (发布) 新建本 ROADMAP.md, 并在 README 增加 "开发路线图" 章节挂链.
 - [x] (发布) 构建系统迁移与文档整改一并入库: 使用 `org.autojs.build.platform-versions` 统一解析 Gradle 插件版本, 并通过 foojay 自动解析 JDK; `:app:assembleDebug` 已在 JDK 21 / Gradle 9.5 / AGP 9.2.1 组合下验证通过.
-- [ ] (发布) 文档整改后的首个对外版本 v1.0.2: `version.properties` 与 10 语言 CHANGELOG 已更新, 5 个签名 APK 已完成版本/ABI/CRC32/SHA-256/签名连续性核验; 待推送提交与标签并创建 GitHub Release 后勾选.
+- [x] (发布) 文档整改后的首个对外版本 v1.0.2 (2026-08-31): `version.properties` 与 10 语言 CHANGELOG 已更新, 5 个签名 APK 已完成版本/ABI/CRC32/SHA-256/签名连续性核验, `v1.0.2` 标签与 GitHub Release 已公开发布.
 - [ ] (发布) 提供插件在 AutoJs6 插件中心内被识别与启用状态的界面截图, 接入 README 多语言生成链路 (参考姊妹插件 `docs/images/screenshots` 方案).
 
 验收条件: `py .python/generate_markdown.py --check` 在本地与 CI 全绿; 新用户仅凭 README 即可独立完成安装, 选包与生效确认.
