@@ -17,6 +17,9 @@
     "多语言: 插件信息, 使用说明, README 与更新日志覆盖 10 种语言.",
     "轻量后台: 插件无独立界面, 由宿主按需唤醒与绑定, 空闲时自动释放连接."
   ],
+  "h3_screenshots": "界面截图",
+  "p_screenshots_intro": "以下为 AutoJs6 插件中心的真实运行截图. OpenCC 1.0.2 (17) 已被宿主识别, 右侧开关处于启用状态. 画面保留原始 Android 截图, 未裁剪或调色.",
+  "screenshot_plugin_center_caption": "插件中心已识别并启用 OpenCC 1.0.2",
   "h3_usage": "使用方法",
   "usage_steps": [
     "将 AutoJs6 升级到内部版本号 {{ required_host_version_code }} ({{ required_host_version_name }}) 及以上; 6.8.0 正式版及更新版本均满足要求.",

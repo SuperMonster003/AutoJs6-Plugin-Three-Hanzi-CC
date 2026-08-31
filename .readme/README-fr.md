@@ -62,6 +62,25 @@ Le plugin suit une répartition des rôles entre hôte et plugin: l'hôte AutoJs
 
 ******
 
+### Capture d'écran
+
+******
+
+Cette capture réelle montre le centre de plugins AutoJs6. OpenCC 1.0.2 (17) est reconnu par l'hôte et l'interrupteur à droite est activé. La capture Android originale est conservée sans recadrage ni correction des couleurs.
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/images/screenshots/plugin-center-enabled.png?raw=true"
+           alt="OpenCC 1.0.2 reconnu et activé dans le centre de plugins" width="360" />
+      <br />
+      <sub>OpenCC 1.0.2 reconnu et activé dans le centre de plugins</sub>
+    </td>
+  </tr>
+</table>
+
+******
+
 ### Mode d'emploi
 
 ******
@@ -361,6 +380,8 @@ La compilation nécessite JDK 17 ou ultérieur ainsi que le SDK Android 36; les 
 .changelog/lang_*.json
 .changelog/template_changelog.md
 .python/generate_markdown.py
+docs/images/screenshots/README.md
+docs/images/screenshots/plugin-center-enabled.png
 app/src/main/assets/doc/CHANGELOG-*.md
 app/src/main/res/values-*/strings.xml
 app/src/main/res/raw-*/plugin_instruction.md

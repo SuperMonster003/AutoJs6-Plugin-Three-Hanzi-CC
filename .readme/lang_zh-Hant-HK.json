@@ -17,6 +17,9 @@
     "多語言: 插件資訊, 使用說明, README 與更新日誌覆蓋 10 種語言.",
     "輕量背景服務: 插件無獨立介面, 由宿主按需喚醒與綁定, 空閒時自動釋放連接."
   ],
+  "h3_screenshots": "介面截圖",
+  "p_screenshots_intro": "以下為 AutoJs6 插件中心的真實運行截圖. OpenCC 1.0.2 (17) 已被宿主識別, 右側開關處於啟用狀態. 畫面保留原始 Android 截圖, 未經裁剪或調色.",
+  "screenshot_plugin_center_caption": "插件中心已識別並啟用 OpenCC 1.0.2",
   "h3_usage": "使用方法",
   "usage_steps": [
     "將 AutoJs6 升級到內部版本號 {{ required_host_version_code }} ({{ required_host_version_name }}) 及以上; 6.8.0 正式版及更新版本均滿足要求.",

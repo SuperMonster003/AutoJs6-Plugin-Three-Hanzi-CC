@@ -62,6 +62,25 @@ OpenCC プラグイン (OpenCC Plugin) は, [OpenCC](https://github.com/BYVoid/O
 
 ******
 
+### 画面スクリーンショット
+
+******
+
+以下は AutoJs6 プラグインセンターの実際の画面です. OpenCC 1.0.2 (17) はホストに認識され, 右側のスイッチが有効になっています. 元の Android スクリーンショットは切り抜きや色調整をせず保持しています.
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/images/screenshots/plugin-center-enabled.png?raw=true"
+           alt="プラグインセンターで認識され有効になった OpenCC 1.0.2" width="360" />
+      <br />
+      <sub>プラグインセンターで認識され有効になった OpenCC 1.0.2</sub>
+    </td>
+  </tr>
+</table>
+
+******
+
 ### 使用方法
 
 ******
@@ -361,6 +380,8 @@ py .python\generate_markdown.py --check
 .changelog/lang_*.json
 .changelog/template_changelog.md
 .python/generate_markdown.py
+docs/images/screenshots/README.md
+docs/images/screenshots/plugin-center-enabled.png
 app/src/main/assets/doc/CHANGELOG-*.md
 app/src/main/res/values-*/strings.xml
 app/src/main/res/raw-*/plugin_instruction.md

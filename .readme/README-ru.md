@@ -62,6 +62,25 @@
 
 ******
 
+### Снимок интерфейса
+
+******
+
+Это реальный снимок центра плагинов AutoJs6. OpenCC 1.0.2 (17) распознан хостом, а переключатель справа включен. Исходный снимок Android сохранен без обрезки и цветокоррекции.
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/images/screenshots/plugin-center-enabled.png?raw=true"
+           alt="OpenCC 1.0.2 распознан и включен в центре плагинов" width="360" />
+      <br />
+      <sub>OpenCC 1.0.2 распознан и включен в центре плагинов</sub>
+    </td>
+  </tr>
+</table>
+
+******
+
 ### Использование
 
 ******
@@ -361,6 +380,8 @@ py .python\generate_markdown.py --check
 .changelog/lang_*.json
 .changelog/template_changelog.md
 .python/generate_markdown.py
+docs/images/screenshots/README.md
+docs/images/screenshots/plugin-center-enabled.png
 app/src/main/assets/doc/CHANGELOG-*.md
 app/src/main/res/values-*/strings.xml
 app/src/main/res/raw-*/plugin_instruction.md

@@ -62,6 +62,25 @@ OpenCC 插件 (OpenCC Plugin) 为 AutoJs6 提供基于 [OpenCC](https://github.c
 
 ******
 
+### 界面截图
+
+******
+
+以下为 AutoJs6 插件中心的真实运行截图. OpenCC 1.0.2 (17) 已被宿主识别, 右侧开关处于启用状态. 画面保留原始 Android 截图, 未裁剪或调色.
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/images/screenshots/plugin-center-enabled.png?raw=true"
+           alt="插件中心已识别并启用 OpenCC 1.0.2" width="360" />
+      <br />
+      <sub>插件中心已识别并启用 OpenCC 1.0.2</sub>
+    </td>
+  </tr>
+</table>
+
+******
+
 ### 使用方法
 
 ******
@@ -361,6 +380,8 @@ py .python\generate_markdown.py --check
 .changelog/lang_*.json
 .changelog/template_changelog.md
 .python/generate_markdown.py
+docs/images/screenshots/README.md
+docs/images/screenshots/plugin-center-enabled.png
 app/src/main/assets/doc/CHANGELOG-*.md
 app/src/main/res/values-*/strings.xml
 app/src/main/res/raw-*/plugin_instruction.md

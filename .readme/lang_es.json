@@ -17,6 +17,9 @@
     "Multilingüe: los metadatos del complemento, las instrucciones de uso, el README y el changelog cubren 10 idiomas.",
     "Servicio en segundo plano ligero: el complemento no tiene interfaz propia; el host lo despierta y se enlaza a él bajo demanda, y las conexiones inactivas se liberan automáticamente."
   ],
+  "h3_screenshots": "Captura de pantalla",
+  "p_screenshots_intro": "Esta captura real muestra el centro de complementos de AutoJs6. OpenCC 1.0.2 (17) está reconocido por el anfitrión y el interruptor de la derecha está activado. Se conserva la captura original de Android sin recortes ni ajustes de color.",
+  "screenshot_plugin_center_caption": "OpenCC 1.0.2 reconocido y activado en el centro de complementos",
   "h3_usage": "Cómo se usa",
   "usage_steps": [
     "Actualice AutoJs6 a la compilación interna {{ required_host_version_code }} ({{ required_host_version_name }}) o superior; la versión oficial 6.8.0 y todas las posteriores cumplen este requisito.",

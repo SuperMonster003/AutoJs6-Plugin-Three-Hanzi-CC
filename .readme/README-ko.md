@@ -62,6 +62,25 @@ OpenCC 플러그인 (OpenCC Plugin)은 [OpenCC](https://github.com/BYVoid/OpenCC
 
 ******
 
+### 화면 스크린샷
+
+******
+
+다음은 AutoJs6 플러그인 센터의 실제 화면입니다. OpenCC 1.0.2 (17)이 호스트에 인식되었고 오른쪽 스위치가 활성화되어 있습니다. 원본 Android 스크린샷은 자르기나 색상 조정 없이 보존했습니다.
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/images/screenshots/plugin-center-enabled.png?raw=true"
+           alt="플러그인 센터에서 인식되고 활성화된 OpenCC 1.0.2" width="360" />
+      <br />
+      <sub>플러그인 센터에서 인식되고 활성화된 OpenCC 1.0.2</sub>
+    </td>
+  </tr>
+</table>
+
+******
+
 ### 사용 방법
 
 ******
@@ -361,6 +380,8 @@ py .python\generate_markdown.py --check
 .changelog/lang_*.json
 .changelog/template_changelog.md
 .python/generate_markdown.py
+docs/images/screenshots/README.md
+docs/images/screenshots/plugin-center-enabled.png
 app/src/main/assets/doc/CHANGELOG-*.md
 app/src/main/res/values-*/strings.xml
 app/src/main/res/raw-*/plugin_instruction.md

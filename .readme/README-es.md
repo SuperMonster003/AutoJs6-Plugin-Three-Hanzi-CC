@@ -62,6 +62,25 @@ El complemento sigue un reparto de tareas entre host y complemento: el host Auto
 
 ******
 
+### Captura de pantalla
+
+******
+
+Esta captura real muestra el centro de complementos de AutoJs6. OpenCC 1.0.2 (17) está reconocido por el anfitrión y el interruptor de la derecha está activado. Se conserva la captura original de Android sin recortes ni ajustes de color.
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/images/screenshots/plugin-center-enabled.png?raw=true"
+           alt="OpenCC 1.0.2 reconocido y activado en el centro de complementos" width="360" />
+      <br />
+      <sub>OpenCC 1.0.2 reconocido y activado en el centro de complementos</sub>
+    </td>
+  </tr>
+</table>
+
+******
+
 ### Cómo se usa
 
 ******
@@ -361,6 +380,8 @@ La compilación requiere JDK 17 o superior y el SDK de Android 36; las versiones
 .changelog/lang_*.json
 .changelog/template_changelog.md
 .python/generate_markdown.py
+docs/images/screenshots/README.md
+docs/images/screenshots/plugin-center-enabled.png
 app/src/main/assets/doc/CHANGELOG-*.md
 app/src/main/res/values-*/strings.xml
 app/src/main/res/raw-*/plugin_instruction.md

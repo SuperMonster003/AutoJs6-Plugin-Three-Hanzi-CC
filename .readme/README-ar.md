@@ -62,6 +62,25 @@
 
 ******
 
+### لقطة للواجهة
+
+******
+
+هذه لقطة فعلية لمركز المكونات الإضافية في AutoJs6. تعرف المضيف على OpenCC 1.0.2 (17) والمفتاح على اليمين مفعل. تم الاحتفاظ بلقطة Android الأصلية من دون قص أو تعديل للألوان.
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/images/screenshots/plugin-center-enabled.png?raw=true"
+           alt="التعرف على OpenCC 1.0.2 وتفعيله في مركز المكونات الإضافية" width="360" />
+      <br />
+      <sub>التعرف على OpenCC 1.0.2 وتفعيله في مركز المكونات الإضافية</sub>
+    </td>
+  </tr>
+</table>
+
+******
+
 ### الاستخدام
 
 ******
@@ -361,6 +380,8 @@ py .python\generate_markdown.py --check
 .changelog/lang_*.json
 .changelog/template_changelog.md
 .python/generate_markdown.py
+docs/images/screenshots/README.md
+docs/images/screenshots/plugin-center-enabled.png
 app/src/main/assets/doc/CHANGELOG-*.md
 app/src/main/res/values-*/strings.xml
 app/src/main/res/raw-*/plugin_instruction.md

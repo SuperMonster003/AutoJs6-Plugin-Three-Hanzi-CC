@@ -17,6 +17,9 @@
     "Multilingual: plugin metadata, usage instructions, README, and changelog cover 10 languages.",
     "Lightweight background service: the plugin has no UI of its own; the host wakes and binds it on demand and idle connections are released automatically."
   ],
+  "h3_screenshots": "Interface Screenshot",
+  "p_screenshots_intro": "This is a real capture of the AutoJs6 plugin center. OpenCC 1.0.2 (17) is recognized by the host and the switch on the right is enabled. The original Android screenshot is preserved without cropping or color adjustment.",
+  "screenshot_plugin_center_caption": "OpenCC 1.0.2 recognized and enabled in the plugin center",
   "h3_usage": "Usage",
   "usage_steps": [
     "Update AutoJs6 to internal build {{ required_host_version_code }} ({{ required_host_version_name }}) or later; release 6.8.0 and newer all satisfy this requirement.",

@@ -47,6 +47,25 @@
 
 ******
 
+### {{ h3_screenshots }}
+
+******
+
+{{ p_screenshots_intro }}
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="{{ repo_url }}/blob/master/docs/images/screenshots/plugin-center-enabled.png?raw=true"
+           alt="{{ screenshot_plugin_center_caption }}" width="360" />
+      <br />
+      <sub>{{ screenshot_plugin_center_caption }}</sub>
+    </td>
+  </tr>
+</table>
+
+******
+
 ### {{ h3_usage }}
 
 ******
@@ -287,6 +306,8 @@ py .python\generate_markdown.py --check
 .changelog/lang_*.json
 .changelog/template_changelog.md
 .python/generate_markdown.py
+docs/images/screenshots/README.md
+docs/images/screenshots/plugin-center-enabled.png
 app/src/main/assets/doc/CHANGELOG-*.md
 app/src/main/res/values-*/strings.xml
 app/src/main/res/raw-*/plugin_instruction.md

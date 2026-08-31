@@ -20,6 +20,8 @@ Generated artifacts (36 in total, never edit them by hand):
 
 Validated but not generated:
   app/src/main/res/values*/strings.xml           key parity, plugin_description sync
+  docs/images/screenshots/plugin-center-enabled.png
+                                                  PNG format, dimensions, SHA-256, README reference
 
 Usage:
   py .python/generate_markdown.py            regenerate all artifacts
@@ -31,6 +33,7 @@ Exit protocol: prints MARKDOWN_OK on success, MARKDOWN_ERROR <reason> on failure
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import sys
@@ -92,6 +95,10 @@ README_FAQ_KEY = "faq"
 
 EXPECTED_ARTIFACT_COUNT = 36
 README_LATEST_RELEASES = 3
+
+SCREENSHOT_FILENAME = "plugin-center-enabled.png"
+SCREENSHOT_DIMENSIONS = (720, 1280)
+SCREENSHOT_SHA256 = "EA87F97D5CA5A82B95F0FF397E90AC564AF59205BAFBF86F7C761AB77F364E01"
 
 PLACEHOLDER_MARKERS = (
     "TODO_TRANSLATION",
@@ -159,6 +166,53 @@ def load_json(path: Path) -> dict[str, Any]:
         raise MarkdownGenerationError(f"Invalid JSON in {path}: {error}") from None
     require(isinstance(data, dict), f"JSON root must be an object: {path}")
     return data
+
+
+def validate_screenshot_asset(root: Path, readme_template: str) -> None:
+    screenshot_dir = root / "docs" / "images" / "screenshots"
+    screenshot_path = screenshot_dir / SCREENSHOT_FILENAME
+    notes_path = screenshot_dir / "README.md"
+
+    notes = load_text(notes_path)
+    require(SCREENSHOT_FILENAME in notes, f"Screenshot capture notes do not list {SCREENSHOT_FILENAME!r}")
+    require(SCREENSHOT_SHA256 in notes, "Screenshot capture notes do not contain the expected SHA-256")
+
+    require(screenshot_path.is_file(), f"Missing screenshot asset: {screenshot_path}")
+    require(not screenshot_path.is_symlink(), f"Refusing to read symlink: {screenshot_path}")
+    try:
+        data = screenshot_path.read_bytes()
+    except OSError as error:
+        raise MarkdownGenerationError(f"Cannot read screenshot asset {screenshot_path}: {error}") from None
+
+    header = data[:26]
+    require(
+        len(header) == 26 and header[:8] == b"\x89PNG\r\n\x1a\n" and header[12:16] == b"IHDR",
+        f"Screenshot asset is not a valid PNG: {screenshot_path}",
+    )
+    dimensions = (
+        int.from_bytes(header[16:20], "big"),
+        int.from_bytes(header[20:24], "big"),
+    )
+    bit_depth = header[24]
+    color_type = header[25]
+    require(
+        dimensions == SCREENSHOT_DIMENSIONS and bit_depth == 8 and color_type == 6,
+        f"Unexpected screenshot format for {screenshot_path}: "
+        f"dimensions={dimensions}, bit_depth={bit_depth}, color_type={color_type}",
+    )
+
+    digest = hashlib.sha256(data).hexdigest().upper()
+    require(
+        digest == SCREENSHOT_SHA256,
+        f"Screenshot SHA-256 mismatch for {screenshot_path}: expected={SCREENSHOT_SHA256} actual={digest}",
+    )
+
+    marker = f"docs/images/screenshots/{SCREENSHOT_FILENAME}?raw=true"
+    reference_count = readme_template.count(marker)
+    require(
+        reference_count == 1,
+        f"Screenshot must appear exactly once in the README template: references={reference_count}",
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -491,6 +545,7 @@ def build_artifacts(root: Path) -> dict[Path, str]:
 
     languages, changelogs = load_languages(root)
     readme_template = load_text(readme_dir / "template_readme.md")
+    validate_screenshot_asset(root, readme_template)
     instruction_template = load_text(readme_dir / "template_plugin_instruction.md")
     changelog_template = load_text(changelog_dir / "template_changelog.md")
 

@@ -17,6 +17,9 @@
     "多言語対応: プラグイン情報, 使用説明, README, 更新履歴が 10 言語をカバーします.",
     "軽量なバックグラウンド動作: プラグインは独自の画面を持たず, ホストが必要時にウェイクアップとバインドを行い, アイドル時は接続が自動的に解放されます."
   ],
+  "h3_screenshots": "画面スクリーンショット",
+  "p_screenshots_intro": "以下は AutoJs6 プラグインセンターの実際の画面です. OpenCC 1.0.2 (17) はホストに認識され, 右側のスイッチが有効になっています. 元の Android スクリーンショットは切り抜きや色調整をせず保持しています.",
+  "screenshot_plugin_center_caption": "プラグインセンターで認識され有効になった OpenCC 1.0.2",
   "h3_usage": "使用方法",
   "usage_steps": [
     "AutoJs6 を内部ビルド番号 {{ required_host_version_code }} ({{ required_host_version_name }}) 以上に更新します; リリース版 6.8.0 以降はすべて要件を満たします.",

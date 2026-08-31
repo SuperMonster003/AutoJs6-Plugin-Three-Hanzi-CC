@@ -17,6 +17,9 @@
     "多語言: 外掛資訊, 使用說明, README 與更新日誌涵蓋 10 種語言.",
     "輕量背景服務: 外掛無獨立介面, 由主程式視需要喚醒與繫結, 閒置時自動釋放連線."
   ],
+  "h3_screenshots": "介面截圖",
+  "p_screenshots_intro": "以下為 AutoJs6 外掛中心的實際執行畫面. OpenCC 1.0.2 (17) 已由宿主識別, 右側開關處於啟用狀態. 畫面保留原始 Android 截圖, 未經裁切或調色.",
+  "screenshot_plugin_center_caption": "外掛中心已識別並啟用 OpenCC 1.0.2",
   "h3_usage": "使用方法",
   "usage_steps": [
     "將 AutoJs6 升級到內部版本號 {{ required_host_version_code }} ({{ required_host_version_name }}) 及以上; 6.8.0 正式版及更新版本均符合要求.",
