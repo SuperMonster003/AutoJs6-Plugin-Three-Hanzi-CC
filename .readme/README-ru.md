@@ -175,7 +175,7 @@ jp2hk  = jp2t + t2hk          jp2tw  = jp2t + t2tw
 twi2jp = twi2s + s2t + t2jp   jp2twi = jp2t + t2s + s2twi
 ```
 
-Каждый шаг составного метода является отдельным вызовом плагина; например, `twi2jp` последовательно выполняет 3 преобразования. В плотных циклах и для очень длинных текстов отдавайте предпочтение основным типам, чтобы сократить число вызовов.
+Новый хост с поддержкой расширенного контракта передает всю составную цепочку одним вызовом плагина; например, для 3 этапов `twi2jp` нужен только 1 обмен Binder. Старые хосты продолжают вызывать каждый этап и сохраняют совместимость с этим плагином.
 
 ******
 
@@ -274,12 +274,14 @@ variant: default
 service action: org.autojs.plugin.OPENCC
 service category: opencc
 aidl interface: org.autojs.plugin.opencc.api.IOpenccPlugin
-aidl methods: getInfo(), convert(text, conversionType)
+aidl contract version: 2
+aidl methods: getInfo(), convert(text, conversionType), getSupportedConversionTypes(), convertBatch(texts, conversionType), convertChain(text, conversionTypes)
+batch/chain limits: 1024 texts / 32 stages
 minimum host build: 3923 (6.7.1 Alpha4)
 conversion library: com.github.brooklet:android-opencc:1.2.2
 ```
 
-`OpenccPluginService` отвечает на действие `org.autojs.plugin.OPENCC` (категория `opencc`); интерфейс Binder представлен `org.autojs.plugin.opencc.api.IOpenccPlugin` из opencc-api и содержит ровно два метода: `getInfo()` и `convert(text, conversionType)`. Также предоставляется `WakeActivity`, чтобы хост мог пробуждать процесс плагина.
+`OpenccPluginService` отвечает на действие `org.autojs.plugin.OPENCC` (категория `opencc`) через `org.autojs.plugin.opencc.api.IOpenccPlugin` из opencc-api. Версия контракта 2 добавляет обнаружение типов, пакетное и цепочечное преобразование после исходных методов `getInfo()` и `convert(text, conversionType)`, а также сообщает версию и поддерживаемые типы через `PluginInfo.capabilities`; старые хосты продолжают использовать исходные методы и номера транзакций. Также предоставляется `WakeActivity` для пробуждения процесса плагина.
 
 `PluginInfo.supportedAbis` сообщает четыре архитектуры `arm64-v8a`, `armeabi-v7a`, `x86_64` и `x86`, чтобы хост и центр плагинов могли определить доступные варианты; преобразование обеспечивают движок OpenCC и словари из `com.github.brooklet:android-opencc:1.2.2`.
 
@@ -299,6 +301,16 @@ conversion library: com.github.brooklet:android-opencc:1.2.2
 
 ******
 
+#### v1.1.0
+
+_2026/08/31_
+
+- `Функция` Обновление контракта плагина OpenCC до версии 2 с методом `getSupportedConversionTypes()`, чтобы новые хосты могли динамически определять 14 реально поддерживаемых типов преобразования
+- `Функция` Добавление `convertBatch(texts, conversionType)` для преобразования до 1024 фрагментов текста за один обмен Binder с сохранением поэлементного пути для старых хостов
+- `Функция` Добавление `convertChain(text, conversionTypes)` для последовательного выполнения до 32 этапов за один вызов, что сокращает составные методы в новых хостах с максимум 3 обменов Binder до 1
+- `Улучшение` Передача локализованных инструкций через `PluginInfo.instruction` и публикация версии контракта и поддерживаемых типов преобразования через capabilities
+- `Улучшение` Сохранение исходных методов AIDL и номеров транзакций, а также модульные и реальные Binder-тесты расширенных вызовов, отката к старому контракту, ограничений размера и ошибок
+
 #### v1.0.2
 
 _2026/08/31_
@@ -317,16 +329,6 @@ _2026/07/14_
 - `Улучшение` Поставляются пакеты, разделенные по архитектуре процессора (ABI): пакеты для одной ABI `arm64-v8a`, `armeabi-v7a`, `x86_64` и `x86`, а также пакет `universal` со всеми архитектурами; устройства устанавливают только необходимое, а загрузки остаются небольшими
 - `Улучшение` Список поддерживаемых ABI сообщается в сведениях о плагине, чтобы AutoJs6 и центр плагинов могли определить, какие варианты плагина подходят текущему устройству
 - `Улучшение` К именам выпускаемых APK добавляются версия, ABI и дайджест CRC32, что упрощает проверку целостности скачанных файлов
-
-#### v1.0.0
-
-_2026/07/14_
-
-- `Функция` Первый стабильный выпуск: предоставляет AutoJs6 преобразование китайского текста OpenCC в виде отдельного плагина; и идентификатор плагина, и движок имеют значение `opencc`
-- `Функция` AutoJs6 автоматически обнаруживает и вызывает плагин через `org.autojs.plugin.OPENCC`; он работает сразу после установки без настройки и перезапуска
-- `Функция` Поддерживаются все 14 стандартных типов преобразования OpenCC, охватывающие преобразование между упрощенным и традиционным китайским, гонконгские и тайваньские варианты и японский синдзитай: `S2T`/`S2TW`/`S2TWP`/`S2HK`/`T2S`/`T2TW`/`T2HK`/`T2JP`/`TW2S`/`TW2T`/`TW2SP`/`HK2S`/`HK2T`/`JP2T`
-- `Функция` Локализованные сведения о плагине и инструкции по использованию на 10 языках: упрощенный китайский, гонконгский традиционный китайский, тайваньский традиционный китайский, английский, французский, испанский, японский, корейский, русский и арабский
-- `Функция` Многоязычный README с примерами использования, инструкциями по сборке и связанными ссылками
 
 ##### Больше истории выпусков
 
@@ -407,7 +409,7 @@ app/src/main/res/raw-*/plugin_instruction.md
 
 ******
 
-Код проекта распространяется по лицензии [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/LICENSE). Преобразование китайского текста обеспечивают [OpenCC](https://github.com/BYVoid/OpenCC) (Apache License 2.0) и его Android-обертка [android-opencc](https://github.com/qichuan/android-opencc).
+Код проекта распространяется по лицензии [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/LICENSE). Преобразование китайского текста обеспечивают [OpenCC](https://github.com/BYVoid/OpenCC) (Apache License 2.0) и его Android-обертка [android-opencc](https://github.com/brooklet/android-opencc).
 
 ******
 
@@ -418,4 +420,4 @@ app/src/main/res/raw-*/plugin_instruction.md
 - Документация AutoJs6 OpenCC: https://docs.autojs6.com/#/opencc
 - Проект AutoJs6: https://github.com/SuperMonster003/AutoJs6
 - Официальный проект OpenCC: https://github.com/BYVoid/OpenCC
-- Проект Android OpenCC: https://github.com/qichuan/android-opencc
+- Проект Android OpenCC: https://github.com/brooklet/android-opencc

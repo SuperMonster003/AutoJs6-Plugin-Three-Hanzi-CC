@@ -175,7 +175,7 @@ jp2hk  = jp2t + t2hk          jp2tw  = jp2t + t2tw
 twi2jp = twi2s + s2t + t2jp   jp2twi = jp2t + t2s + s2twi
 ```
 
-Every step of a composed method is a separate plugin call; `twi2jp`, for example, performs 3 conversions in sequence. For tight loops or very long texts, prefer core types to reduce the number of calls.
+A newer host that supports the extended contract sends an entire composed chain as one plugin call; the 3 conversion stages of `twi2jp`, for example, need only 1 Binder round trip. Older hosts keep calling each stage and remain compatible with this plugin.
 
 ******
 
@@ -274,12 +274,14 @@ variant: default
 service action: org.autojs.plugin.OPENCC
 service category: opencc
 aidl interface: org.autojs.plugin.opencc.api.IOpenccPlugin
-aidl methods: getInfo(), convert(text, conversionType)
+aidl contract version: 2
+aidl methods: getInfo(), convert(text, conversionType), getSupportedConversionTypes(), convertBatch(texts, conversionType), convertChain(text, conversionTypes)
+batch/chain limits: 1024 texts / 32 stages
 minimum host build: 3923 (6.7.1 Alpha4)
 conversion library: com.github.brooklet:android-opencc:1.2.2
 ```
 
-`OpenccPluginService` responds to the `org.autojs.plugin.OPENCC` action (category `opencc`); the Binder interface is `org.autojs.plugin.opencc.api.IOpenccPlugin` from opencc-api, with exactly two methods, `getInfo()` and `convert(text, conversionType)`. A `WakeActivity` is also provided so the host can wake the plugin process.
+`OpenccPluginService` responds to the `org.autojs.plugin.OPENCC` action (category `opencc`), using `org.autojs.plugin.opencc.api.IOpenccPlugin` from opencc-api. Contract version 2 appends type discovery, batch conversion, and chained conversion after the original `getInfo()` and `convert(text, conversionType)` methods, and advertises its version and supported types through `PluginInfo.capabilities`; older hosts keep using the original methods and transaction numbers. A `WakeActivity` is also provided so the host can wake the plugin process.
 
 `PluginInfo.supportedAbis` reports the four architectures `arm64-v8a`, `armeabi-v7a`, `x86_64`, and `x86` so the host and the plugin center can identify available variants; conversion is powered by the OpenCC engine and dictionaries from `com.github.brooklet:android-opencc:1.2.2`.
 
@@ -299,6 +301,16 @@ The plugin's plans and progress are maintained as a checkable list in ROADMAP.md
 
 ******
 
+#### v1.1.0
+
+_2026/08/31_
+
+- `Feature` Upgrade to OpenCC plugin contract version 2 with `getSupportedConversionTypes()`, allowing newer hosts to discover the 14 conversion types actually supported by the plugin
+- `Feature` Add `convertBatch(texts, conversionType)` to convert up to 1024 text segments in one Binder round trip while retaining the per-item path for older hosts
+- `Feature` Add `convertChain(text, conversionTypes)` to run up to 32 stages in one call, reducing composed methods on newer hosts from as many as 3 Binder round trips to 1
+- `Improvement` Deliver localized plugin instructions through `PluginInfo.instruction` and report the contract version and supported conversion types through capabilities
+- `Improvement` Preserve the original AIDL methods and transaction numbers, with unit and real Binder tests covering extended calls, legacy fallback, size limits, and error paths
+
 #### v1.0.2
 
 _2026/08/31_
@@ -317,16 +329,6 @@ _2026/07/14_
 - `Improvement` Ship packages split by processor architecture (ABI): single-ABI packages for `arm64-v8a`, `armeabi-v7a`, `x86_64`, and `x86` plus a `universal` package with all architectures, so devices install only what they need and downloads stay small
 - `Improvement` Report the supported ABI list in the plugin info so AutoJs6 and the plugin center can identify which plugin variants fit the current device
 - `Improvement` Append the version, ABI, and CRC32 digest to release APK file names, making it easy to verify the integrity of downloaded files
-
-#### v1.0.0
-
-_2026/07/14_
-
-- `Feature` First stable release: provides OpenCC Chinese conversion for AutoJs6 as a standalone plugin, with both plugin ID and engine set to `opencc`
-- `Feature` AutoJs6 discovers and calls the plugin automatically via `org.autojs.plugin.OPENCC`; it works right after installation with no configuration or restart
-- `Feature` Support all 14 standard OpenCC conversion types, covering Simplified-Traditional conversion, Hong Kong and Taiwan variants, and Japanese Shinjitai: `S2T`/`S2TW`/`S2TWP`/`S2HK`/`T2S`/`T2TW`/`T2HK`/`T2JP`/`TW2S`/`TW2T`/`TW2SP`/`HK2S`/`HK2T`/`JP2T`
-- `Feature` Localized plugin metadata and usage instructions in 10 languages: Simplified Chinese, Hong Kong Traditional, Taiwan Traditional, English, French, Spanish, Japanese, Korean, Russian, and Arabic
-- `Feature` Multilingual README with usage examples, build instructions, and related links
 
 ##### For more release history
 
@@ -407,7 +409,7 @@ app/src/main/res/raw-*/plugin_instruction.md
 
 ******
 
-The project code is licensed under the [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/LICENSE). Chinese conversion is powered by [OpenCC](https://github.com/BYVoid/OpenCC) (Apache License 2.0) and its Android wrapper [android-opencc](https://github.com/qichuan/android-opencc).
+The project code is licensed under the [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/LICENSE). Chinese conversion is powered by [OpenCC](https://github.com/BYVoid/OpenCC) (Apache License 2.0) and its Android wrapper [android-opencc](https://github.com/brooklet/android-opencc).
 
 ******
 
@@ -418,4 +420,4 @@ The project code is licensed under the [Mozilla Public License 2.0](https://gith
 - AutoJs6 OpenCC documentation: https://docs.autojs6.com/#/opencc
 - AutoJs6 project: https://github.com/SuperMonster003/AutoJs6
 - OpenCC official project: https://github.com/BYVoid/OpenCC
-- Android OpenCC project: https://github.com/qichuan/android-opencc
+- Android OpenCC project: https://github.com/brooklet/android-opencc

@@ -5,6 +5,18 @@
   "changelog_label_improvement": "改善",
   "changelog_label_dependency": "依存関係",
   "$data": {
+    "v1.1.0": {
+      "released_date": "2026/08/31",
+      "feature": [
+        "OpenCC プラグイン契約をバージョン 2 に更新し, `getSupportedConversionTypes()` を追加しました. 新しいホストはプラグインが実際に対応する 14 種類の変換タイプを動的に検出できます",
+        "`convertBatch(texts, conversionType)` を追加し, 1 回の Binder 往復で最大 1024 個のテキストを変換できるようにしました. 古いホスト向けの項目別呼び出しも維持します",
+        "`convertChain(text, conversionTypes)` を追加し, 1 回の呼び出しで最大 32 ステージを順に実行できるようにしました. 新しいホストの組み合わせメソッドは最大 3 回の Binder 往復から 1 回に減ります"
+      ],
+      "improvement": [
+        "`PluginInfo.instruction` で呼び出し側の言語に合った説明を提供し, capabilities で契約バージョンと対応変換タイプを報告します",
+        "既存の AIDL メソッドとトランザクション番号を維持し, 拡張呼び出し, 旧契約へのフォールバック, サイズ上限, エラー経路を単体テストと実 Binder テストで検証します"
+      ]
+    },
     "v1.0.2": {
       "released_date": "2026/08/31",
       "hint": [

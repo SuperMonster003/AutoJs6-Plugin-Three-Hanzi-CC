@@ -175,7 +175,7 @@ jp2hk  = jp2t + t2hk          jp2tw  = jp2t + t2tw
 twi2jp = twi2s + s2t + t2jp   jp2twi = jp2t + t2s + s2twi
 ```
 
-组合方法的每一步都是一次独立的插件调用, 例如 `twi2jp` 会依次执行 3 次转换; 高频循环或超长文本场景下, 优先使用核心类型可减少调用次数.
+支持扩展契约的新版宿主会将整条组合链作为一次插件调用; 例如 `twi2jp` 的 3 个转换阶段只需 1 次 Binder 往返. 旧宿主仍按阶段调用, 与本插件保持兼容.
 
 ******
 
@@ -274,12 +274,14 @@ variant: default
 service action: org.autojs.plugin.OPENCC
 service category: opencc
 aidl interface: org.autojs.plugin.opencc.api.IOpenccPlugin
-aidl methods: getInfo(), convert(text, conversionType)
+aidl contract version: 2
+aidl methods: getInfo(), convert(text, conversionType), getSupportedConversionTypes(), convertBatch(texts, conversionType), convertChain(text, conversionTypes)
+batch/chain limits: 1024 texts / 32 stages
 minimum host build: 3923 (6.7.1 Alpha4)
 conversion library: com.github.brooklet:android-opencc:1.2.2
 ```
 
-`OpenccPluginService` 响应 `org.autojs.plugin.OPENCC` action (category `opencc`), Binder 接口为 opencc-api 的 `org.autojs.plugin.opencc.api.IOpenccPlugin`, 仅含 `getInfo()` 与 `convert(text, conversionType)` 两个方法; 另提供 `WakeActivity` 供宿主唤醒插件进程.
+`OpenccPluginService` 响应 `org.autojs.plugin.OPENCC` action (category `opencc`), Binder 接口为 opencc-api 的 `org.autojs.plugin.opencc.api.IOpenccPlugin`. 契约版本 2 在原有 `getInfo()` 与 `convert(text, conversionType)` 之后追加类型发现, 批量转换与链式转换方法, 并通过 `PluginInfo.capabilities` 广告版本与支持类型; 旧宿主继续使用原有方法和事务编号. 另提供 `WakeActivity` 供宿主唤醒插件进程.
 
 `PluginInfo.supportedAbis` 上报 `arm64-v8a`, `armeabi-v7a`, `x86_64`, `x86` 四种架构, 供宿主与插件中心识别可用变体; 转换由 `com.github.brooklet:android-opencc:1.2.2` 提供的 OpenCC 引擎与词典完成.
 
@@ -299,6 +301,16 @@ conversion library: com.github.brooklet:android-opencc:1.2.2
 
 ******
 
+#### v1.1.0
+
+_2026/08/31_
+
+- `新增` 升级到 OpenCC 插件契约版本 2, 新增 `getSupportedConversionTypes()`, 供新版宿主动态发现当前实际支持的 14 种转换类型
+- `新增` 新增 `convertBatch(texts, conversionType)`, 单次 Binder 往返最多转换 1024 段文本, 同时保留旧宿主逐项调用的兼容路径
+- `新增` 新增 `convertChain(text, conversionTypes)`, 单次调用最多顺序执行 32 个阶段, 让新版宿主的组合方法从最多 3 次 Binder 往返降为 1 次
+- `优化` 通过 `PluginInfo.instruction` 交付调用方语言的插件说明, 并通过 capabilities 上报契约版本与支持的转换类型
+- `优化` 保持原有 AIDL 方法及事务编号不变, 并为扩展调用, 旧契约回退, 大小上限与异常路径补充单元测试和真实 Binder 测试
+
 #### v1.0.2
 
 _2026/08/31_
@@ -317,16 +329,6 @@ _2026/07/14_
 - `优化` 提供按处理器架构 (ABI) 拆分的安装包: `arm64-v8a`, `armeabi-v7a`, `x86_64`, `x86` 单架构包与包含全部架构的 `universal` 包, 设备按需安装, 体积更小
 - `优化` 插件信息上报支持的 ABI 列表, AutoJs6 与插件中心可据此识别当前设备可用的插件变体
 - `优化` 发布 APK 文件名附带版本号, 架构与 CRC32 校验码, 便于核对下载文件的完整性
-
-#### v1.0.0
-
-_2026/07/14_
-
-- `新增` 首个正式版本: 以独立插件形式为 AutoJs6 提供 OpenCC 中文转换能力, 插件 ID 与引擎均为 `opencc`
-- `新增` AutoJs6 通过 `org.autojs.plugin.OPENCC` 自动发现并调用插件, 安装即用, 无需配置与重启
-- `新增` 支持全部 14 种 OpenCC 标准转换类型, 覆盖简繁转换, 香港/台湾地区用字与日文新字体: `S2T`/`S2TW`/`S2TWP`/`S2HK`/`T2S`/`T2TW`/`T2HK`/`T2JP`/`TW2S`/`TW2T`/`TW2SP`/`HK2S`/`HK2T`/`JP2T`
-- `新增` 插件信息与使用说明提供 10 种语言的本地化资源: 简体中文, 香港繁体, 台湾繁体, 英语, 法语, 西班牙语, 日语, 韩语, 俄语, 阿拉伯语
-- `新增` 提供多语言 README, 包含用法示例, 构建说明与相关链接
 
 ##### 更多发行历史可参阅
 
@@ -407,7 +409,7 @@ app/src/main/res/raw-*/plugin_instruction.md
 
 ******
 
-项目代码使用 [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/LICENSE). 中文转换能力来自 [OpenCC](https://github.com/BYVoid/OpenCC) (Apache License 2.0) 及其 Android 封装 [android-opencc](https://github.com/qichuan/android-opencc).
+项目代码使用 [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/LICENSE). 中文转换能力来自 [OpenCC](https://github.com/BYVoid/OpenCC) (Apache License 2.0) 及其 Android 封装 [android-opencc](https://github.com/brooklet/android-opencc).
 
 ******
 
@@ -418,4 +420,4 @@ app/src/main/res/raw-*/plugin_instruction.md
 - AutoJs6 OpenCC 文档: https://docs.autojs6.com/#/opencc
 - AutoJs6 项目: https://github.com/SuperMonster003/AutoJs6
 - OpenCC 官方项目: https://github.com/BYVoid/OpenCC
-- Android OpenCC 项目: https://github.com/qichuan/android-opencc
+- Android OpenCC 项目: https://github.com/brooklet/android-opencc

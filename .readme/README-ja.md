@@ -175,7 +175,7 @@ jp2hk  = jp2t + t2hk          jp2tw  = jp2t + t2tw
 twi2jp = twi2s + s2t + t2jp   jp2twi = jp2t + t2s + s2twi
 ```
 
-組み合わせメソッドの各ステップは独立したプラグイン呼び出しです. 例えば `twi2jp` は 3 回の変換を順に実行します; 高頻度ループや非常に長いテキストでは, コアタイプを優先すると呼び出し回数を減らせます.
+拡張契約に対応する新しいホストは, 組み合わせチェーン全体を 1 回のプラグイン呼び出しで送ります. 例えば `twi2jp` の 3 変換ステージに必要な Binder 往復は 1 回だけです; 古いホストは各ステージを引き続き呼び出し, このプラグインとの互換性を維持します.
 
 ******
 
@@ -274,12 +274,14 @@ variant: default
 service action: org.autojs.plugin.OPENCC
 service category: opencc
 aidl interface: org.autojs.plugin.opencc.api.IOpenccPlugin
-aidl methods: getInfo(), convert(text, conversionType)
+aidl contract version: 2
+aidl methods: getInfo(), convert(text, conversionType), getSupportedConversionTypes(), convertBatch(texts, conversionType), convertChain(text, conversionTypes)
+batch/chain limits: 1024 texts / 32 stages
 minimum host build: 3923 (6.7.1 Alpha4)
 conversion library: com.github.brooklet:android-opencc:1.2.2
 ```
 
-`OpenccPluginService` は `org.autojs.plugin.OPENCC` アクション (カテゴリ `opencc`) に応答します. Binder インターフェースは opencc-api の `org.autojs.plugin.opencc.api.IOpenccPlugin` で, メソッドは `getInfo()` と `convert(text, conversionType)` の 2 つだけです; また, ホストがプラグインプロセスを起動するための `WakeActivity` も提供します.
+`OpenccPluginService` は `org.autojs.plugin.OPENCC` アクション (カテゴリ `opencc`) に opencc-api の `org.autojs.plugin.opencc.api.IOpenccPlugin` で応答します. 契約バージョン 2 は既存の `getInfo()` と `convert(text, conversionType)` の後ろにタイプ検出, 一括変換, チェーン変換を追加し, `PluginInfo.capabilities` でバージョンと対応タイプを通知します; 古いホストは既存のメソッドとトランザクション番号をそのまま使用できます. ホストがプラグインプロセスを起動するための `WakeActivity` も提供します.
 
 `PluginInfo.supportedAbis` は `arm64-v8a`, `armeabi-v7a`, `x86_64`, `x86` の 4 アーキテクチャを報告し, ホストとプラグインセンターが利用可能なバリアントを識別できるようにします; 変換は `com.github.brooklet:android-opencc:1.2.2` が提供する OpenCC エンジンと辞書によって行われます.
 
@@ -299,6 +301,16 @@ conversion library: com.github.brooklet:android-opencc:1.2.2
 
 ******
 
+#### v1.1.0
+
+_2026/08/31_
+
+- `機能` OpenCC プラグイン契約をバージョン 2 に更新し, `getSupportedConversionTypes()` を追加しました. 新しいホストはプラグインが実際に対応する 14 種類の変換タイプを動的に検出できます
+- `機能` `convertBatch(texts, conversionType)` を追加し, 1 回の Binder 往復で最大 1024 個のテキストを変換できるようにしました. 古いホスト向けの項目別呼び出しも維持します
+- `機能` `convertChain(text, conversionTypes)` を追加し, 1 回の呼び出しで最大 32 ステージを順に実行できるようにしました. 新しいホストの組み合わせメソッドは最大 3 回の Binder 往復から 1 回に減ります
+- `改善` `PluginInfo.instruction` で呼び出し側の言語に合った説明を提供し, capabilities で契約バージョンと対応変換タイプを報告します
+- `改善` 既存の AIDL メソッドとトランザクション番号を維持し, 拡張呼び出し, 旧契約へのフォールバック, サイズ上限, エラー経路を単体テストと実 Binder テストで検証します
+
 #### v1.0.2
 
 _2026/08/31_
@@ -317,16 +329,6 @@ _2026/07/14_
 - `改善` プロセッサアーキテクチャ (ABI) 別に分割したインストールパッケージを提供: `arm64-v8a`, `armeabi-v7a`, `x86_64`, `x86` の単一アーキテクチャ版と全アーキテクチャ入りの `universal` 版により, 端末は必要な分だけをインストールでき, ダウンロードサイズも小さくなります
 - `改善` プラグイン情報でサポート対象の ABI リストを報告し, AutoJs6 とプラグインセンターが現在の端末で利用可能なプラグインバリアントを識別できるようになりました
 - `改善` リリース APK のファイル名にバージョン, ABI, CRC32 チェックサムを付加し, ダウンロードしたファイルの完全性を確認しやすくしました
-
-#### v1.0.0
-
-_2026/07/14_
-
-- `機能` 初の正式リリース: 独立したプラグインとして AutoJs6 に OpenCC 中国語変換機能を提供します. プラグイン ID とエンジンはともに `opencc` です
-- `機能` AutoJs6 は `org.autojs.plugin.OPENCC` を通じてプラグインを自動的に発見して呼び出します. インストールするだけで動作し, 設定も再起動も不要です
-- `機能` OpenCC の標準変換タイプ全 14 種類に対応し, 簡体字と繁体字の変換, 香港/台湾の地域字形, 日本語新字体をカバーします: `S2T`/`S2TW`/`S2TWP`/`S2HK`/`T2S`/`T2TW`/`T2HK`/`T2JP`/`TW2S`/`TW2T`/`TW2SP`/`HK2S`/`HK2T`/`JP2T`
-- `機能` プラグイン情報と使用説明を 10 言語でローカライズ: 簡体字中国語, 香港繁体字, 台湾正体字, 英語, フランス語, スペイン語, 日本語, 韓国語, ロシア語, アラビア語
-- `機能` 使用例, ビルド手順, 関連リンクを含む多言語 README を提供します
 
 ##### その他のリリース履歴
 
@@ -407,7 +409,7 @@ app/src/main/res/raw-*/plugin_instruction.md
 
 ******
 
-プロジェクトのコードは [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/LICENSE) でライセンスされています. 中国語変換機能は [OpenCC](https://github.com/BYVoid/OpenCC) (Apache License 2.0) とその Android ラッパー [android-opencc](https://github.com/qichuan/android-opencc) によって提供されます.
+プロジェクトのコードは [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/LICENSE) でライセンスされています. 中国語変換機能は [OpenCC](https://github.com/BYVoid/OpenCC) (Apache License 2.0) とその Android ラッパー [android-opencc](https://github.com/brooklet/android-opencc) によって提供されます.
 
 ******
 
@@ -418,4 +420,4 @@ app/src/main/res/raw-*/plugin_instruction.md
 - AutoJs6 OpenCC ドキュメント: https://docs.autojs6.com/#/opencc
 - AutoJs6 プロジェクト: https://github.com/SuperMonster003/AutoJs6
 - OpenCC 公式プロジェクト: https://github.com/BYVoid/OpenCC
-- Android OpenCC プロジェクト: https://github.com/qichuan/android-opencc
+- Android OpenCC プロジェクト: https://github.com/brooklet/android-opencc

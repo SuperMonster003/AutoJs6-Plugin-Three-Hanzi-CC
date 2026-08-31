@@ -227,7 +227,9 @@ variant: {{ plugin_variant }}
 service action: {{ plugin_service_action }}
 service category: {{ plugin_service_category }}
 aidl interface: {{ plugin_aidl_interface }}
-aidl methods: getInfo(), convert(text, conversionType)
+aidl contract version: {{ plugin_contract_version }}
+aidl methods: getInfo(), convert(text, conversionType), getSupportedConversionTypes(), convertBatch(texts, conversionType), convertChain(text, conversionTypes)
+batch/chain limits: {{ max_batch_size }} texts / {{ max_chain_length }} stages
 minimum host build: {{ required_host_version_code }} ({{ required_host_version_name }})
 conversion library: {{ opencc_library_coordinates }}
 ```

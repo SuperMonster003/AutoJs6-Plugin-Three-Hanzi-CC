@@ -175,7 +175,7 @@ jp2hk  = jp2t + t2hk          jp2tw  = jp2t + t2tw
 twi2jp = twi2s + s2t + t2jp   jp2twi = jp2t + t2s + s2twi
 ```
 
-كل خطوة في طريقة مركبة هي استدعاء مستقل للمكون الإضافي; فمثلا ينفذ `twi2jp` ثلاثة تحويلات متتالية. وفي الحلقات المكثفة أو النصوص الطويلة جدا, فضل الأنواع الأساسية لتقليل عدد الاستدعاءات.
+يرسل المضيف الحديث الذي يدعم العقد الموسع سلسلة التحويل المركبة كاملة في استدعاء واحد للمكون الإضافي; فمراحل `twi2jp` الثلاث تحتاج إلى رحلة Binder واحدة فقط. وتستمر المضيفات القديمة في استدعاء كل مرحلة وتبقى متوافقة مع هذا المكون الإضافي.
 
 ******
 
@@ -274,12 +274,14 @@ variant: default
 service action: org.autojs.plugin.OPENCC
 service category: opencc
 aidl interface: org.autojs.plugin.opencc.api.IOpenccPlugin
-aidl methods: getInfo(), convert(text, conversionType)
+aidl contract version: 2
+aidl methods: getInfo(), convert(text, conversionType), getSupportedConversionTypes(), convertBatch(texts, conversionType), convertChain(text, conversionTypes)
+batch/chain limits: 1024 texts / 32 stages
 minimum host build: 3923 (6.7.1 Alpha4)
 conversion library: com.github.brooklet:android-opencc:1.2.2
 ```
 
-تستجيب `OpenccPluginService` للإجراء `org.autojs.plugin.OPENCC` (الفئة `opencc`); وواجهة Binder هي `org.autojs.plugin.opencc.api.IOpenccPlugin` من opencc-api, وتضم طريقتين اثنتين فقط: `getInfo()` و`convert(text, conversionType)`. كما يتوفر `WakeActivity` ليتمكن المضيف من إيقاظ عملية المكون الإضافي.
+تستجيب `OpenccPluginService` للإجراء `org.autojs.plugin.OPENCC` (الفئة `opencc`) عبر `org.autojs.plugin.opencc.api.IOpenccPlugin` من opencc-api. يضيف الإصدار 2 من العقد اكتشاف الأنواع والتحويل الدفعي والتحويل المتسلسل بعد الطريقتين الأصليتين `getInfo()` و`convert(text, conversionType)`, ويعلن الإصدار والأنواع المدعومة عبر `PluginInfo.capabilities`; وتواصل المضيفات القديمة استخدام الطرق وأرقام المعاملات الأصلية. كما يتوفر `WakeActivity` لإيقاظ عملية المكون الإضافي.
 
 يبلغ `PluginInfo.supportedAbis` عن المعماريات الأربع `arm64-v8a` و`armeabi-v7a` و`x86_64` و`x86` ليتمكن المضيف ومركز المكونات الإضافية من تحديد المتغيرات المتاحة; ويعتمد التحويل على محرك OpenCC وقواميسه من `com.github.brooklet:android-opencc:1.2.2`.
 
@@ -299,6 +301,16 @@ conversion library: com.github.brooklet:android-opencc:1.2.2
 
 ******
 
+#### v1.1.0
+
+_2026/08/31_
+
+- `ميزة` ترقية عقد مكون OpenCC الإضافي إلى الإصدار 2 مع `getSupportedConversionTypes()`, مما يتيح للمضيفات الحديثة اكتشاف أنواع التحويل الأربعة عشر التي يدعمها المكون فعليا
+- `ميزة` إضافة `convertBatch(texts, conversionType)` لتحويل ما يصل إلى 1024 مقطعا نصيا في رحلة Binder واحدة مع الإبقاء على مسار الاستدعاء لكل عنصر للمضيفات القديمة
+- `ميزة` إضافة `convertChain(text, conversionTypes)` لتنفيذ ما يصل إلى 32 مرحلة بالترتيب في استدعاء واحد, مما يخفض طرق التحويل المركبة في المضيفات الحديثة من 3 رحلات Binder كحد أقصى إلى رحلة واحدة
+- `تحسين` تقديم تعليمات مترجمة عبر `PluginInfo.instruction` والإبلاغ عن إصدار العقد وأنواع التحويل المدعومة عبر capabilities
+- `تحسين` الحفاظ على طرق AIDL الأصلية وأرقام المعاملات, مع اختبارات وحدات واختبارات Binder حقيقية للاستدعاءات الموسعة والتراجع إلى العقد القديم وحدود الحجم ومسارات الخطأ
+
 #### v1.0.2
 
 _2026/08/31_
@@ -317,16 +329,6 @@ _2026/07/14_
 - `تحسين` توفير حزم مقسمة حسب معمارية المعالج (ABI): حزم أحادية ABI لـ `arm64-v8a` و`armeabi-v7a` و`x86_64` و`x86` إضافة إلى حزمة `universal` بكل المعماريات, بحيث لا تثبت الأجهزة إلا ما تحتاج إليه وتبقى التنزيلات صغيرة
 - `تحسين` الإبلاغ عن قائمة ABI المدعومة في معلومات المكون الإضافي ليتمكن AutoJs6 ومركز المكونات الإضافية من تحديد متغيرات المكون الإضافي الملائمة للجهاز الحالي
 - `تحسين` إلحاق الإصدار وABI وملخص CRC32 بأسماء ملفات APK المنشورة, مما يسهل التحقق من سلامة الملفات المنزلة
-
-#### v1.0.0
-
-_2026/07/14_
-
-- `ميزة` أول إصدار مستقر: يوفر تحويل OpenCC للنص الصيني في AutoJs6 على هيئة مكون إضافي مستقل, مع تعيين معرف المكون الإضافي والمحرك معا إلى `opencc`
-- `ميزة` يكتشف AutoJs6 المكون الإضافي ويستدعيه تلقائيا عبر `org.autojs.plugin.OPENCC`; ويعمل فور التثبيت من دون إعداد أو إعادة تشغيل
-- `ميزة` دعم جميع أنواع تحويل OpenCC القياسية الـ 14, بما يغطي التحويل بين المبسطة والتقليدية ومتغيرات هونغ كونغ وتايوان والشينجيتاي اليابانية: `S2T`/`S2TW`/`S2TWP`/`S2HK`/`T2S`/`T2TW`/`T2HK`/`T2JP`/`TW2S`/`TW2T`/`TW2SP`/`HK2S`/`HK2T`/`JP2T`
-- `ميزة` بيانات المكون الإضافي وتعليمات الاستخدام مترجمة إلى 10 لغات: الصينية المبسطة والصينية التقليدية في هونغ كونغ والصينية التقليدية في تايوان والإنجليزية والفرنسية والإسبانية واليابانية والكورية والروسية والعربية
-- `ميزة` README متعدد اللغات مع أمثلة استخدام وتعليمات بناء وروابط ذات صلة
 
 ##### لمزيد من سجل الإصدارات
 
@@ -407,7 +409,7 @@ app/src/main/res/raw-*/plugin_instruction.md
 
 ******
 
-يوزع رمز المشروع بموجب [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/LICENSE). ويعتمد تحويل النص الصيني على [OpenCC](https://github.com/BYVoid/OpenCC) (Apache License 2.0) وغلافه لنظام Android وهو [android-opencc](https://github.com/qichuan/android-opencc).
+يوزع رمز المشروع بموجب [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/LICENSE). ويعتمد تحويل النص الصيني على [OpenCC](https://github.com/BYVoid/OpenCC) (Apache License 2.0) وغلافه لنظام Android وهو [android-opencc](https://github.com/brooklet/android-opencc).
 
 ******
 
@@ -418,4 +420,4 @@ app/src/main/res/raw-*/plugin_instruction.md
 - وثائق AutoJs6 OpenCC: https://docs.autojs6.com/#/opencc
 - مشروع AutoJs6: https://github.com/SuperMonster003/AutoJs6
 - مشروع OpenCC الرسمي: https://github.com/BYVoid/OpenCC
-- مشروع Android OpenCC: https://github.com/qichuan/android-opencc
+- مشروع Android OpenCC: https://github.com/brooklet/android-opencc
