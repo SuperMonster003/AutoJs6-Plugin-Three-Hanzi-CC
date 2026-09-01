@@ -219,7 +219,9 @@ aidl contract version: {{ plugin_contract_version }}
 aidl methods: getInfo(), convert(text, conversionType), getSupportedConversionTypes(), convertBatch(texts, conversionType), convertChain(text, conversionTypes)
 batch/chain limits: {{ max_batch_size }} texts / {{ max_chain_length }} stages
 minimum host build: {{ required_host_version_code }} ({{ required_host_version_name }})
-conversion library: {{ opencc_library_coordinates }}
+conversion backend: OpenCC {{ opencc_version }} ({{ opencc_tag }})
+OpenCC source commit: {{ opencc_commit }}
+OpenCC resources SHA-256: {{ opencc_resource_sha256 }}
 ```
 
 {{ p_contract_service }}
@@ -334,4 +336,4 @@ app/src/main/res/raw-*/plugin_instruction.md
 - {{ text_link_autojs6_opencc_docs }}: {{ docs_opencc_url }}
 - {{ text_link_autojs6 }}: {{ autojs6_url }}
 - {{ text_link_opencc_official }}: {{ opencc_official_url }}
-- {{ text_link_android_opencc }}: {{ android_opencc_url }}
+- {{ text_link_third_party_notices }}: {{ third_party_notices_url }}

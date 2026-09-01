@@ -263,12 +263,14 @@ aidl contract version: 2
 aidl methods: getInfo(), convert(text, conversionType), getSupportedConversionTypes(), convertBatch(texts, conversionType), convertChain(text, conversionTypes)
 batch/chain limits: 1024 texts / 32 stages
 minimum host build: 3923 (6.7.1 Alpha4)
-conversion library: com.github.brooklet:android-opencc:1.2.2
+conversion backend: OpenCC 1.4.2 (ver.1.4.2)
+OpenCC source commit: 025f371dc76b598d77384fbdab90c937471844d8
+OpenCC resources SHA-256: 9ea0d303219b34d014d5c116677b5d325043beafb2c8a62ee889ca67f4d054a5
 ```
 
 `OpenccPluginService` 响应 `org.autojs.plugin.OPENCC` action (category `opencc`), Binder 接口为 opencc-api 的 `org.autojs.plugin.opencc.api.IOpenccPlugin`. 契约版本 2 在原有 `getInfo()` 与 `convert(text, conversionType)` 之后追加类型发现, 批量转换与链式转换方法, 并通过 `PluginInfo.capabilities` 广告版本与支持类型; 旧宿主继续使用原有方法和事务编号. 另提供 `WakeActivity` 供宿主唤醒插件进程.
 
-转换由 `com.github.brooklet:android-opencc:1.2.2` 提供的 OpenCC 引擎与词典完成.
+插件直接构建固定在提交 `025f371dc76b598d77384fbdab90c937471844d8` 的官方 OpenCC `ver.1.4.2`, 并使用同一发行版的配套资源. 每个 ABI 仅包含一个静态链接且按 16 KB 对齐的 `libopencc_jni.so`, 转换始终完全离线.
 
 ******
 
@@ -285,6 +287,17 @@ conversion library: com.github.brooklet:android-opencc:1.2.2
 ### 发行历史
 
 ******
+
+#### v1.2.0
+
+_2026/09/01_
+
+- `提示` OpenCC 1.4.2 的词典更新会有意改变少量结果, 包括 `复盘` -> `復盤`, `内卷` -> `內捲`, 保留 `什么怎么这么` 及 `内存条` -> `記憶體模組`; 完整审阅清单见迁移报告
+- `优化` 将官方 OpenCC 1.4.2 及同版本词典直接构建为每个 ABI 一个静态链接的 JNI 库, 所有转换继续完全离线
+- `优化` 使用 NDK 28.2, 16 KB ELF 与 ZIP 对齐及真实 16 KB 模拟器 Binder 验证, 支持 16 KB 页大小设备
+- `优化` 以大小和 SHA-256 校验原子安装固定资源 ZIP, 支持损坏自动恢复, Unicode 安全 JNI 转换及热路径转换器缓存
+- `依赖` 移除已停止维护的 `com.github.brooklet:android-opencc:1.2.2` 包装库, 并固定官方 OpenCC `ver.1.4.2` 到提交 `025f371dc76b598d77384fbdab90c937471844d8`
+- `依赖` 在 `THIRD_PARTY_NOTICES.md` 中记录内置 OpenCC, Marisa Trie, Darts Clone 与 RapidJSON 的来源和许可
 
 #### v1.1.0
 
@@ -307,14 +320,6 @@ _2026/08/31_
 - `优化` 增强文档校验脚本并接入 GitHub Actions, 自动检测跨语言结构不一致, 生成产物漂移, 孤儿文件, 版本不对齐与残留占位符
 - `优化` 新增 ROADMAP.md, 以可验收的里程碑清单公开维护文档, 工程化, 转换能力与运行时演进计划
 - `优化` 迁移 Gradle 构建配置到 `org.autojs.build.platform-versions` 1.4.1, 并通过 foojay 自动解析 JDK, 简化并统一构建环境
-
-#### v1.0.1
-
-_2026/07/14_
-
-- `优化` 提供按处理器架构 (ABI) 拆分的安装包: `arm64-v8a`, `armeabi-v7a`, `x86_64`, `x86` 单架构包与包含全部架构的 `universal` 包, 设备按需安装, 体积更小
-- `优化` 插件信息上报支持的 ABI 列表, AutoJs6 与插件中心可据此识别当前设备可用的插件变体
-- `优化` 发布 APK 文件名附带版本号, 架构与 CRC32 校验码, 便于核对下载文件的完整性
 
 ##### 更多发行历史可参阅
 
@@ -395,7 +400,7 @@ app/src/main/res/raw-*/plugin_instruction.md
 
 ******
 
-项目代码使用 [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/LICENSE). 中文转换能力来自 [OpenCC](https://github.com/BYVoid/OpenCC) (Apache License 2.0) 及其 Android 封装 [android-opencc](https://github.com/brooklet/android-opencc).
+项目代码使用 [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/LICENSE). 中文转换能力直接来自 [OpenCC](https://github.com/BYVoid/OpenCC) (Apache License 2.0); 内置 OpenCC, Marisa Trie, Darts Clone 与 RapidJSON 的来源和许可见[第三方声明](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/THIRD_PARTY_NOTICES.md).
 
 ******
 
@@ -406,4 +411,4 @@ app/src/main/res/raw-*/plugin_instruction.md
 - AutoJs6 OpenCC 文档: https://docs.autojs6.com/#/opencc
 - AutoJs6 项目: https://github.com/SuperMonster003/AutoJs6
 - OpenCC 官方项目: https://github.com/BYVoid/OpenCC
-- Android OpenCC 项目: https://github.com/brooklet/android-opencc
+- 第三方声明: https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/THIRD_PARTY_NOTICES.md

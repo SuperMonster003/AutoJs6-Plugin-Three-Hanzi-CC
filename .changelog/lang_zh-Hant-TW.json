@@ -5,6 +5,21 @@
   "changelog_label_improvement": "優化",
   "changelog_label_dependency": "相依性",
   "$data": {
+    "v1.2.0": {
+      "released_date": "2026/09/01",
+      "hint": [
+        "OpenCC 1.4.2 的詞典更新會有意改變少量結果, 包括 `复盘` -> `復盤`, `内卷` -> `內捲`, 保留 `什么怎么这么` 及 `内存条` -> `記憶體模組`; 完整審閱清單請見移轉報告"
+      ],
+      "improvement": [
+        "將官方 OpenCC 1.4.2 及同版本詞典直接建置為每個 ABI 一個靜態連結的 JNI 程式庫, 所有轉換繼續完全離線",
+        "使用 NDK 28.2, 16 KB ELF 與 ZIP 對齊及真實 16 KB 模擬器 Binder 驗證, 支援 16 KB 頁面大小裝置",
+        "以大小和 SHA-256 驗證原子安裝固定資源 ZIP, 支援損壞自動復原, Unicode 安全 JNI 轉換及熱路徑轉換器快取"
+      ],
+      "dependency": [
+        "移除已停止維護的 `com.github.brooklet:android-opencc:1.2.2` 封裝程式庫, 並將官方 OpenCC `ver.1.4.2` 固定至提交 `025f371dc76b598d77384fbdab90c937471844d8`",
+        "在 `THIRD_PARTY_NOTICES.md` 中記錄內建 OpenCC, Marisa Trie, Darts Clone 與 RapidJSON 的來源和授權"
+      ]
+    },
     "v1.1.0": {
       "released_date": "2026/09/01",
       "feature": [

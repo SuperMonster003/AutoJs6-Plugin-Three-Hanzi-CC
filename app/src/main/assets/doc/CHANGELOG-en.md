@@ -4,6 +4,17 @@
 
 ******
 
+# v1.2.0
+
+###### 2026/09/01
+
+* `Hint` OpenCC 1.4.2 dictionary updates intentionally change a small number of results, including `复盘` -> `復盤`, `内卷` -> `內捲`, preserving `什么怎么这么`, and `内存条` -> `記憶體模組`; the full reviewed list is in the migration report
+* `Improvement` Build official OpenCC 1.4.2 and same-release dictionaries directly into one statically linked JNI library per ABI while keeping all conversion fully offline
+* `Improvement` Support 16 KB page-size devices with NDK 28.2, 16 KB ELF and ZIP alignment, and real 16 KB emulator Binder verification
+* `Improvement` Install the pinned resource ZIP atomically with size and SHA-256 validation, automatic corruption recovery, Unicode-safe JNI conversion, and cached hot-path converters
+* `Dependency` Remove the unmaintained `com.github.brooklet:android-opencc:1.2.2` wrapper and pin official OpenCC `ver.1.4.2` at commit `025f371dc76b598d77384fbdab90c937471844d8`
+* `Dependency` Document bundled OpenCC, Marisa Trie, Darts Clone, and RapidJSON sources and licenses in `THIRD_PARTY_NOTICES.md`
+
 # v1.1.0
 
 ###### 2026/09/01

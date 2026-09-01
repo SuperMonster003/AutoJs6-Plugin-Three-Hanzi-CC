@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run the opt-in OpenCC M4-B device benchmark and persist reproducible results."""
+"""Run the opt-in official OpenCC device benchmark and persist reproducible results."""
 
 from __future__ import annotations
 
@@ -24,7 +24,7 @@ BENCHMARK_CLASS = (
     "OpenccPerformanceBenchmarkTest"
 )
 RESULT_PREFIX = "OPENCC_BENCHMARK_JSON="
-ENGINES = ("legacy", "official")
+ENGINES = ("official",)
 PHASES = ("first-load", "steady-state")
 ABIS = ("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
 RELEASE_ABIS = (*ABIS, "universal")
@@ -426,7 +426,7 @@ def render_markdown(report: dict[str, Any]) -> str:
         "",
         "该报告是一次设备实测快照，不是跨设备的绝对性能承诺。首次加载阶段从清空对应引擎资源",
         "开始；随后强制停止应用，并在新的 PID 中测量已安装资源的冷转换、热转换和批量负载。",
-        "旧引擎与官方引擎分别在隔离的全新安装中运行。",
+        "官方引擎在隔离的全新安装中运行。历史迁移基线保存在工程文档中，不再打包进测试 APK。",
         "",
         "## 环境",
         "",

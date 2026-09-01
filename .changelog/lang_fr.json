@@ -5,6 +5,21 @@
   "changelog_label_improvement": "Amélioration",
   "changelog_label_dependency": "Dépendance",
   "$data": {
+    "v1.2.0": {
+      "released_date": "2026/09/01",
+      "hint": [
+        "Les dictionnaires d'OpenCC 1.4.2 modifient intentionnellement quelques résultats, notamment `复盘` -> `復盤`, `内卷` -> `內捲`, la préservation de `什么怎么这么` et `内存条` -> `記憶體模組`; la liste complète est dans le rapport de migration"
+      ],
+      "improvement": [
+        "Compiler directement OpenCC 1.4.2 officiel et les dictionnaires de la même version dans une bibliothèque JNI liée statiquement par ABI, tout en conservant une conversion entièrement hors ligne",
+        "Prendre en charge les appareils à pages de 16 KB avec NDK 28.2, l'alignement ELF et ZIP sur 16 KB et une vérification Binder sur un véritable émulateur 16 KB",
+        "Installer atomiquement le ZIP de ressources verrouillé avec contrôle de taille et SHA-256, récupération automatique après corruption, conversion JNI sûre pour Unicode et mise en cache des convertisseurs utilisés à chaud"
+      ],
+      "dependency": [
+        "Supprimer l'encapsulation non maintenue `com.github.brooklet:android-opencc:1.2.2` et verrouiller OpenCC officiel `ver.1.4.2` au commit `025f371dc76b598d77384fbdab90c937471844d8`",
+        "Documenter les sources et licences intégrées d'OpenCC, Marisa Trie, Darts Clone et RapidJSON dans `THIRD_PARTY_NOTICES.md`"
+      ]
+    },
     "v1.1.0": {
       "released_date": "2026/09/01",
       "feature": [

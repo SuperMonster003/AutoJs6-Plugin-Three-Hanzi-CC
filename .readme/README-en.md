@@ -263,12 +263,14 @@ aidl contract version: 2
 aidl methods: getInfo(), convert(text, conversionType), getSupportedConversionTypes(), convertBatch(texts, conversionType), convertChain(text, conversionTypes)
 batch/chain limits: 1024 texts / 32 stages
 minimum host build: 3923 (6.7.1 Alpha4)
-conversion library: com.github.brooklet:android-opencc:1.2.2
+conversion backend: OpenCC 1.4.2 (ver.1.4.2)
+OpenCC source commit: 025f371dc76b598d77384fbdab90c937471844d8
+OpenCC resources SHA-256: 9ea0d303219b34d014d5c116677b5d325043beafb2c8a62ee889ca67f4d054a5
 ```
 
 `OpenccPluginService` responds to the `org.autojs.plugin.OPENCC` action (category `opencc`), using `org.autojs.plugin.opencc.api.IOpenccPlugin` from opencc-api. Contract version 2 appends type discovery, batch conversion, and chained conversion after the original `getInfo()` and `convert(text, conversionType)` methods, and advertises its version and supported types through `PluginInfo.capabilities`; older hosts keep using the original methods and transaction numbers. A `WakeActivity` is also provided so the host can wake the plugin process.
 
-Conversion is powered by the OpenCC engine and dictionaries from `com.github.brooklet:android-opencc:1.2.2`.
+The plugin builds official OpenCC `ver.1.4.2` directly at commit `025f371dc76b598d77384fbdab90c937471844d8` with the matching release resources. Each ABI contains one statically linked, 16 KB-aligned `libopencc_jni.so`, and conversion remains fully offline.
 
 ******
 
@@ -285,6 +287,17 @@ The plugin's plans and progress are maintained as a checkable list in ROADMAP.md
 ### Release History
 
 ******
+
+#### v1.2.0
+
+_2026/09/01_
+
+- `Hint` OpenCC 1.4.2 dictionary updates intentionally change a small number of results, including `复盘` -> `復盤`, `内卷` -> `內捲`, preserving `什么怎么这么`, and `内存条` -> `記憶體模組`; the full reviewed list is in the migration report
+- `Improvement` Build official OpenCC 1.4.2 and same-release dictionaries directly into one statically linked JNI library per ABI while keeping all conversion fully offline
+- `Improvement` Support 16 KB page-size devices with NDK 28.2, 16 KB ELF and ZIP alignment, and real 16 KB emulator Binder verification
+- `Improvement` Install the pinned resource ZIP atomically with size and SHA-256 validation, automatic corruption recovery, Unicode-safe JNI conversion, and cached hot-path converters
+- `Dependency` Remove the unmaintained `com.github.brooklet:android-opencc:1.2.2` wrapper and pin official OpenCC `ver.1.4.2` at commit `025f371dc76b598d77384fbdab90c937471844d8`
+- `Dependency` Document bundled OpenCC, Marisa Trie, Darts Clone, and RapidJSON sources and licenses in `THIRD_PARTY_NOTICES.md`
 
 #### v1.1.0
 
@@ -307,14 +320,6 @@ _2026/08/31_
 - `Improvement` Strengthen documentation validation and run it in GitHub Actions, automatically detecting cross-language shape mismatches, generated-file drift, orphan artifacts, version misalignment, and leftover placeholders
 - `Improvement` Add ROADMAP.md with verifiable milestone checklists for documentation, engineering, conversion capabilities, and runtime evolution
 - `Improvement` Migrate Gradle configuration to `org.autojs.build.platform-versions` 1.4.1 and use foojay for automatic JDK resolution, simplifying and standardizing the build environment
-
-#### v1.0.1
-
-_2026/07/14_
-
-- `Improvement` Ship packages split by processor architecture (ABI): single-ABI packages for `arm64-v8a`, `armeabi-v7a`, `x86_64`, and `x86` plus a `universal` package with all architectures, so devices install only what they need and downloads stay small
-- `Improvement` Report the supported ABI list in the plugin info so AutoJs6 and the plugin center can identify which plugin variants fit the current device
-- `Improvement` Append the version, ABI, and CRC32 digest to release APK file names, making it easy to verify the integrity of downloaded files
 
 ##### For more release history
 
@@ -395,7 +400,7 @@ app/src/main/res/raw-*/plugin_instruction.md
 
 ******
 
-The project code is licensed under the [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/LICENSE). Chinese conversion is powered by [OpenCC](https://github.com/BYVoid/OpenCC) (Apache License 2.0) and its Android wrapper [android-opencc](https://github.com/brooklet/android-opencc).
+The project code is licensed under the [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/LICENSE). Chinese conversion is powered directly by [OpenCC](https://github.com/BYVoid/OpenCC) (Apache License 2.0); bundled OpenCC, Marisa Trie, Darts Clone, and RapidJSON sources and licenses are listed in [Third-Party Notices](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/THIRD_PARTY_NOTICES.md).
 
 ******
 
@@ -406,4 +411,4 @@ The project code is licensed under the [Mozilla Public License 2.0](https://gith
 - AutoJs6 OpenCC documentation: https://docs.autojs6.com/#/opencc
 - AutoJs6 project: https://github.com/SuperMonster003/AutoJs6
 - OpenCC official project: https://github.com/BYVoid/OpenCC
-- Android OpenCC project: https://github.com/brooklet/android-opencc
+- Third-party notices: https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/THIRD_PARTY_NOTICES.md

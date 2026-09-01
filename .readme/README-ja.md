@@ -263,12 +263,14 @@ aidl contract version: 2
 aidl methods: getInfo(), convert(text, conversionType), getSupportedConversionTypes(), convertBatch(texts, conversionType), convertChain(text, conversionTypes)
 batch/chain limits: 1024 texts / 32 stages
 minimum host build: 3923 (6.7.1 Alpha4)
-conversion library: com.github.brooklet:android-opencc:1.2.2
+conversion backend: OpenCC 1.4.2 (ver.1.4.2)
+OpenCC source commit: 025f371dc76b598d77384fbdab90c937471844d8
+OpenCC resources SHA-256: 9ea0d303219b34d014d5c116677b5d325043beafb2c8a62ee889ca67f4d054a5
 ```
 
 `OpenccPluginService` は `org.autojs.plugin.OPENCC` アクション (カテゴリ `opencc`) に opencc-api の `org.autojs.plugin.opencc.api.IOpenccPlugin` で応答します. 契約バージョン 2 は既存の `getInfo()` と `convert(text, conversionType)` の後ろにタイプ検出, 一括変換, チェーン変換を追加し, `PluginInfo.capabilities` でバージョンと対応タイプを通知します; 古いホストは既存のメソッドとトランザクション番号をそのまま使用できます. ホストがプラグインプロセスを起動するための `WakeActivity` も提供します.
 
-変換には `com.github.brooklet:android-opencc:1.2.2` の OpenCC エンジンと辞書を使用します.
+プラグインはコミット `025f371dc76b598d77384fbdab90c937471844d8` に固定した公式 OpenCC `ver.1.4.2` と同一リリースのリソースを直接ビルドします. 各 ABI には静的リンクされ 16 KB 境界に整列した `libopencc_jni.so` が 1 つだけ含まれ, 変換は常に完全オフラインです.
 
 ******
 
@@ -285,6 +287,17 @@ conversion library: com.github.brooklet:android-opencc:1.2.2
 ### リリース履歴
 
 ******
+
+#### v1.2.0
+
+_2026/09/01_
+
+- `ヒント` OpenCC 1.4.2 の辞書更新により, `复盘` -> `復盤`, `内卷` -> `內捲`, `什么怎么这么` の保持, `内存条` -> `記憶體模組` など少数の結果が意図的に変わります. 全レビュー一覧は移行レポートに記録しています
+- `改善` 公式 OpenCC 1.4.2 と同一リリースの辞書を ABI ごとに 1 つの静的リンク JNI ライブラリへ直接ビルドし, すべての変換を完全オフラインに維持
+- `改善` NDK 28.2, 16 KB の ELF および ZIP アラインメント, 実際の 16 KB エミュレーターでの Binder 検証により 16 KB ページサイズ端末に対応
+- `改善` 固定されたリソース ZIP をサイズと SHA-256 の検証付きでアトミックにインストールし, 破損時の自動復旧, Unicode 安全な JNI 変換, ホットパスのコンバーターキャッシュを実装
+- `依存関係` 保守されていない `com.github.brooklet:android-opencc:1.2.2` ラッパーを削除し, 公式 OpenCC `ver.1.4.2` をコミット `025f371dc76b598d77384fbdab90c937471844d8` に固定
+- `依存関係` 同梱する OpenCC, Marisa Trie, Darts Clone, RapidJSON の出典とライセンスを `THIRD_PARTY_NOTICES.md` に記載
 
 #### v1.1.0
 
@@ -307,14 +320,6 @@ _2026/08/31_
 - `改善` ドキュメント検証を強化して GitHub Actions に統合し, 言語間の構造不一致, 生成ファイルのずれ, 孤立した成果物, バージョン不一致, 残存プレースホルダーを自動検出します
 - `改善` ROADMAP.md を追加し, ドキュメント, エンジニアリング, 変換機能, ランタイム進化の計画を検証可能なマイルストーン一覧で公開しました
 - `改善` Gradle 設定を `org.autojs.build.platform-versions` 1.4.1 に移行し, foojay による JDK の自動解決を導入してビルド環境を簡素化し統一しました
-
-#### v1.0.1
-
-_2026/07/14_
-
-- `改善` プロセッサアーキテクチャ (ABI) 別に分割したインストールパッケージを提供: `arm64-v8a`, `armeabi-v7a`, `x86_64`, `x86` の単一アーキテクチャ版と全アーキテクチャ入りの `universal` 版により, 端末は必要な分だけをインストールでき, ダウンロードサイズも小さくなります
-- `改善` プラグイン情報でサポート対象の ABI リストを報告し, AutoJs6 とプラグインセンターが現在の端末で利用可能なプラグインバリアントを識別できるようになりました
-- `改善` リリース APK のファイル名にバージョン, ABI, CRC32 チェックサムを付加し, ダウンロードしたファイルの完全性を確認しやすくしました
 
 ##### その他のリリース履歴
 
@@ -395,7 +400,7 @@ app/src/main/res/raw-*/plugin_instruction.md
 
 ******
 
-プロジェクトのコードは [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/LICENSE) でライセンスされています. 中国語変換機能は [OpenCC](https://github.com/BYVoid/OpenCC) (Apache License 2.0) とその Android ラッパー [android-opencc](https://github.com/brooklet/android-opencc) によって提供されます.
+プロジェクトのコードは [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/LICENSE) でライセンスされています. 中国語変換には [OpenCC](https://github.com/BYVoid/OpenCC) (Apache License 2.0) を直接使用し, 同梱する OpenCC, Marisa Trie, Darts Clone, RapidJSON の出典とライセンスは[サードパーティー通知](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/THIRD_PARTY_NOTICES.md)に記載しています.
 
 ******
 
@@ -406,4 +411,4 @@ app/src/main/res/raw-*/plugin_instruction.md
 - AutoJs6 OpenCC ドキュメント: https://docs.autojs6.com/#/opencc
 - AutoJs6 プロジェクト: https://github.com/SuperMonster003/AutoJs6
 - OpenCC 公式プロジェクト: https://github.com/BYVoid/OpenCC
-- Android OpenCC プロジェクト: https://github.com/brooklet/android-opencc
+- サードパーティー通知: https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/THIRD_PARTY_NOTICES.md

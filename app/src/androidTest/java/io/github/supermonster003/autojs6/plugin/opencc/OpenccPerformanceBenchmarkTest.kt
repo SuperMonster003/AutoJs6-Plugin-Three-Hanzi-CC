@@ -1,8 +1,6 @@
 package io.github.supermonster003.autojs6.plugin.opencc
 
 import android.content.Context
-import android.content.ContextWrapper
-import android.content.res.AssetManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Debug
@@ -13,8 +11,6 @@ import android.system.OsConstants
 import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.zqc.opencc.android.lib.ChineseConverter as LegacyChineseConverter
-import com.zqc.opencc.android.lib.ConversionType as LegacyConversionType
 import io.github.supermonster003.autojs6.plugin.opencc.nativebridge.OpenccConversionType
 import io.github.supermonster003.autojs6.plugin.opencc.nativebridge.OpenccNativeEngine
 import org.json.JSONArray
@@ -32,7 +28,7 @@ import java.util.concurrent.locks.LockSupport
 import kotlin.math.max
 
 /**
- * Opt-in M4-B benchmark for the migration-only legacy engine and the official backend.
+ * Opt-in device benchmark for the pinned official backend.
  *
  * The host runner invokes the first-load and steady-state phases in different app
  * processes. Running the regular instrumentation suite without benchmark arguments
@@ -43,7 +39,6 @@ class OpenccPerformanceBenchmarkTest {
 
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context = instrumentation.targetContext
-    private val testContext = instrumentation.context
 
     @Test
     fun measureSelectedEngineAndPhase() {
@@ -51,7 +46,7 @@ class OpenccPerformanceBenchmarkTest {
         val engineName = arguments.getString(ARGUMENT_ENGINE)
         val phase = arguments.getString(ARGUMENT_PHASE)
         assumeTrue(
-            "Pass -e $ARGUMENT_ENGINE {official|legacy} and " +
+            "Pass -e $ARGUMENT_ENGINE official and " +
                 "-e $ARGUMENT_PHASE {first-load|steady-state}",
             engineName != null && phase != null,
         )
@@ -178,11 +173,6 @@ class OpenccPerformanceBenchmarkTest {
     private fun createConverter(engineName: String): BenchmarkConverter {
         return when (engineName) {
             ENGINE_OFFICIAL -> OfficialConverter(context)
-            ENGINE_LEGACY -> LegacyConverter(
-                object : ContextWrapper(context) {
-                    override fun getAssets(): AssetManager = testContext.assets
-                },
-            )
             else -> error("Unsupported benchmark engine: $engineName")
         }
     }
@@ -196,7 +186,6 @@ class OpenccPerformanceBenchmarkTest {
     private fun resourceDirectory(engineName: String): File {
         return when (engineName) {
             ENGINE_OFFICIAL -> File(context.noBackupFilesDir, "opencc")
-            ENGINE_LEGACY -> File(context.filesDir, "openccdata")
             else -> error("Unsupported benchmark engine: $engineName")
         }
     }
@@ -204,7 +193,6 @@ class OpenccPerformanceBenchmarkTest {
     private fun resourceMarker(engineName: String): File {
         return when (engineName) {
             ENGINE_OFFICIAL -> resourceDirectory(engineName)
-            ENGINE_LEGACY -> File(resourceDirectory(engineName), "zFinished2")
             else -> error("Unsupported benchmark engine: $engineName")
         }
     }
@@ -272,14 +260,6 @@ class OpenccPerformanceBenchmarkTest {
         }
 
         override fun close() = engine.close()
-    }
-
-    private class LegacyConverter(private val context: Context) : BenchmarkConverter {
-        override fun convert(text: String): String {
-            return LegacyChineseConverter.convert(text, LegacyConversionType.S2T, context)
-        }
-
-        override fun close() = Unit
     }
 
     private data class MemorySnapshot(
@@ -356,7 +336,6 @@ class OpenccPerformanceBenchmarkTest {
         const val ARGUMENT_ENGINE = "opencc_benchmark_engine"
         const val ARGUMENT_PHASE = "opencc_benchmark_phase"
         const val ENGINE_OFFICIAL = "official"
-        const val ENGINE_LEGACY = "legacy"
         const val PHASE_FIRST_LOAD = "first-load"
         const val PHASE_STEADY_STATE = "steady-state"
         const val RESULT_PREFIX = "OPENCC_BENCHMARK_JSON="
@@ -375,7 +354,7 @@ class OpenccPerformanceBenchmarkTest {
         val MEMORY_BENCHMARK_TEXT = BENCHMARK_TEXT.repeat(8)
         val MEMORY_BENCHMARK_EXPECTED_TEXT = BENCHMARK_EXPECTED_TEXT.repeat(8)
         val BATCH_SEGMENT = "汉字转换软件网络数据 OpenCC 😀 𠀀"
-        val ENGINES = setOf(ENGINE_OFFICIAL, ENGINE_LEGACY)
+        val ENGINES = setOf(ENGINE_OFFICIAL)
         val PHASES = setOf(PHASE_FIRST_LOAD, PHASE_STEADY_STATE)
     }
 }

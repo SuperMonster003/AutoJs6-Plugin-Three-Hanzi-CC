@@ -79,7 +79,7 @@ M4 的主线是让插件摆脱停止跟进上游的 `com.github.brooklet:android
 
 - 只跟踪 OpenCC 的正式 `ver.*` Release 标签, 不以移动中的 `master` 作为发布输入.
 - OpenCC 源码提交, 官方资源 ZIP, 资源清单提交及 SHA-256 必须属于同一个 Release; 任一项不一致即拒绝构建或升级.
-- 上游新版本由自动化工作流生成升级 PR, 但不自动合并或自动发布; 词典输出差异必须经过测试与人工审阅.
+- 上游新版本的目标流程是由自动化工作流生成升级 PR, 但不自动合并或自动发布; 当前已启用只读监视, 自动改写与建 PR 仍属 M4-D-2, 词典输出差异始终必须经过测试与人工审阅.
 - 第一阶段保持现有 14 种转换类型, AIDL 事务编号, 契约版本 2 和 `default` 变体兼容; 新配置和自定义词典另行升级 API/宿主契约.
 - 原生库按四种 ABI 从源码重建并静态链接 C++ 运行时, 最终 APK 不携带外部 `libopencc.so` 或 `libc++_shared.so` 依赖.
 - 旧引擎只在迁移期作为差分测试基线保留; 正式提升官方后端为 `default` 后删除旧 AAR, 不长期发布两套重复引擎.
@@ -102,8 +102,10 @@ M4-A 官方后端原型 ──> M4-B 兼容/性能/16 KB ──> M4-C 正式替�
 | 4 | M4-D | 锁定格式在 M4-A 稳定; 自动改写在 M4-C 后启用 | 每周只读监视先行, 再生成经完整门禁验证的升级 PR | 无更新重放稳定; 有更新只建 PR, 不自动合并或发版 |
 | 5 | M4-E | 官方后端和上游同步流程稳定 | 新配置/自定义词典/宿主路由的独立契约升级 | 每项先有 API 与旧实现回退测试, 不阻塞主线发布 |
 
-当前检查点 (2026-09-01): M4-A 与 M4-B 已完成，可以进入 M4-C 的正式替换与 v1.2.0 发布准备;
-M4-D 的只读监视已提前启用，自动升级 PR 仍按顺序等待 M4-C 完成.
+当前检查点 (2026-09-01): M4-A 与 M4-B 已完成; M4-C 已删除迁移基线并完成 v1.2.0 的
+本地签名发布候选, 10 语言文档与全部离线/设备门禁, 但尚未创建源码标签, 推送 GitHub Release
+或更新插件中心索引, 因而 M4-C 仍未整体完成. M4-D 的只读监视已提前启用, 自动升级 PR
+仍按顺序等待 M4-C 正式发布完成.
 
 ### M4-A: 官方 OpenCC 原生后端原型 (2026-08-31, 已完成)
 
@@ -112,13 +114,13 @@ M4-D 的只读监视已提前启用，自动升级 PR 仍按顺序等待 M4-C �
 - [x] (插件) 新建内部 `:opencc-native` Android Library, 使用 NDK 28.2/CMake 构建官方 OpenCC 与 Marisa, 为四 ABI 静态链接单一 `libopencc_jni.so`, 不执行上游宿主机字典/CLI 目标.
 - [x] (插件) 实现薄 JNI 与 JVM 门面: 14 配置白名单, Converter 缓存, 标准 UTF-8/UTF-16 转换, emoji/非 BMP 保真, C++ 异常边界, 资源修复及服务销毁清理均有设备测试.
 - [x] (插件/API) Binder 服务已切换到官方后端且维持 v1/v2 契约; capabilities 新增 OpenCC 版本, commit 和资源 SHA-256, 最低宿主版本不变.
-- [x] (测试) `android-opencc:1.2.2` 仅存在于 JVM/仪器测试配置作为迁移基线; APK 门禁证明正式 5 APK 不含旧类库的 native/resources 或动态 C++ 运行时.
+- [x] (测试) M4-A/M4-B 期间将 `android-opencc:1.2.2` 严格限制为 JVM/仪器差分基线; APK 门禁证明正式 5 APK 不含旧类库的 native/resources 或动态 C++ 运行时, M4-C 随后已将该测试依赖彻底删除.
 
 M4-A 验收条件: 官方 1.4.2 核心和 JNI 在 `arm64-v8a` / `armeabi-v7a` / `x86_64` / `x86` 四 ABI 构建成功; 14 种转换通过 JVM 契约测试与真实 Binder 冒烟测试; 正式 APK 内不再出现旧 `ChineseConverter` 原生库, 旧 AAR 资源或 `libc++_shared.so`; 源码, 资源和运行时版本信息可相互追溯. (已满足; 证据见 `docs/engineering/opencc-1.4.2-migration.md`)
 
 ### M4-B: 兼容性, 性能与 16 KB 验收 (2026-09-01, 已完成)
 
-- [x] (测试) 新旧引擎差分语料已建立: 14 类型基础语料必须一致, 11 条官方词典变化逐条固定旧值/新值与审阅原因; 明细归档于 `docs/engineering/opencc-1.4.2-migration.md`.
+- [x] (测试) M4-B 迁移窗口已完成新旧引擎差分: 14 类型基础语料一致, 11 条官方词典变化逐条固定旧值/新值与审阅原因; 旧基线随后从构建图删除, 历史值继续归档于 `docs/engineering/opencc-1.4.2-migration.md`, 官方值继续由设备测试固定.
 - [x] (测试) 仪器测试覆盖空文本, 长文本, emoji, 非 BMP, 批量/链式上限, 未知类型, 同长度损坏资源, SHA-256 不匹配后恢复, 64 路并发调用; 两阶段测试以不同 PID 验证真实进程重启后复用已校验资源且不重写文件.
 - [x] (测试) 旧/新引擎首次加载, 新进程冷转换, 200 次热转换, 1,024 段批量负载, 峰值 PSS 和五种 APK 体积已归档于 `docs/engineering/opencc-1.4.2-benchmark.md`; Android 15 arm64 真机上官方后端为 313.726 ms / 285.502 ms / 0.836 ms median / 42.362 ms / 31.55 MiB 增量. 冷路径低于 0.4 秒且热/批量显著改善, 当前不引入按 ABI 生成 `.ocd2` 的复杂度.
 - [x] (依赖/发布) 使用 NDK 28.2 重建最终 JNI `.so`; 四 ABI 均通过 ELF `LOAD >= 0x4000` 与 RELRO 检查, debug/release 各 5 APK 通过 `zipalign -c -P 16 4`, `jniLibs.useLegacyPackaging` 已删除且 native entries 保持未压缩.
@@ -126,14 +128,18 @@ M4-A 验收条件: 官方 1.4.2 核心和 JNI 在 `arm64-v8a` / `armeabi-v7a` / 
 
 M4-B 验收条件: 差分结果均可解释并有审阅记录; 新后端在现有四 ABI/API 矩阵无行为回归; 性能和体积报告已归档; 16 KB ELF, ZIP 对齐和真实运行环境全部通过. (已满足)
 
-### M4-C: 正式替换与 v1.2.0 发布
+### M4-C: 正式替换与 v1.2.0 发布 (本地发布候选已完成)
 
-- [ ] (依赖/插件) 从版本目录和应用依赖中删除 `com.github.brooklet:android-opencc`, 删除旧 `ChineseConverter` / `ConversionType` 引用与旧资源初始化逻辑, 将官方后端提升为唯一 `default` 引擎.
-- [ ] (发布) 补齐 OpenCC, Marisa 及其他随包第三方代码的许可证/NOTICE, 更新 README, 10 语言 CHANGELOG, 插件说明和本 Roadmap, 清楚标注内置 OpenCC 版本, 词典版本, 离线特性与 16 KB 支持状态.
-- [ ] (发布) 将底层引擎与词典迁移作为用户可感知的次版本发布 `v1.2.0`, 使用既有发布脚本生成并验证 5 个签名 APK, CRC32, SHA-256, ABI 内容和签名连续性; GitHub Release 同时列出经审阅的主要词典输出变化.
+- [x] (依赖/插件) 从版本目录和应用的单元测试, instrumentation 及正式配置中删除 `com.github.brooklet:android-opencc`, 删除旧 `ChineseConverter` / `ConversionType` 引用与旧资源初始化逻辑, 将官方后端提升为唯一 `default` 引擎; 三条 Gradle 依赖图均明确返回无匹配依赖.
+- [x] (发布) 补齐 OpenCC, Marisa, Darts Clone 与 RapidJSON 的许可证/NOTICE, 更新 README, 10 语言 CHANGELOG, 插件说明和本 Roadmap, 清楚标注内置 OpenCC 版本/提交, 词典摘要, 离线特性与 16 KB 支持状态; 36 个生成产物通过漂移检查.
+- [x] (发布准备) 版本已提升为 `v1.2.0` / build 19; 既有发布脚本已在 `build/release/v1.2.0` 原子生成 5 个本地签名 APK, `SHA256SUMS.txt` 与 `RELEASE_NOTES.md`, 并通过 CRC32, SHA-256, 精确 ABI, APK/ELF/资源内容及签名连续性门禁. 签名证书 SHA-256 与仓库 v1.0.2 留存包一致 (`31A681FCFFFB3E428420CAE280DED89292B12A3B0F59E19B7A73E32A8AE4C213`).
+- [x] (设备) 删除迁移 AAR 后重新在 API 35 `arm64-v8a`, API 28 `armeabi-v7a` 与 API 37 / 16 KB `x86_64` 环境执行服务 + restart prepare/verify 三阶段测试; 全部通过且测试包清理完成. 旧 Android 无 `getconf` 时, CI 脚本会从 `/proc/self/smaps` 的 `KernelPageSize` 安全回退探测.
+- [ ] (发布) 经维护者确认后创建 `v1.2.0` 源码标签并推送 GitHub Release, 上传上述 5 个已验证 APK, `SHA256SUMS.txt` 与发行说明; Release 必须列出经审阅的主要词典输出变化. 本地候选完成不视为已公开发布.
 - [ ] (发布) 更新插件中心在线索引仓库中的版本, 下载地址, 摘要与兼容信息, 确保索引元数据与 GitHub Release 同步.
 
-M4-C 验收条件: 正式产物仅包含官方后端; v1.2.0 的源码标签, 5 个 APK, 校验和, Release 与插件索引相互一致; 旧宿主继续使用 v1 接口, 新宿主继续使用 v2 批量/链式接口.
+M4-C 验收条件: 正式产物仅包含官方后端 (本地已满足); v1.2.0 的源码标签, 5 个 APK,
+校验和, GitHub Release 与插件索引相互一致 (外部发布后方可满足); 旧宿主继续使用 v1 接口,
+新宿主继续使用 v2 批量/链式接口. 在标签/Release/索引完成前不得将 M4-C 整体标记为完成.
 
 ### M4-D: 上游同步自动化
 

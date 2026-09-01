@@ -108,13 +108,13 @@
     "Minimal permissions: the manifest declares only the `org.autojs.permission.PLUGIN` plugin permission and no sensitive system permissions such as network, storage, or camera.",
     "Two-way protection: the plugin service is guarded by the same permission, so only hosts holding the plugin permission (such as AutoJs6) can bind and call it; other apps have no access.",
     "Signature authorization: AutoJs6 verifies the plugin signature; official release packages are authorized automatically, while builds with other signatures must be authorized manually in the plugin center before they are loaded.",
-    "Local processing: conversion happens entirely on the device; the plugin never goes online, writes nothing to disk, and collects no user data."
+    "Local processing: conversion happens entirely on the device; converted text is never persisted or uploaded, and the plugin collects no user data."
   ],
   "p_security_permission": "Only obtain the plugin from the official [Releases]({{ repo_url }}/releases) page or the AutoJs6 plugin center. Packages from unknown sources may fail host verification or carry risks even when the version number looks identical.",
   "h3_plugin_interface": "Plugin Interface",
   "p_plugin_interface": "The following information targets AutoJs6 host and plugin developers; the host uses these identifiers to discover the plugin and negotiate compatibility",
   "p_contract_service": "`OpenccPluginService` responds to the `{{ plugin_service_action }}` action (category `{{ plugin_service_category }}`), using `{{ plugin_aidl_interface }}` from opencc-api. Contract version 2 appends type discovery, batch conversion, and chained conversion after the original `getInfo()` and `convert(text, conversionType)` methods, and advertises its version and supported types through `PluginInfo.capabilities`; older hosts keep using the original methods and transaction numbers. A `WakeActivity` is also provided so the host can wake the plugin process.",
-  "p_abi_reporting": "Conversion is powered by the OpenCC engine and dictionaries from `{{ opencc_library_coordinates }}`.",
+  "p_abi_reporting": "The plugin builds official OpenCC `{{ opencc_tag }}` directly at commit `{{ opencc_commit }}` with the matching release resources. Each ABI contains one statically linked, 16 KB-aligned `libopencc_jni.so`, and conversion remains fully offline.",
   "h3_roadmap": "Roadmap",
   "p_roadmap": "The plugin's plans and progress are maintained as a checkable list in ROADMAP.md, organized by milestone with acceptance criteria, covering documentation and release experience, engineering and continuous integration, conversion capability enhancements, and runtime evolution. Unchecked items express intent rather than current capabilities; discussion via Issues is welcome.",
   "text_link_roadmap": "View ROADMAP.md",
@@ -132,11 +132,12 @@
   "h3_resource_layout": "Localization and Docs Generation",
   "p_resource_layout": "`strings.xml` holds the localized plugin description and error messages, and `plugin_instruction.md` holds the usage instructions shown inside the host plugin center. For README and changelog, always edit the JSON sources under `.readme/` and `.changelog/` and rerun `py .python/generate_markdown.py`; generated artifacts are never edited by hand. Run `py .python/generate_markdown.py --check` to verify sources and artifacts are in sync.",
   "h3_license": "License",
-  "p_license": "The project code is licensed under the [Mozilla Public License 2.0]({{ license_url }}). Chinese conversion is powered by [OpenCC]({{ opencc_official_url }}) (Apache License 2.0) and its Android wrapper [android-opencc]({{ android_opencc_url }}).",
+  "p_license": "The project code is licensed under the [Mozilla Public License 2.0]({{ license_url }}). Chinese conversion is powered directly by [OpenCC]({{ opencc_official_url }}) (Apache License 2.0); bundled OpenCC, Marisa Trie, Darts Clone, and RapidJSON sources and licenses are listed in [Third-Party Notices]({{ third_party_notices_url }}).",
   "h3_links": "Links",
   "text_link_autojs6_opencc_docs": "AutoJs6 OpenCC documentation",
   "text_link_autojs6": "AutoJs6 project",
   "text_link_opencc_official": "OpenCC official project",
-  "text_link_android_opencc": "Android OpenCC project",
-  "p_instruction_more": "See the [AutoJs6 OpenCC documentation]({{ docs_opencc_url }}) and the [project README]({{ repo_url }}) for the full method list and conversion type reference."
+  "text_link_third_party_notices": "Third-party notices",
+  "p_instruction_more": "See the [AutoJs6 OpenCC documentation]({{ docs_opencc_url }}) and the [project README]({{ repo_url }}) for the full method list and conversion type reference.",
+  "p_instruction_backend": "This release embeds official OpenCC {{ opencc_version }} and its pinned same-release dictionaries. Processing remains fully offline, and the native packages support Android devices with 16 KB memory pages."
 }

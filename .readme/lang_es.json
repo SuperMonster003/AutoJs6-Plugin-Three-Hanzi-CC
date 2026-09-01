@@ -108,13 +108,13 @@
     "Permisos mínimos: el manifiesto declara únicamente el permiso de complemento `org.autojs.permission.PLUGIN`, sin ningún permiso sensible del sistema como red, almacenamiento o cámara.",
     "Protección bidireccional: el servicio del complemento está protegido por el mismo permiso, de modo que solo los hosts que poseen el permiso de complemento (como AutoJs6) pueden enlazarse a él y llamarlo; otras aplicaciones no tienen acceso.",
     "Autorización por firma: AutoJs6 verifica la firma del complemento; los paquetes oficiales se autorizan automáticamente, mientras que las compilaciones con otras firmas deben autorizarse manualmente en el centro de complementos antes de cargarse.",
-    "Procesamiento local: la conversión ocurre por completo en el dispositivo; el complemento nunca se conecta a la red, no escribe nada en el disco y no recopila datos del usuario."
+    "Procesamiento local: la conversión ocurre por completo en el dispositivo; el texto convertido nunca se almacena ni se sube, y el complemento no recopila datos del usuario."
   ],
   "p_security_permission": "Obtenga el complemento únicamente desde la página oficial [Releases]({{ repo_url }}/releases) o desde el centro de complementos de AutoJs6. Los paquetes de origen desconocido pueden no superar la verificación del host u ocultar riesgos aunque el número de versión parezca idéntico.",
   "h3_plugin_interface": "Interfaz del complemento",
   "p_plugin_interface": "La siguiente información está dirigida a los desarrolladores del host AutoJs6 y de complementos; el host usa estos identificadores para descubrir el complemento y negociar la compatibilidad",
   "p_contract_service": "`OpenccPluginService` responde a la acción `{{ plugin_service_action }}` (categoría `{{ plugin_service_category }}`) mediante `{{ plugin_aidl_interface }}` de opencc-api. La versión 2 del contrato agrega descubrimiento de tipos, conversión por lotes y conversión encadenada después de los métodos originales `getInfo()` y `convert(text, conversionType)`, y anuncia su versión y los tipos admitidos mediante `PluginInfo.capabilities`; los hosts antiguos conservan los métodos y números de transacción originales. También se proporciona una `WakeActivity` para despertar el proceso del complemento.",
-  "p_abi_reporting": "La conversión utiliza el motor y los diccionarios OpenCC de `{{ opencc_library_coordinates }}`.",
+  "p_abi_reporting": "El complemento compila directamente OpenCC oficial `{{ opencc_tag }}` en el commit `{{ opencc_commit }}` con los recursos de la misma versión. Cada ABI contiene un único `libopencc_jni.so` enlazado estáticamente y alineado a 16 KB; la conversión sigue siendo totalmente local.",
   "h3_roadmap": "Hoja de ruta",
   "p_roadmap": "Los planes del complemento y su grado de avance se mantienen como una lista marcable en ROADMAP.md, organizada por hitos con criterios de aceptación, y abarcan la documentación y la experiencia de publicación, la ingeniería y la integración continua, las mejoras de la capacidad de conversión y la evolución del entorno de ejecución. Los elementos sin marcar expresan intenciones, no capacidades actuales; la discusión mediante Issues es bienvenida.",
   "text_link_roadmap": "Ver ROADMAP.md",
@@ -132,11 +132,12 @@
   "h3_resource_layout": "Localización y generación de documentos",
   "p_resource_layout": "`strings.xml` contiene la descripción localizada del complemento y los mensajes de error, y `plugin_instruction.md` contiene las instrucciones de uso que se muestran en el centro de complementos del host. Para el README y el changelog, edite siempre las fuentes JSON bajo `.readme/` y `.changelog/` y vuelva a ejecutar `py .python/generate_markdown.py`; los archivos generados nunca se editan a mano. Ejecute `py .python/generate_markdown.py --check` para comprobar que las fuentes y los archivos generados están sincronizados.",
   "h3_license": "Licencia",
-  "p_license": "El código del proyecto se distribuye bajo la [Mozilla Public License 2.0]({{ license_url }}). La conversión de chino corre a cargo de [OpenCC]({{ opencc_official_url }}) (Apache License 2.0) y su envoltorio para Android [android-opencc]({{ android_opencc_url }}).",
+  "p_license": "El código del proyecto se distribuye bajo la [Mozilla Public License 2.0]({{ license_url }}). La conversión de chino usa directamente [OpenCC]({{ opencc_official_url }}) (Apache License 2.0); las fuentes y licencias incluidas de OpenCC, Marisa Trie, Darts Clone y RapidJSON se detallan en los [avisos de terceros]({{ third_party_notices_url }}).",
   "h3_links": "Enlaces",
   "text_link_autojs6_opencc_docs": "Documentación de AutoJs6 OpenCC",
   "text_link_autojs6": "Proyecto AutoJs6",
   "text_link_opencc_official": "Proyecto oficial OpenCC",
-  "text_link_android_opencc": "Proyecto Android OpenCC",
-  "p_instruction_more": "Consulte la [documentación de AutoJs6 OpenCC]({{ docs_opencc_url }}) y el [README del proyecto]({{ repo_url }}) para ver la lista completa de métodos y la referencia de tipos de conversión."
+  "text_link_third_party_notices": "Avisos de terceros",
+  "p_instruction_more": "Consulte la [documentación de AutoJs6 OpenCC]({{ docs_opencc_url }}) y el [README del proyecto]({{ repo_url }}) para ver la lista completa de métodos y la referencia de tipos de conversión.",
+  "p_instruction_backend": "Esta versión integra OpenCC oficial {{ opencc_version }} y sus diccionarios fijados de la misma versión. Todo el procesamiento sigue siendo local y los paquetes nativos admiten dispositivos Android con páginas de memoria de 16 KB."
 }

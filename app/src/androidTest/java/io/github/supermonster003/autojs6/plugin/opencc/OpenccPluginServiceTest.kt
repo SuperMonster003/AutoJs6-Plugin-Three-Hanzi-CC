@@ -9,8 +9,6 @@ import android.os.Build
 import android.os.IBinder
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.zqc.opencc.android.lib.ChineseConverter as LegacyChineseConverter
-import com.zqc.opencc.android.lib.ConversionType as LegacyConversionType
 import io.github.supermonster003.autojs6.plugin.opencc.nativebridge.OpenccConversionType
 import io.github.supermonster003.autojs6.plugin.opencc.nativebridge.OpenccNativeEngine
 import io.github.supermonster003.autojs6.plugin.opencc.nativebridge.OpenccUpstream
@@ -39,8 +37,6 @@ import java.util.concurrent.atomic.AtomicReference
 class OpenccPluginServiceTest {
 
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
-    private val testContext = InstrumentationRegistry.getInstrumentation().context
-    private val legacyEngineContext: Context by lazy(::prepareLegacyEngineResources)
 
     @Test
     fun discoveryBindingMetadataAndAllConversionTypesRoundTrip() {
@@ -48,16 +44,12 @@ class OpenccPluginServiceTest {
             assertRuntimeInfo(plugin)
 
             val smokeInput = "汉字漢字软件軟體里面裏面"
+            assertEquals(CONVERSION_TYPES.toSet(), SMOKE_OUTPUTS.keys)
             for (conversionType in CONVERSION_TYPES) {
                 val result = plugin.convert(smokeInput, conversionType)
-                assertTrue("$conversionType returned an empty result", result.isNotEmpty())
                 assertEquals(
-                    "Unexpected unreviewed difference from the migration baseline for $conversionType",
-                    LegacyChineseConverter.convert(
-                        smokeInput,
-                        LegacyConversionType.valueOf(conversionType),
-                        legacyEngineContext,
-                    ),
+                    "Official OpenCC 1.4.2 smoke output drifted for $conversionType",
+                    SMOKE_OUTPUTS.getValue(conversionType),
                     result,
                 )
             }
@@ -136,33 +128,25 @@ class OpenccPluginServiceTest {
     }
 
     /**
-     * OpenCC 1.4.2 intentionally fixes these legacy dictionary outputs. Keeping the
-     * old and new expected values together makes every accepted behavior change explicit.
+     * OpenCC 1.4.2 intentionally fixes these dictionary outputs. Historical legacy values
+     * remain archived in docs/engineering/opencc-1.4.2-migration.md; the release test keeps
+     * the reviewed official values fixed without packaging the retired migration engine.
      */
     private fun assertReviewedUpstreamDifferences(plugin: IOpenccPlugin) {
         val reviewedCases = listOf(
-            ReviewedDifference(OpenccConversionTypes.S2T, "托着", "託着", "托着", "托/託 candidate order"),
-            ReviewedDifference(OpenccConversionTypes.S2T, "复盘", "覆盤", "復盤", "explicit phrase correction"),
-            ReviewedDifference(OpenccConversionTypes.S2T, "内卷", "內卷", "內捲", "regional character correction"),
-            ReviewedDifference(OpenccConversionTypes.S2T, "谷神谷神星", "穀神穀神星", "谷神穀神星", "classical-context exception"),
-            ReviewedDifference(OpenccConversionTypes.T2S, "乾斷食乾紅", "乾断食乾红", "干断食干红", "issue-specific phrases"),
-            ReviewedDifference(OpenccConversionTypes.TW2S, "什么怎么这么", "什幺怎幺这幺", "什么怎么这么", "么/幺 destructive-conversion fix"),
-            ReviewedDifference(OpenccConversionTypes.S2TWP, "内存条", "記憶體條", "記憶體模組", "Taiwan terminology"),
-            ReviewedDifference(OpenccConversionTypes.S2TWP, "数字人文", "數字人文", "數位人文", "Taiwan terminology"),
-            ReviewedDifference(OpenccConversionTypes.S2TWP, "互联网络", "網際網路絡", "網際網路", "greedy-match correction"),
-            ReviewedDifference(OpenccConversionTypes.S2TWP, "快闪存储器", "快快閃記憶體儲器", "快閃記憶體", "greedy-match correction"),
-            ReviewedDifference(OpenccConversionTypes.S2TWP, "老挝人民民主共和国", "寮國人民民主共和國", "寮人民民主共和國", "official Taiwan name"),
+            ReviewedDifference(OpenccConversionTypes.S2T, "托着", "托着", "托/託 candidate order"),
+            ReviewedDifference(OpenccConversionTypes.S2T, "复盘", "復盤", "explicit phrase correction"),
+            ReviewedDifference(OpenccConversionTypes.S2T, "内卷", "內捲", "regional character correction"),
+            ReviewedDifference(OpenccConversionTypes.S2T, "谷神谷神星", "谷神穀神星", "classical-context exception"),
+            ReviewedDifference(OpenccConversionTypes.T2S, "乾斷食乾紅", "干断食干红", "issue-specific phrases"),
+            ReviewedDifference(OpenccConversionTypes.TW2S, "什么怎么这么", "什么怎么这么", "么/幺 destructive-conversion fix"),
+            ReviewedDifference(OpenccConversionTypes.S2TWP, "内存条", "記憶體模組", "Taiwan terminology"),
+            ReviewedDifference(OpenccConversionTypes.S2TWP, "数字人文", "數位人文", "Taiwan terminology"),
+            ReviewedDifference(OpenccConversionTypes.S2TWP, "互联网络", "網際網路", "greedy-match correction"),
+            ReviewedDifference(OpenccConversionTypes.S2TWP, "快闪存储器", "快閃記憶體", "greedy-match correction"),
+            ReviewedDifference(OpenccConversionTypes.S2TWP, "老挝人民民主共和国", "寮人民民主共和國", "official Taiwan name"),
         )
         for (case in reviewedCases) {
-            assertEquals(
-                "Legacy baseline drifted for ${case.conversionType}/${case.input} (${case.reason})",
-                case.legacyOutput,
-                LegacyChineseConverter.convert(
-                    case.input,
-                    LegacyConversionType.valueOf(case.conversionType),
-                    legacyEngineContext,
-                ),
-            )
             assertEquals(
                 "Official OpenCC 1.4.2 output drifted for " +
                     "${case.conversionType}/${case.input} (${case.reason})",
@@ -170,34 +154,6 @@ class OpenccPluginServiceTest {
                 plugin.convert(case.input, case.conversionType),
             )
         }
-    }
-
-    /**
-     * The legacy wrapper assumes its assets and files directory belong to the same APK.
-     * Instrumentation assets live in the test APK while its process/files belong to the
-     * target APK, so the migration fixture prepares the old data explicitly.
-     */
-    private fun prepareLegacyEngineResources(): Context {
-        val targetDirectory = File(context.filesDir, "openccdata")
-        check(targetDirectory.isDirectory || targetDirectory.mkdirs()) {
-            "Unable to create legacy OpenCC test directory: $targetDirectory"
-        }
-        val entries = requireNotNull(testContext.assets.list("openccdata")) {
-            "Legacy OpenCC test assets are unavailable"
-        }
-        check(entries.isNotEmpty()) { "Legacy OpenCC test assets are empty" }
-        for (entry in entries) {
-            check('/' !in entry && '\\' !in entry && entry !in setOf(".", "..")) {
-                "Unsafe legacy OpenCC test asset name: $entry"
-            }
-            testContext.assets.open("openccdata/$entry").use { input ->
-                File(targetDirectory, entry).outputStream().use(input::copyTo)
-            }
-        }
-        check(File(targetDirectory, "zFinished2").isFile) {
-            "Legacy OpenCC completion marker was not installed"
-        }
-        return context
     }
 
     private fun assertConcurrentConversions(plugin: IOpenccPlugin) {
@@ -369,12 +325,27 @@ class OpenccPluginServiceTest {
 
     private companion object {
         val CONVERSION_TYPES = OpenccConversionTypes.ALL
+        val SMOKE_OUTPUTS = mapOf(
+            OpenccConversionTypes.HK2S to "汉字汉字软件软体里面里面",
+            OpenccConversionTypes.HK2T to "汉字漢字软件軟體里面裏面",
+            OpenccConversionTypes.JP2T to "汉字漢字软件軟體里面裏面",
+            OpenccConversionTypes.S2HK to "漢字漢字軟件軟體裏面裏面",
+            OpenccConversionTypes.S2T to "漢字漢字軟件軟體裏面裏面",
+            OpenccConversionTypes.S2TW to "漢字漢字軟件軟體裡面裡面",
+            OpenccConversionTypes.S2TWP to "漢字漢字軟體軟體裡面裡面",
+            OpenccConversionTypes.T2HK to "汉字漢字软件軟體里面裏面",
+            OpenccConversionTypes.T2S to "汉字汉字软件软体里面里面",
+            OpenccConversionTypes.T2TW to "汉字漢字软件軟體里面裡面",
+            OpenccConversionTypes.T2JP to "汉字漢字软件軟体里面裏面",
+            OpenccConversionTypes.TW2S to "汉字汉字软件软体里面里面",
+            OpenccConversionTypes.TW2T to "汉字漢字软件軟體里面裏面",
+            OpenccConversionTypes.TW2SP to "汉字汉字软件软件里面里面",
+        )
     }
 
     private data class ReviewedDifference(
         val conversionType: String,
         val input: String,
-        val legacyOutput: String,
         val officialOutput: String,
         val reason: String,
     )

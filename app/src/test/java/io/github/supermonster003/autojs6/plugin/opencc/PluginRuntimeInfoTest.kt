@@ -17,9 +17,9 @@ class PluginRuntimeInfoTest {
             id = OpenccPluginIds.ID,
             engine = OpenccPluginIds.ENGINE,
             variant = OpenccPluginIds.VARIANT_DEFAULT,
-            versionName = "1.1.0",
-            versionCode = 18,
-            versionDate = "Aug 31, 2026",
+            versionName = "1.2.0",
+            versionCode = 19,
+            versionDate = "Sep 1, 2026",
         )
 
         assertEquals("OpenCC", fields.name)
@@ -29,9 +29,9 @@ class PluginRuntimeInfoTest {
         assertEquals(OpenccPluginIds.ID, fields.id)
         assertEquals(OpenccPluginIds.ENGINE, fields.engine)
         assertEquals(OpenccPluginIds.VARIANT_DEFAULT, fields.variant)
-        assertEquals("1.1.0", fields.versionName)
-        assertEquals(18, fields.versionCode)
-        assertEquals("Aug 31, 2026", fields.versionDate)
+        assertEquals("1.2.0", fields.versionName)
+        assertEquals(19, fields.versionCode)
+        assertEquals("Sep 1, 2026", fields.versionDate)
         assertEquals(
             listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86"),
             fields.supportedAbis,

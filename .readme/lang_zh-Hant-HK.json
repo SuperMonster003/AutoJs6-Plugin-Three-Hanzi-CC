@@ -108,13 +108,13 @@
     "最小權限: 插件清單僅聲明 `org.autojs.permission.PLUGIN` 插件權限, 不含網絡, 儲存空間, 相機等任何敏感系統權限.",
     "雙向防護: 插件服務同樣受該權限保護, 只有持有插件權限的宿主 (如 AutoJs6) 才能綁定與調用, 其他應用程式無法存取.",
     "簽名授權: AutoJs6 會校驗插件簽名, 官方發佈包自動獲得授權; 非官方簽名的構建需在插件中心手動授權後才會被載入.",
-    "本地處理: 轉換完全在裝置本地完成, 插件不連線, 不寫入儲存空間, 不收集任何用戶數據."
+    "本地處理: 轉換完全在裝置本地完成, 轉換文字不會持久化或上傳, 插件不收集任何用戶數據."
   ],
   "p_security_permission": "請僅從官方 [Releases]({{ repo_url }}/releases) 頁面或 AutoJs6 插件中心獲取插件. 來源不明的安裝包即使版本號相同, 也可能無法通過宿主校驗或暗藏風險.",
   "h3_plugin_interface": "插件介面",
   "p_plugin_interface": "以下資訊面向 AutoJs6 宿主與插件開發者, 宿主通過這些標識發現插件並完成兼容性協商",
   "p_contract_service": "`OpenccPluginService` 響應 `{{ plugin_service_action }}` action (category `{{ plugin_service_category }}`), Binder 介面為 opencc-api 的 `{{ plugin_aidl_interface }}`. 契約版本 2 在原有 `getInfo()` 與 `convert(text, conversionType)` 之後追加類型發現, 批量轉換與鏈式轉換方法, 並透過 `PluginInfo.capabilities` 公告版本與支援類型; 舊宿主繼續使用原有方法和事務編號. 另提供 `WakeActivity` 供宿主喚醒插件進程.",
-  "p_abi_reporting": "轉換由 `{{ opencc_library_coordinates }}` 提供的 OpenCC 引擎與詞典完成.",
+  "p_abi_reporting": "插件直接構建固定在提交 `{{ opencc_commit }}` 的官方 OpenCC `{{ opencc_tag }}`, 並使用同一發行版的配套資源. 每個 ABI 僅包含一個靜態連結且按 16 KB 對齊的 `libopencc_jni.so`, 轉換始終完全離線.",
   "h3_roadmap": "開發路線圖",
   "p_roadmap": "插件的能力規劃與完成情況以可勾選清單維護在 ROADMAP.md 中, 按里程碑組織並附驗收條件, 涵蓋文件與發佈體驗, 工程化與持續整合, 轉換能力增強與運行時演進等方向. 未勾選條目表示規劃意向而非目前版本能力, 歡迎通過 Issues 參與討論.",
   "text_link_roadmap": "查看 ROADMAP.md",
@@ -132,11 +132,12 @@
   "h3_resource_layout": "本地化與文件生成",
   "p_resource_layout": "`strings.xml` 提供本地化插件描述與錯誤資訊, `plugin_instruction.md` 提供宿主插件中心內展示的使用說明. README 與更新日誌一律修改 `.readme/` 與 `.changelog/` 下的 JSON 源文件, 再運行 `py .python/generate_markdown.py` 重新生成, 生成產物不手工編輯; 運行 `py .python/generate_markdown.py --check` 可校驗源文件與生成產物是否同步.",
   "h3_license": "許可",
-  "p_license": "項目代碼使用 [Mozilla Public License 2.0]({{ license_url }}). 中文轉換能力來自 [OpenCC]({{ opencc_official_url }}) (Apache License 2.0) 及其 Android 封裝 [android-opencc]({{ android_opencc_url }}).",
+  "p_license": "項目代碼使用 [Mozilla Public License 2.0]({{ license_url }}). 中文轉換能力直接來自 [OpenCC]({{ opencc_official_url }}) (Apache License 2.0); 內置 OpenCC, Marisa Trie, Darts Clone 與 RapidJSON 的來源和許可見[第三方聲明]({{ third_party_notices_url }}).",
   "h3_links": "相關連結",
   "text_link_autojs6_opencc_docs": "AutoJs6 OpenCC 文件",
   "text_link_autojs6": "AutoJs6 項目",
   "text_link_opencc_official": "OpenCC 官方項目",
-  "text_link_android_opencc": "Android OpenCC 項目",
-  "p_instruction_more": "更多方法與完整轉換類型說明參見 [AutoJs6 OpenCC 文件]({{ docs_opencc_url }}) 與 [項目 README]({{ repo_url }})."
+  "text_link_third_party_notices": "第三方聲明",
+  "p_instruction_more": "更多方法與完整轉換類型說明參見 [AutoJs6 OpenCC 文件]({{ docs_opencc_url }}) 與 [項目 README]({{ repo_url }}).",
+  "p_instruction_backend": "本版本內置官方 OpenCC {{ opencc_version }} 及固定在同一發行版的配套詞典. 所有處理繼續完全離線, 原生安裝包支援使用 16 KB 記憶體頁面的 Android 裝置."
 }

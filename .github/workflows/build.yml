@@ -47,7 +47,10 @@ jobs:
           ./gradlew :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest --stacktrace
 
       - name: Verify all ABI variants
-        run: python scripts/ci/verify_apk_variants.py app/build/outputs/apk/debug
+        run: >-
+          python scripts/ci/verify_apk_variants.py
+          app/build/outputs/apk/debug
+          --instrumentation-apk app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
 
       - name: Upload debug and test APKs
         uses: actions/upload-artifact@v7

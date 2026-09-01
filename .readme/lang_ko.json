@@ -108,13 +108,13 @@
     "최소 권한: 매니페스트에는 플러그인 권한 `org.autojs.permission.PLUGIN`만 선언하며, 네트워크, 저장소, 카메라 등 민감한 시스템 권한은 포함하지 않습니다.",
     "양방향 보호: 플러그인 서비스도 같은 권한으로 보호되어, 플러그인 권한을 가진 호스트 (AutoJs6 등)만 바인딩하고 호출할 수 있습니다. 다른 앱은 접근할 수 없습니다.",
     "서명 기반 승인: AutoJs6는 플러그인 서명을 검증합니다. 공식 릴리스 패키지는 자동으로 승인되며, 그 외 서명의 빌드는 플러그인 센터에서 수동 승인하지 않는 한 로드되지 않습니다.",
-    "로컬 처리: 변환은 전적으로 기기 안에서 이루어집니다. 플러그인은 네트워크에 연결하지 않고 디스크에 쓰지 않으며 사용자 데이터를 일절 수집하지 않습니다."
+    "로컬 처리: 변환은 전적으로 기기 안에서 이루어집니다. 변환된 텍스트는 저장되거나 업로드되지 않으며 플러그인은 사용자 데이터를 일절 수집하지 않습니다."
   ],
   "p_security_permission": "플러그인은 공식 [Releases]({{ repo_url }}/releases) 페이지 또는 AutoJs6 플러그인 센터에서만 받으세요. 출처를 알 수 없는 패키지는 버전 번호가 같아 보여도 호스트 검증을 통과하지 못하거나 위험을 포함할 수 있습니다.",
   "h3_plugin_interface": "플러그인 인터페이스",
   "p_plugin_interface": "아래 정보는 AutoJs6 호스트 및 플러그인 개발자를 위한 것입니다. 호스트는 이 식별자들로 플러그인을 발견하고 호환성 협상을 수행합니다",
   "p_contract_service": "`OpenccPluginService`는 `{{ plugin_service_action }}` 액션 (카테고리 `{{ plugin_service_category }}`)에 opencc-api의 `{{ plugin_aidl_interface }}`로 응답합니다. 계약 버전 2는 기존 `getInfo()`와 `convert(text, conversionType)` 뒤에 유형 검색, 일괄 변환, 체인 변환을 추가하고 `PluginInfo.capabilities`를 통해 버전과 지원 유형을 알립니다; 이전 호스트는 기존 메서드와 트랜잭션 번호를 계속 사용합니다. 호스트가 플러그인 프로세스를 깨우기 위한 `WakeActivity`도 제공합니다.",
-  "p_abi_reporting": "변환에는 `{{ opencc_library_coordinates }}`의 OpenCC 엔진과 사전을 사용합니다.",
+  "p_abi_reporting": "플러그인은 커밋 `{{ opencc_commit }}`에 고정된 공식 OpenCC `{{ opencc_tag }}`와 같은 릴리스의 리소스를 직접 빌드합니다. 각 ABI에는 정적으로 링크되고 16 KB에 정렬된 `libopencc_jni.so` 하나만 포함되며 변환은 항상 완전히 오프라인으로 이루어집니다.",
   "h3_roadmap": "개발 로드맵",
   "p_roadmap": "플러그인의 기능 계획과 진행 상황은 체크 가능한 목록 형태로 ROADMAP.md에서 관리됩니다. 마일스톤별로 정리되고 수용 기준이 붙어 있으며, 문서와 릴리스 경험, 엔지니어링과 지속적 통합, 변환 기능 강화, 런타임 진화 등의 방향을 포괄합니다. 체크되지 않은 항목은 계획상의 의향이며 현재 버전의 기능이 아닙니다. Issues에서의 토론을 환영합니다.",
   "text_link_roadmap": "ROADMAP.md 보기",
@@ -132,11 +132,12 @@
   "h3_resource_layout": "현지화 및 문서 생성",
   "p_resource_layout": "`strings.xml`은 현지화된 플러그인 설명과 오류 메시지를, `plugin_instruction.md`는 호스트 플러그인 센터 안에 표시되는 사용 설명을 제공합니다. README와 변경 기록은 반드시 `.readme/`와 `.changelog/` 아래의 JSON 소스를 편집한 뒤 `py .python/generate_markdown.py`를 실행해 다시 생성합니다. 생성물을 손으로 편집하지 않습니다; `py .python/generate_markdown.py --check`를 실행하면 소스와 생성물의 동기화 여부를 검증할 수 있습니다.",
   "h3_license": "라이선스",
-  "p_license": "프로젝트 코드는 [Mozilla Public License 2.0]({{ license_url }})으로 라이선스됩니다. 중국어 변환 기능은 [OpenCC]({{ opencc_official_url }}) (Apache License 2.0)와 그 Android 래퍼 [android-opencc]({{ android_opencc_url }})가 제공합니다.",
+  "p_license": "프로젝트 코드는 [Mozilla Public License 2.0]({{ license_url }})으로 라이선스됩니다. 중국어 변환은 [OpenCC]({{ opencc_official_url }}) (Apache License 2.0)를 직접 사용하며 포함된 OpenCC, Marisa Trie, Darts Clone, RapidJSON의 출처와 라이선스는 [서드 파티 고지]({{ third_party_notices_url }})에 정리되어 있습니다.",
   "h3_links": "링크",
   "text_link_autojs6_opencc_docs": "AutoJs6 OpenCC 문서",
   "text_link_autojs6": "AutoJs6 프로젝트",
   "text_link_opencc_official": "OpenCC 공식 프로젝트",
-  "text_link_android_opencc": "Android OpenCC 프로젝트",
-  "p_instruction_more": "메서드 목록과 변환 유형의 전체 레퍼런스는 [AutoJs6 OpenCC 문서]({{ docs_opencc_url }})와 [프로젝트 README]({{ repo_url }})를 참고하세요."
+  "text_link_third_party_notices": "서드 파티 고지",
+  "p_instruction_more": "메서드 목록과 변환 유형의 전체 레퍼런스는 [AutoJs6 OpenCC 문서]({{ docs_opencc_url }})와 [프로젝트 README]({{ repo_url }})를 참고하세요.",
+  "p_instruction_backend": "이 릴리스에는 공식 OpenCC {{ opencc_version }}와 같은 릴리스에 고정된 사전이 포함됩니다. 모든 처리는 계속 완전히 오프라인으로 이루어지며 네이티브 패키지는 16 KB 메모리 페이지를 사용하는 Android 기기를 지원합니다."
 }

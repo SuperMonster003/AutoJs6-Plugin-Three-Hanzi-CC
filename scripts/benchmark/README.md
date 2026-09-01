@@ -1,10 +1,12 @@
-# OpenCC M4-B device benchmark
+# Official OpenCC device benchmark
 
-`run_opencc_benchmark.py` runs the migration-only `android-opencc:1.2.2` baseline and the
-official OpenCC backend in isolated app installs. Each engine uses two instrumentation
+`run_opencc_benchmark.py` runs the pinned official OpenCC backend in an isolated app install.
+The retired `android-opencc:1.2.2` migration baseline is no longer a build or test dependency;
+its reviewed M4-B measurements remain archived in
+`docs/engineering/opencc-1.4.2-benchmark.md`. The current benchmark uses two instrumentation
 processes:
 
-1. `first-load` removes that engine's installed resources and measures the first conversion.
+1. `first-load` removes the installed official resources and measures the first conversion.
 2. `steady-state` starts in a different PID with resources already installed, then measures a
    cold conversion, 200 hot conversions, a 1,024-segment batch workload, and peak process
    memory.

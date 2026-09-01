@@ -263,12 +263,14 @@ aidl contract version: 2
 aidl methods: getInfo(), convert(text, conversionType), getSupportedConversionTypes(), convertBatch(texts, conversionType), convertChain(text, conversionTypes)
 batch/chain limits: 1024 texts / 32 stages
 minimum host build: 3923 (6.7.1 Alpha4)
-conversion library: com.github.brooklet:android-opencc:1.2.2
+conversion backend: OpenCC 1.4.2 (ver.1.4.2)
+OpenCC source commit: 025f371dc76b598d77384fbdab90c937471844d8
+OpenCC resources SHA-256: 9ea0d303219b34d014d5c116677b5d325043beafb2c8a62ee889ca67f4d054a5
 ```
 
 تستجيب `OpenccPluginService` للإجراء `org.autojs.plugin.OPENCC` (الفئة `opencc`) عبر `org.autojs.plugin.opencc.api.IOpenccPlugin` من opencc-api. يضيف الإصدار 2 من العقد اكتشاف الأنواع والتحويل الدفعي والتحويل المتسلسل بعد الطريقتين الأصليتين `getInfo()` و`convert(text, conversionType)`, ويعلن الإصدار والأنواع المدعومة عبر `PluginInfo.capabilities`; وتواصل المضيفات القديمة استخدام الطرق وأرقام المعاملات الأصلية. كما يتوفر `WakeActivity` لإيقاظ عملية المكون الإضافي.
 
-يعتمد التحويل على محرك OpenCC وقواميسه من `com.github.brooklet:android-opencc:1.2.2`.
+يبني المكون الإضافي إصدار OpenCC الرسمي `ver.1.4.2` مباشرة عند الالتزام `025f371dc76b598d77384fbdab90c937471844d8` مع موارد الإصدار نفسه. تحتوي كل ABI على ملف `libopencc_jni.so` واحد مرتبط ساكنا ومحاذى إلى 16 KB, ويظل التحويل محليا بالكامل.
 
 ******
 
@@ -285,6 +287,17 @@ conversion library: com.github.brooklet:android-opencc:1.2.2
 ### سجل الإصدارات
 
 ******
+
+#### v1.2.0
+
+_2026/09/01_
+
+- `تلميح` تغير تحديثات قواميس OpenCC 1.4.2 بعض النتائج عمدا, ومنها `复盘` -> `復盤` و`内卷` -> `內捲` والحفاظ على `什么怎么这么` و`内存条` -> `記憶體模組`; وترد القائمة المراجعة كاملة في تقرير الانتقال
+- `تحسين` بناء OpenCC 1.4.2 الرسمي وقواميس الإصدار نفسه مباشرة في مكتبة JNI واحدة مرتبطة ساكنا لكل ABI مع إبقاء التحويل كله محليا
+- `تحسين` دعم الأجهزة ذات حجم الصفحة 16 KB باستخدام NDK 28.2 ومحاذاة ELF وZIP إلى 16 KB والتحقق من Binder على محاكي حقيقي بحجم صفحة 16 KB
+- `تحسين` تثبيت ZIP الموارد المثبت ذريًا مع التحقق من الحجم وSHA-256 والاسترداد التلقائي عند التلف وتحويل JNI آمن لـ Unicode وتخزين المحولات الساخنة مؤقتا
+- `تبعية` إزالة الغلاف غير المصان `com.github.brooklet:android-opencc:1.2.2` وتثبيت OpenCC الرسمي `ver.1.4.2` عند الالتزام `025f371dc76b598d77384fbdab90c937471844d8`
+- `تبعية` توثيق مصادر وتراخيص OpenCC وMarisa Trie وDarts Clone وRapidJSON المضمنة في `THIRD_PARTY_NOTICES.md`
 
 #### v1.1.0
 
@@ -307,14 +320,6 @@ _2026/08/31_
 - `تحسين` تعزيز التحقق من التوثيق وتشغيله في GitHub Actions, مع الكشف تلقائيا عن اختلاف البنية بين اللغات وانحراف الملفات المولدة والملفات اليتيمة وعدم تطابق الإصدار والعناصر النائبة المتبقية
 - `تحسين` إضافة ROADMAP.md بقوائم مراحل قابلة للتحقق للتوثيق والهندسة وقدرات التحويل وتطور بيئة التشغيل
 - `تحسين` نقل إعداد Gradle إلى `org.autojs.build.platform-versions` 1.4.1 واستخدام foojay لحل JDK تلقائيا, مما يبسط بيئة البناء ويوحدها
-
-#### v1.0.1
-
-_2026/07/14_
-
-- `تحسين` توفير حزم مقسمة حسب معمارية المعالج (ABI): حزم أحادية ABI لـ `arm64-v8a` و`armeabi-v7a` و`x86_64` و`x86` إضافة إلى حزمة `universal` بكل المعماريات, بحيث لا تثبت الأجهزة إلا ما تحتاج إليه وتبقى التنزيلات صغيرة
-- `تحسين` الإبلاغ عن قائمة ABI المدعومة في معلومات المكون الإضافي ليتمكن AutoJs6 ومركز المكونات الإضافية من تحديد متغيرات المكون الإضافي الملائمة للجهاز الحالي
-- `تحسين` إلحاق الإصدار وABI وملخص CRC32 بأسماء ملفات APK المنشورة, مما يسهل التحقق من سلامة الملفات المنزلة
 
 ##### لمزيد من سجل الإصدارات
 
@@ -395,7 +400,7 @@ app/src/main/res/raw-*/plugin_instruction.md
 
 ******
 
-يوزع رمز المشروع بموجب [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/LICENSE). ويعتمد تحويل النص الصيني على [OpenCC](https://github.com/BYVoid/OpenCC) (Apache License 2.0) وغلافه لنظام Android وهو [android-opencc](https://github.com/brooklet/android-opencc).
+يوزع رمز المشروع بموجب [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/LICENSE). ويستخدم تحويل النص الصيني [OpenCC](https://github.com/BYVoid/OpenCC) (Apache License 2.0) مباشرة; وترد مصادر وتراخيص OpenCC وMarisa Trie وDarts Clone وRapidJSON المضمنة في [إشعارات الجهات الخارجية](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/THIRD_PARTY_NOTICES.md).
 
 ******
 
@@ -406,4 +411,4 @@ app/src/main/res/raw-*/plugin_instruction.md
 - وثائق AutoJs6 OpenCC: https://docs.autojs6.com/#/opencc
 - مشروع AutoJs6: https://github.com/SuperMonster003/AutoJs6
 - مشروع OpenCC الرسمي: https://github.com/BYVoid/OpenCC
-- مشروع Android OpenCC: https://github.com/brooklet/android-opencc
+- إشعارات الجهات الخارجية: https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/THIRD_PARTY_NOTICES.md

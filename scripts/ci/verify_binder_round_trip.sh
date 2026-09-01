@@ -30,7 +30,13 @@ trap cleanup 0
 test -f "${target_apk}"
 test -f "${test_apk}"
 
-page_size="$(adb shell getconf PAGE_SIZE | tr -d '\r')"
+page_size="$(
+  adb shell "if command -v getconf >/dev/null 2>&1; then \
+    getconf PAGE_SIZE; \
+  else \
+    awk '/KernelPageSize:/ { print \$2 * 1024; exit }' /proc/self/smaps; \
+  fi" | tr -d '\r'
+)"
 sdk_level="$(adb shell getprop ro.build.version.sdk | tr -d '\r')"
 device_abi="$(adb shell getprop ro.product.cpu.abi | tr -d '\r')"
 case "${page_size}" in

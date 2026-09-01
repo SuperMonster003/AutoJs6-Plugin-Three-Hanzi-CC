@@ -108,13 +108,13 @@
     "最小権限: マニフェストにはプラグイン権限 `org.autojs.permission.PLUGIN` のみを宣言し, ネットワーク, ストレージ, カメラなどの機微なシステム権限は含まれません.",
     "双方向の保護: プラグインサービスも同じ権限で保護されており, プラグイン権限を持つホスト (AutoJs6 など) だけがバインドと呼び出しを行えます. 他のアプリはアクセスできません.",
     "署名による承認: AutoJs6 はプラグインの署名を検証します. 公式リリースパッケージは自動的に承認され, それ以外の署名のビルドはプラグインセンターで手動承認しない限りロードされません.",
-    "ローカル処理: 変換は完全に端末内で行われます. プラグインはネットワークに接続せず, ディスクにも書き込まず, ユーザーデータを一切収集しません."
+    "ローカル処理: 変換は完全に端末内で行われます. 変換テキストが保存または送信されることはなく, プラグインはユーザーデータを一切収集しません."
   ],
   "p_security_permission": "プラグインは公式の [Releases]({{ repo_url }}/releases) ページまたは AutoJs6 プラグインセンターからのみ入手してください. 出所不明のパッケージは, バージョン番号が同じに見えてもホストの検証を通過できなかったり, リスクを含んでいたりする可能性があります.",
   "h3_plugin_interface": "プラグインインターフェース",
   "p_plugin_interface": "以下の情報は AutoJs6 ホストとプラグインの開発者向けです. ホストはこれらの識別子でプラグインを発見し, 互換性ネゴシエーションを行います",
   "p_contract_service": "`OpenccPluginService` は `{{ plugin_service_action }}` アクション (カテゴリ `{{ plugin_service_category }}`) に opencc-api の `{{ plugin_aidl_interface }}` で応答します. 契約バージョン 2 は既存の `getInfo()` と `convert(text, conversionType)` の後ろにタイプ検出, 一括変換, チェーン変換を追加し, `PluginInfo.capabilities` でバージョンと対応タイプを通知します; 古いホストは既存のメソッドとトランザクション番号をそのまま使用できます. ホストがプラグインプロセスを起動するための `WakeActivity` も提供します.",
-  "p_abi_reporting": "変換には `{{ opencc_library_coordinates }}` の OpenCC エンジンと辞書を使用します.",
+  "p_abi_reporting": "プラグインはコミット `{{ opencc_commit }}` に固定した公式 OpenCC `{{ opencc_tag }}` と同一リリースのリソースを直接ビルドします. 各 ABI には静的リンクされ 16 KB 境界に整列した `libopencc_jni.so` が 1 つだけ含まれ, 変換は常に完全オフラインです.",
   "h3_roadmap": "開発ロードマップ",
   "p_roadmap": "プラグインの機能計画と進捗はチェック可能なリストとして ROADMAP.md で管理されています. マイルストーンごとに整理され受け入れ条件が付記されており, ドキュメントとリリース体験, エンジニアリングと継続的インテグレーション, 変換機能の強化, ランタイムの進化などの方向をカバーします. 未チェックの項目は計画上の意向であり現行バージョンの機能ではありません. Issues でのディスカッションを歓迎します.",
   "text_link_roadmap": "ROADMAP.md を見る",
@@ -132,11 +132,12 @@
   "h3_resource_layout": "ローカライズとドキュメント生成",
   "p_resource_layout": "`strings.xml` はローカライズされたプラグイン説明とエラーメッセージを, `plugin_instruction.md` はホストのプラグインセンター内に表示される使用説明を提供します. README と更新履歴は必ず `.readme/` と `.changelog/` 配下の JSON ソースを編集してから `py .python/generate_markdown.py` を実行して再生成します. 生成物を手で編集することはありません; `py .python/generate_markdown.py --check` を実行すると, ソースと生成物が同期しているかを検証できます.",
   "h3_license": "ライセンス",
-  "p_license": "プロジェクトのコードは [Mozilla Public License 2.0]({{ license_url }}) でライセンスされています. 中国語変換機能は [OpenCC]({{ opencc_official_url }}) (Apache License 2.0) とその Android ラッパー [android-opencc]({{ android_opencc_url }}) によって提供されます.",
+  "p_license": "プロジェクトのコードは [Mozilla Public License 2.0]({{ license_url }}) でライセンスされています. 中国語変換には [OpenCC]({{ opencc_official_url }}) (Apache License 2.0) を直接使用し, 同梱する OpenCC, Marisa Trie, Darts Clone, RapidJSON の出典とライセンスは[サードパーティー通知]({{ third_party_notices_url }})に記載しています.",
   "h3_links": "リンク",
   "text_link_autojs6_opencc_docs": "AutoJs6 OpenCC ドキュメント",
   "text_link_autojs6": "AutoJs6 プロジェクト",
   "text_link_opencc_official": "OpenCC 公式プロジェクト",
-  "text_link_android_opencc": "Android OpenCC プロジェクト",
-  "p_instruction_more": "メソッドの一覧と変換タイプの完全なリファレンスは [AutoJs6 OpenCC ドキュメント]({{ docs_opencc_url }}) と [プロジェクト README]({{ repo_url }}) を参照してください."
+  "text_link_third_party_notices": "サードパーティー通知",
+  "p_instruction_more": "メソッドの一覧と変換タイプの完全なリファレンスは [AutoJs6 OpenCC ドキュメント]({{ docs_opencc_url }}) と [プロジェクト README]({{ repo_url }}) を参照してください.",
+  "p_instruction_backend": "このリリースには公式 OpenCC {{ opencc_version }} と同一リリースに固定された辞書が組み込まれています. すべての処理は完全オフラインのままで, ネイティブパッケージは 16 KB メモリページの Android 端末に対応します."
 }

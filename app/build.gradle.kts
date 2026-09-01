@@ -96,11 +96,6 @@ dependencies {
     implementation(project(":opencc-native"))
 
     testImplementation(libs.junit)
-    // Migration-only enum baseline. This AAR is not packaged into application APKs.
-    testImplementation(libs.opencc)
-    // Migration-only behavior baseline. It is packaged into the instrumentation APK,
-    // never into the plugin APK verified by scripts/ci/verify_apk_variants.py.
-    androidTestImplementation(libs.opencc)
     androidTestImplementation(libs.test.ext.junit)
     androidTestImplementation(libs.test.runner)
 }

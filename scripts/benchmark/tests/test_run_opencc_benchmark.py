@@ -48,7 +48,7 @@ class ExtractBenchmarkResultTest(unittest.TestCase):
     def test_rejects_identity_mismatch(self) -> None:
         payload = {
             "schema_version": 1,
-            "engine": "legacy",
+            "engine": "unexpected",
             "phase": "first-load",
         }
         output = f"{benchmark.RESULT_PREFIX}{json.dumps(payload)}\nOK (1 test)\n"
@@ -121,6 +121,11 @@ class ApkSizeCollectionTest(unittest.TestCase):
             self.assertEqual(set(benchmark.RELEASE_ABIS), set(sizes["current"]))
             self.assertEqual(1, sizes["current"]["arm64-v8a"])
             self.assertEqual(15, sizes["baseline"]["universal"])
+
+
+class EngineConfigurationTest(unittest.TestCase):
+    def test_only_official_engine_is_available_after_migration(self) -> None:
+        self.assertEqual(("official",), benchmark.ENGINES)
 
 
 if __name__ == "__main__":

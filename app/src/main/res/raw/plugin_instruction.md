@@ -1,5 +1,7 @@
 The OpenCC Plugin brings [OpenCC](https://github.com/BYVoid/OpenCC)-based Chinese text conversion to AutoJs6. Once the plugin is installed, the global `opencc` object in AutoJs6 scripts just works: a single line of code converts text between Simplified Chinese, Traditional Chinese, Hong Kong Traditional, Taiwan Traditional, and Japanese Shinjitai, with no imports and no network access.
 
+This release embeds official OpenCC 1.4.2 and its pinned same-release dictionaries. Processing remains fully offline, and the native packages support Android devices with 16 KB memory pages.
+
 ### Quick Start
 
 After installation the following script runs as-is; the comments show the expected output:

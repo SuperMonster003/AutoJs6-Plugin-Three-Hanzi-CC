@@ -4,10 +4,11 @@
 
 ## 结论
 
-M4-A 与 M4-B 已通过仓库级、APK 级和设备级验收。插件现在从官方 OpenCC 1.4.2 源码构建
-`libopencc_jni.so`，正式 APK 不再打包旧 `android-opencc` 的原生库与资源。差分语料、异常路径、
-性能/内存基准、四 ABI/API 设备矩阵以及 ELF/APK/真实 16 KB 页三层门禁均已完成，可以进入
-M4-C 的正式替换与 v1.2.0 发布准备。
+M4-A 与 M4-B 已通过仓库级、APK 级和设备级验收。M4-C 已将迁移期 `android-opencc` AAR
+从所有 Gradle 配置和测试代码中彻底删除，官方 OpenCC 1.4.2 是唯一 `default` 后端。差分语料、
+异常路径、性能/内存基准、四 ABI/API 设备矩阵以及 ELF/APK/真实 16 KB 页三层门禁均已完成；
+v1.2.0 / build 19 的五包本地签名发布候选也已生成并验证。尚未完成的是需要维护者授权的源码
+标签、GitHub Release 上传与插件中心索引更新，因此本记录不把本地候选表述为已公开发布。
 
 ## 上游追溯
 
@@ -28,8 +29,9 @@ GitHub Release API 核对正式 Release、标签最终 commit 与资产 digest�
 
 ## 新旧引擎差分审阅
 
-测试 APK 保留 `android-opencc:1.2.2` 作为迁移期基线，正式插件 APK 不携带它。14 种转换对
-基础语料 `汉字漢字软件軟體里面裏面` 的结果全部一致。以下变化由设备测试固定为已审阅输出：
+M4-B 迁移窗口曾在测试 APK 中保留 `android-opencc:1.2.2`，并实测确认 14 种转换对基础语料
+`汉字漢字软件軟體里面裏面` 的结果全部一致。M4-C 已删除这项测试依赖；下表保留当时采集并
+审阅的历史旧值，当前设备测试继续固定官方 1.4.2 输出，而不再把旧引擎装入测试 APK：
 
 | 类型 | 输入 | 旧基线 | 官方 1.4.2 | 审阅结论 |
 |---|---|---|---|---|
@@ -45,7 +47,8 @@ GitHub Release API 核对正式 Release、标签最终 commit 与资产 digest�
 | S2TWP | `快闪存储器` | `快快閃記憶體儲器` | `快閃記憶體` | 修复短词优先导致的贪婪匹配错误 |
 | S2TWP | `老挝人民民主共和国` | `寮國人民民主共和國` | `寮人民民主共和國` | 对齐台湾官方译名 |
 
-这些断言位于 `OpenccPluginServiceTest`，后续上游升级若改变任一输出，必须先更新审阅记录再合并。
+官方输出断言位于 `OpenccPluginServiceTest`，旧值和审阅原因保留在本表。后续上游升级若改变
+任一官方输出，必须先更新审阅记录再合并，不需要也不得重新引入已退役的旧包装库。
 
 ## 已通过门禁
 
@@ -69,24 +72,50 @@ GitHub Release API 核对正式 Release、标签最终 commit 与资产 digest�
 - 旧/新引擎性能和 PSS 已归档于 `docs/engineering/opencc-1.4.2-benchmark.md`。Android 15 arm64
   真机上官方后端首转 313.726 ms、冷转 285.502 ms、热转中位数 0.836 ms、1,024 段 42.362 ms；
   峰值 PSS 相对基线增加 31.55 MiB。当前保留官方 ZIP，不引入 `.ocd2` 生成链。
+- M4-C 删除旧 AAR 后，`debugAndroidTestRuntimeClasspath`、`debugUnitTestRuntimeClasspath` 与
+  `releaseRuntimeClasspath` 对 `com.github.brooklet:android-opencc` 的 dependency insight 均返回
+  无匹配依赖；新的 instrumentation APK 也不含旧 native、资源目录或类标记。
+- 删除迁移 AAR 后的新测试包已在 API 35 `arm64-v8a` 真机、API 28 `armeabi-v7a` 真机及
+  API 37 / `PAGE_SIZE=16384` x86_64 模拟器重新通过服务 + restart prepare/verify 三阶段测试；
+  测试脚本对没有 `getconf` 的旧 Android 从 `/proc/self/smaps` 的 `KernelPageSize` 回退探测。
 
-## M4-C 尚未完成的发布门禁
+## M4-C 本地发布候选
 
-- 从迁移测试配置删除旧 `android-opencc` AAR，并确认测试/正式依赖图均只保留官方后端。
-- 完成 v1.2.0 的 10 语言文档、发布签名产物、Release 和插件索引更新。
+`scripts/release/prepare_release.py` 已从最终 minified release APK 原子生成
+`build/release/v1.2.0`。该目录是本地构建产物而非提交内容；五包签名证书 SHA-256 均为
+`31A681FCFFFB3E428420CAE280DED89292B12A3B0F59E19B7A73E32A8AE4C213`，与仓库留存的
+v1.0.2 正式包一致。
 
-## 初步 release APK 体积
+| ABI | 本地候选文件 | 大小 | SHA-256 |
+|---|---|---:|---|
+| arm64-v8a | `autojs6-plugin-opencc-v1.2.0-arm64-v8a-f663d404.apk` | 1,499,452 B | `aa7007249475bc5312846652bae794c8eadb1c87205af9c7ec266d9934802923` |
+| armeabi-v7a | `autojs6-plugin-opencc-v1.2.0-armeabi-v7a-1c9378a1.apk` | 1,160,706 B | `967b792f1fbe04d7bf689eb03903d927649d564f946511bbe80e03f7ec2cd8f2` |
+| x86_64 | `autojs6-plugin-opencc-v1.2.0-x86_64-ab268561.apk` | 1,508,249 B | `a714c4786ebc491338f2841236c437ab14ec58ce58cbdecbc2d0b55c859286b0` |
+| x86 | `autojs6-plugin-opencc-v1.2.0-x86-4dc6b9dc.apk` | 1,461,662 B | `0e69ad0f438c13f6bd6104ecfb8438b9965923fd26bad02fd39e69909db1fc37` |
+| universal | `autojs6-plugin-opencc-v1.2.0-universal-9ff59a9c.apk` | 3,835,001 B | `2b2b03c430be83bc212ed6358c7ec08c13f4141c380f11ee95263afa6b0cc2d3` |
 
-同一开发机签名配置下，将当前 1.1.0 + 官方后端的 minified release APK 与仓库留存的
-v1.0.2 APK 对比。该结果用于 M4-B 体积基线，不代表尚未发布的 v1.2.0 最终大小：
+每个原始 release APK 和上述重命名候选均通过签名、精确 ABI、官方资源摘要、旧后端排除、
+R8 JNI 标记、ELF `0x4000`/RELRO 与 `zipalign -c -P 16 4` 门禁。随包生成的
+`SHA256SUMS.txt` 与 `RELEASE_NOTES.md` 已列出同一组文件和经审阅的主要词典变化。
+
+## M4-C 尚未完成的外部门禁
+
+- 经维护者确认后创建并推送 `v1.2.0` 源码标签，发布 GitHub Release 并上传本地候选五包、
+  `SHA256SUMS.txt` 与发行说明。
+- 更新插件中心在线索引中的版本、下载地址、摘要和兼容信息，并与 GitHub Release 交叉核对。
+
+## v1.2.0 本地候选 APK 体积
+
+同一开发机签名配置下，将 v1.2.0 本地候选的 minified release APK 与仓库留存的 v1.0.2
+正式 APK 对比。若发布前代码或资源再次改变，必须重新生成候选并更新本表：
 
 | ABI | v1.0.2 | 当前官方后端 | 增量 |
 |---|---:|---:|---:|
-| arm64-v8a | 980,054 B | 1,489,096 B | +509,042 B (+51.9%) |
-| armeabi-v7a | 924,348 B | 1,150,350 B | +226,002 B (+24.4%) |
-| x86_64 | 997,727 B | 1,497,893 B | +500,166 B (+50.1%) |
-| x86 | 1,000,704 B | 1,451,306 B | +450,602 B (+45.0%) |
-| universal | 2,041,573 B | 3,824,645 B | +1,783,072 B (+87.3%) |
+| arm64-v8a | 980,054 B | 1,499,452 B | +519,398 B (+53.0%) |
+| armeabi-v7a | 924,348 B | 1,160,706 B | +236,358 B (+25.6%) |
+| x86_64 | 997,727 B | 1,508,249 B | +510,522 B (+51.2%) |
+| x86 | 1,000,704 B | 1,461,662 B | +460,958 B (+46.1%) |
+| universal | 2,041,573 B | 3,835,001 B | +1,793,428 B (+87.8%) |
 
 主要固定成本是 1,237,703 B 的官方纯文本资源 ZIP。M4-B 的真机性能结论是不改为按 ABI 生成
 `.ocd2`：冷路径仍低于 0.4 秒，热路径和批量吞吐显著改善，不值得为体积优化引入尚未建立的

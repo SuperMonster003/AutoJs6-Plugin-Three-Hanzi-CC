@@ -185,12 +185,16 @@ def verify_apk(path: Path, expected_abis: set[str], upstream: dict[str, str]) ->
             names = set(archive.namelist())
             if resource_entry not in names:
                 raise VerificationError(f"Pinned OpenCC resource is missing from {path.name}: {resource_entry}")
-            legacy_resources = sorted(name for name in names if name.startswith("assets/openccdata/"))
+            legacy_resources = sorted(
+                name for name in names if name.startswith("assets/openccdata/")
+            )
             if legacy_resources:
                 raise VerificationError(
                     f"Legacy android-opencc resources remain in {path.name}: {legacy_resources[:5]}",
                 )
-            dex_entries = sorted(name for name in names if name.startswith("classes") and name.endswith(".dex"))
+            dex_entries = sorted(
+                name for name in names if name.startswith("classes") and name.endswith(".dex")
+            )
             if not dex_entries:
                 raise VerificationError(f"APK contains no DEX files: {path.name}")
             dex_payloads = {dex_entry: archive.read(dex_entry) for dex_entry in dex_entries}
@@ -234,6 +238,53 @@ def expected_apks(build_type: str) -> dict[str, set[str]]:
     }
 
 
+def verify_instrumentation_apk(path: Path) -> None:
+    if not path.is_file():
+        raise VerificationError(f"Instrumentation APK is missing: {path}")
+    try:
+        with zipfile.ZipFile(path) as archive:
+            corrupt_entry = archive.testzip()
+            if corrupt_entry is not None:
+                raise VerificationError(
+                    f"Corrupt ZIP entry in instrumentation APK {path.name}: {corrupt_entry}",
+                )
+
+            names = set(archive.namelist())
+            native_entries = sorted(
+                name for name in names if name.startswith("lib/") and name.endswith(".so")
+            )
+            if native_entries:
+                raise VerificationError(
+                    f"Instrumentation APK must not package native libraries: {native_entries}",
+                )
+            legacy_resources = sorted(name for name in names if name.startswith("assets/openccdata/"))
+            if legacy_resources:
+                raise VerificationError(
+                    "Legacy android-opencc resources remain in instrumentation APK: "
+                    f"{legacy_resources[:5]}",
+                )
+
+            dex_entries = sorted(
+                name for name in names if name.startswith("classes") and name.endswith(".dex")
+            )
+            if not dex_entries:
+                raise VerificationError(f"Instrumentation APK contains no DEX files: {path.name}")
+            for dex_entry in dex_entries:
+                dex_data = archive.read(dex_entry)
+                for marker, description in FORBIDDEN_DEX_MARKERS.items():
+                    if marker in dex_data:
+                        raise VerificationError(
+                            f"{description} remain in instrumentation APK {path.name}!/{dex_entry}",
+                        )
+    except zipfile.BadZipFile:
+        raise VerificationError(f"Not a valid instrumentation APK ZIP archive: {path}") from None
+
+    print(
+        f"INSTRUMENTATION_APK_OK {path.name} "
+        "legacy_classes=0 native_libraries=0 legacy_resources=0",
+    )
+
+
 def verify(directory: Path, build_type: str = "debug") -> None:
     if not directory.is_dir():
         raise VerificationError(f"APK output directory is missing: {directory}")
@@ -272,6 +323,11 @@ def parse_arguments() -> argparse.Namespace:
         default="debug",
         help="APK build type (default: debug)",
     )
+    parser.add_argument(
+        "--instrumentation-apk",
+        type=Path,
+        help="optional instrumentation APK that must contain no native or retired legacy backend payload",
+    )
     return parser.parse_args()
 
 
@@ -279,6 +335,8 @@ def main() -> int:
     arguments = parse_arguments()
     try:
         verify(arguments.directory.resolve(), arguments.build_type)
+        if arguments.instrumentation_apk is not None:
+            verify_instrumentation_apk(arguments.instrumentation_apk.resolve())
     except VerificationError as error:
         print(f"APK_ERROR {error}", file=sys.stderr)
         return 1
