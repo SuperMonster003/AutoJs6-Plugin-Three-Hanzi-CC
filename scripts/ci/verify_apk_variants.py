@@ -231,9 +231,12 @@ def pure_path_name(path: str) -> str:
     return path.rsplit("/", 1)[-1]
 
 
-def expected_apks(build_type: str) -> dict[str, set[str]]:
+def expected_apks(build_type: str, unsigned: bool = False) -> dict[str, set[str]]:
+    if unsigned and build_type != "release":
+        raise VerificationError("Unsigned APK naming is supported only for release builds")
+    suffix = f"{build_type}-unsigned" if unsigned else build_type
     return {
-        f"app-{variant}-{build_type}.apk": abis
+        f"app-{variant}-{suffix}.apk": abis
         for variant, abis in EXPECTED_VARIANTS.items()
     }
 
@@ -285,16 +288,17 @@ def verify_instrumentation_apk(path: Path) -> None:
     )
 
 
-def verify(directory: Path, build_type: str = "debug") -> None:
+def verify(directory: Path, build_type: str = "debug", unsigned: bool = False) -> None:
     if not directory.is_dir():
         raise VerificationError(f"APK output directory is missing: {directory}")
 
-    expected_variants = expected_apks(build_type)
+    expected_variants = expected_apks(build_type, unsigned)
     actual = {path.name for path in directory.glob("*.apk") if path.is_file()}
     expected = set(expected_variants)
     if actual != expected:
+        release_kind = "unsigned release" if unsigned else build_type
         raise VerificationError(
-            f"Unexpected debug APK inventory: missing={sorted(expected - actual)}, "
+            f"Unexpected {release_kind} APK inventory: missing={sorted(expected - actual)}, "
             f"unexpected={sorted(actual - expected)}",
         )
 
@@ -328,13 +332,18 @@ def parse_arguments() -> argparse.Namespace:
         type=Path,
         help="optional instrumentation APK that must contain no native or retired legacy backend payload",
     )
+    parser.add_argument(
+        "--unsigned",
+        action="store_true",
+        help="expect Gradle's *-release-unsigned.apk filenames (valid only with --build-type release)",
+    )
     return parser.parse_args()
 
 
 def main() -> int:
     arguments = parse_arguments()
     try:
-        verify(arguments.directory.resolve(), arguments.build_type)
+        verify(arguments.directory.resolve(), arguments.build_type, arguments.unsigned)
         if arguments.instrumentation_apk is not None:
             verify_instrumentation_apk(arguments.instrumentation_apk.resolve())
     except VerificationError as error:
