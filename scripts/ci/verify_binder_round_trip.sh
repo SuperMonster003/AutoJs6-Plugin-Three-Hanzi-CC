@@ -3,13 +3,13 @@
 set -eu
 
 if [ "$#" -ne 1 ]; then
-  printf 'Usage: %s <arm64-v8a|x86_64>\n' "$0" >&2
+  printf 'Usage: %s <arm64-v8a|armeabi-v7a|x86_64|x86>\n' "$0" >&2
   exit 2
 fi
 
 abi="$1"
 case "$abi" in
-  arm64-v8a|x86_64) ;;
+  arm64-v8a|armeabi-v7a|x86_64|x86) ;;
   *)
     printf 'Unsupported ABI: %s\n' "$abi" >&2
     exit 2
@@ -29,6 +29,24 @@ trap cleanup 0
 
 test -f "${target_apk}"
 test -f "${test_apk}"
+
+page_size="$(adb shell getconf PAGE_SIZE | tr -d '\r')"
+sdk_level="$(adb shell getprop ro.build.version.sdk | tr -d '\r')"
+device_abi="$(adb shell getprop ro.product.cpu.abi | tr -d '\r')"
+case "${page_size}" in
+  4096|16384) ;;
+  *)
+    printf 'Unexpected or unavailable PAGE_SIZE: %s\n' "${page_size}" >&2
+    exit 1
+    ;;
+esac
+if [ -n "${EXPECTED_PAGE_SIZE:-}" ] && [ "${page_size}" != "${EXPECTED_PAGE_SIZE}" ]; then
+  printf 'Expected PAGE_SIZE=%s, found %s\n' "${EXPECTED_PAGE_SIZE}" "${page_size}" >&2
+  exit 1
+fi
+printf 'Runtime: API=%s device_abi=%s apk_abi=%s PAGE_SIZE=%s\n' \
+  "${sdk_level}" "${device_abi}" "${abi}" "${page_size}"
+
 adb install -r -t "${target_apk}"
 adb install -r -t "${test_apk}"
 

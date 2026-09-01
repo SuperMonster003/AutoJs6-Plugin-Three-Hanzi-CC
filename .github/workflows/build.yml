@@ -36,6 +36,7 @@ jobs:
         run: |
           python -m unittest discover -s scripts/release/tests -p "test_*.py"
           python -m unittest discover -s scripts/opencc/tests -p "test_*.py"
+          python -m unittest discover -s scripts/benchmark/tests -p "test_*.py"
 
       - name: Verify pinned OpenCC source and resources
         run: python scripts/opencc/verify_upstream.py --root .
@@ -92,4 +93,35 @@ jobs:
           target: google_apis
           arch: x86_64
           profile: pixel_7
-          script: sh scripts/ci/verify_binder_round_trip.sh "${{ matrix.abi }}"
+          script: EXPECTED_PAGE_SIZE=4096 sh scripts/ci/verify_binder_round_trip.sh "${{ matrix.abi }}"
+
+  verify-16kb:
+    name: Binder round trip (x86_64, 16 KB pages)
+    needs: verify-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Download debug and test APKs
+        uses: actions/download-artifact@v8
+        with:
+          name: debug-test-apks
+          path: ci-apks
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Verify discovery and Binder conversions on 16 KB pages
+        uses: reactivecircus/android-emulator-runner@v2.38.0
+        with:
+          api-level: 35
+          target: google_apis_ps16k
+          arch: x86_64
+          profile: pixel_7
+          script: EXPECTED_PAGE_SIZE=16384 sh scripts/ci/verify_binder_round_trip.sh x86_64
