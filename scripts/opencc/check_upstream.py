@@ -15,6 +15,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import zipfile
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -28,6 +29,24 @@ USER_AGENT = "AutoJs6-Plugin-OpenCC-upstream-checker/1"
 
 class UpstreamCheckError(Exception):
     pass
+
+
+@dataclass(frozen=True)
+class ValidatedRelease:
+    properties: dict[str, str]
+    archive_data: bytes
+    release_url: str
+    release_name: str
+    release_body: str
+    published_at: str
+
+
+@dataclass(frozen=True)
+class UpstreamComparison:
+    update_available: bool
+    message: str
+    locked: dict[str, str]
+    latest: dict[str, str]
 
 
 def version_tuple(version: str) -> tuple[int, int, int]:
@@ -103,7 +122,7 @@ def release_asset(release: dict[str, Any], expected_name: str) -> dict[str, Any]
     return matches[0]
 
 
-def validate_release(api_base: str, source_url: str) -> dict[str, str]:
+def download_validated_release(api_base: str, source_url: str) -> ValidatedRelease:
     release = read_json(f"{api_base}/releases/latest")
     if release.get("draft") is not False or release.get("prerelease") is not False:
         raise UpstreamCheckError("GitHub latest release must be a published, non-prerelease release")
@@ -113,6 +132,12 @@ def validate_release(api_base: str, source_url: str) -> dict[str, str]:
         raise UpstreamCheckError(f"Unexpected OpenCC release tag: {tag!r}")
     version = tag.removeprefix("ver.")
     version_tuple(version)
+
+    release_url = str(release.get("html_url", "")).strip()
+    expected_release_url = f"https://github.com/BYVoid/OpenCC/releases/tag/{tag}"
+    if release_url != expected_release_url:
+        raise UpstreamCheckError(f"Unexpected OpenCC release URL: {release_url!r}")
+
     expected_asset_name = f"opencc-v{version}-resources.zip"
     asset = release_asset(release, expected_asset_name)
 
@@ -174,16 +199,21 @@ def validate_release(api_base: str, source_url: str) -> dict[str, str]:
             verify_upstream.verify_resource_archive(root, properties)
         except verify_upstream.VerificationError as error:
             raise UpstreamCheckError(str(error)) from None
-    return properties
+    return ValidatedRelease(
+        properties=properties,
+        archive_data=archive_data,
+        release_url=release_url,
+        release_name=str(release.get("name", "")).strip(),
+        release_body=str(release.get("body", "")).strip(),
+        published_at=str(release.get("published_at", "")).strip(),
+    )
 
 
-def compare(root: Path, api_base: str) -> tuple[bool, str]:
-    try:
-        locked = verify_upstream.parse_properties(root / verify_upstream.LOCK_FILE)
-    except verify_upstream.VerificationError as error:
-        raise UpstreamCheckError(str(error)) from None
-    latest = validate_release(api_base.rstrip("/"), locked["OPENCC_SOURCE_URL"])
+def validate_release(api_base: str, source_url: str) -> dict[str, str]:
+    return download_validated_release(api_base, source_url).properties
 
+
+def compare_properties(locked: dict[str, str], latest: dict[str, str]) -> tuple[bool, str]:
     locked_version = version_tuple(locked["OPENCC_VERSION"])
     latest_version = version_tuple(latest["OPENCC_VERSION"])
     if latest_version < locked_version:
@@ -214,6 +244,21 @@ def compare(root: Path, api_base: str) -> tuple[bool, str]:
     )
 
 
+def inspect_upstream(root: Path, api_base: str) -> UpstreamComparison:
+    try:
+        locked = verify_upstream.parse_properties(root / verify_upstream.LOCK_FILE)
+    except verify_upstream.VerificationError as error:
+        raise UpstreamCheckError(str(error)) from None
+    latest = validate_release(api_base.rstrip("/"), locked["OPENCC_SOURCE_URL"])
+    update_available, message = compare_properties(locked, latest)
+    return UpstreamComparison(update_available, message, locked, latest)
+
+
+def compare(root: Path, api_base: str) -> tuple[bool, str]:
+    comparison = inspect_upstream(root, api_base)
+    return comparison.update_available, comparison.message
+
+
 def append_workflow_summary(message: str) -> None:
     path_value = os.environ.get("GITHUB_STEP_SUMMARY", "").strip()
     if not path_value:
@@ -221,6 +266,26 @@ def append_workflow_summary(message: str) -> None:
     with Path(path_value).open("a", encoding="utf-8") as summary:
         summary.write("## OpenCC upstream check\n\n")
         summary.write(f"`{message}`\n")
+
+
+def append_workflow_outputs(comparison: UpstreamComparison) -> None:
+    path_value = os.environ.get("GITHUB_OUTPUT", "").strip()
+    if not path_value:
+        return
+    outputs = {
+        "update_available": str(comparison.update_available).lower(),
+        "locked_version": comparison.locked["OPENCC_VERSION"],
+        "latest_version": comparison.latest["OPENCC_VERSION"],
+        "latest_tag": comparison.latest["OPENCC_TAG"],
+        "latest_commit": comparison.latest["OPENCC_COMMIT"],
+        "latest_asset": comparison.latest["OPENCC_RESOURCE_ASSET"],
+        "latest_resource_sha256": comparison.latest["OPENCC_RESOURCE_SHA256"],
+    }
+    with Path(path_value).open("a", encoding="utf-8") as output:
+        for name, value in outputs.items():
+            if "\n" in value or "\r" in value:
+                raise UpstreamCheckError(f"Workflow output {name} unexpectedly contains a newline")
+            output.write(f"{name}={value}\n")
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -238,13 +303,14 @@ def parse_arguments() -> argparse.Namespace:
 def main() -> int:
     arguments = parse_arguments()
     try:
-        update_available, message = compare(arguments.root.resolve(), arguments.api_base)
+        comparison = inspect_upstream(arguments.root.resolve(), arguments.api_base)
+        append_workflow_outputs(comparison)
     except UpstreamCheckError as error:
         print(f"OPENCC_UPSTREAM_CHECK_ERROR {error}", file=sys.stderr)
         return 1
-    print(message)
-    append_workflow_summary(message)
-    if update_available and arguments.fail_on_update:
+    print(comparison.message)
+    append_workflow_summary(comparison.message)
+    if comparison.update_available and arguments.fail_on_update:
         return 3
     return 0
 

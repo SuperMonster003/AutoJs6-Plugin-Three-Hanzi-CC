@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import sys
 import tempfile
 import unittest
@@ -83,6 +84,21 @@ class UpstreamCheckTest(unittest.TestCase):
     def test_non_semantic_release_version_is_rejected(self) -> None:
         with self.assertRaisesRegex(check_upstream.UpstreamCheckError, "version format"):
             check_upstream.version_tuple("1.4")
+
+    def test_workflow_outputs_are_complete_and_single_line(self) -> None:
+        comparison = check_upstream.UpstreamComparison(False, "current", dict(LOCKED), dict(LOCKED))
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "github-output.txt"
+            with mock.patch.dict(os.environ, {"GITHUB_OUTPUT": str(output)}):
+                check_upstream.append_workflow_outputs(comparison)
+            values = dict(
+                line.split("=", 1)
+                for line in output.read_text(encoding="utf-8").splitlines()
+            )
+        self.assertEqual("false", values["update_available"])
+        self.assertEqual("1.4.2", values["locked_version"])
+        self.assertEqual("ver.1.4.2", values["latest_tag"])
+        self.assertEqual(LOCKED["OPENCC_RESOURCE_SHA256"], values["latest_resource_sha256"])
 
 
 if __name__ == "__main__":

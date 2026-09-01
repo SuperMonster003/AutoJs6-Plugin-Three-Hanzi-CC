@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   verify-build:
-    name: Unit tests and debug APKs
+    name: Unit tests and debug/release APKs
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -42,21 +42,24 @@ jobs:
       - name: Verify pinned OpenCC source and resources
         run: python scripts/opencc/verify_upstream.py --root .
 
-      - name: Run unit tests and assemble debug APKs
+      - name: Run unit tests and assemble debug/release APKs
         run: |
           chmod +x gradlew
-          ./gradlew :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest --stacktrace
+          ./gradlew :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest :app:assembleRelease --stacktrace
 
       - name: Verify all ABI variants
-        run: >-
-          python scripts/ci/verify_apk_variants.py
-          app/build/outputs/apk/debug
-          --instrumentation-apk app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+        run: |
+          python scripts/ci/verify_apk_variants.py \
+            app/build/outputs/apk/debug \
+            --instrumentation-apk app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+          python scripts/ci/verify_apk_variants.py \
+            app/build/outputs/apk/release \
+            --build-type release
 
-      - name: Upload debug and test APKs
+      - name: Upload debug, release, and test APKs
         uses: actions/upload-artifact@v7
         with:
-          name: debug-test-apks
+          name: build-test-apks
           path: app/build/outputs/apk
           if-no-files-found: error
           retention-days: 7
@@ -81,7 +84,7 @@ jobs:
       - name: Download debug and test APKs
         uses: actions/download-artifact@v8
         with:
-          name: debug-test-apks
+          name: build-test-apks
           path: ci-apks
 
       - name: Enable KVM
@@ -112,7 +115,7 @@ jobs:
       - name: Download debug and test APKs
         uses: actions/download-artifact@v8
         with:
-          name: debug-test-apks
+          name: build-test-apks
           path: ci-apks
 
       - name: Enable KVM

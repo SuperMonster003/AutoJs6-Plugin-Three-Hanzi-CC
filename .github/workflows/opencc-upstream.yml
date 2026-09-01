@@ -1,4 +1,4 @@
-name: OpenCC upstream watch
+name: OpenCC upstream automation
 
 on:
   schedule:
@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: opencc-upstream-watch
+  group: opencc-upstream-automation
   cancel-in-progress: true
 
 jobs:
@@ -17,9 +17,17 @@ jobs:
     name: Validate latest official release
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    outputs:
+      update_available: ${{ steps.check.outputs.update_available }}
+      locked_version: ${{ steps.check.outputs.locked_version }}
+      latest_version: ${{ steps.check.outputs.latest_version }}
+      latest_tag: ${{ steps.check.outputs.latest_tag }}
+      latest_commit: ${{ steps.check.outputs.latest_commit }}
+      latest_asset: ${{ steps.check.outputs.latest_asset }}
+      latest_resource_sha256: ${{ steps.check.outputs.latest_resource_sha256 }}
 
     steps:
-      - name: Check out repository
+      - name: Check out repository without mutable dependencies
         uses: actions/checkout@v7
 
       - name: Set up Python
@@ -28,6 +36,142 @@ jobs:
           python-version: "3.13"
 
       - name: Compare pinned and latest OpenCC releases
+        id: check
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python scripts/opencc/check_upstream.py --root . --fail-on-update
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python scripts/opencc/check_upstream.py --root .
+
+  prepare-upgrade-pr:
+    name: Prepare review-only upgrade PR
+    needs: check-release
+    if: needs.check-release.outputs.update_available == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      actions: write
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Check out repository and pinned OpenCC source
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Check for an existing upgrade PR
+        id: existing
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH_NAME: automation/opencc-${{ needs.check-release.outputs.latest_version }}
+        run: |
+          number="$(gh pr list --state open --base master --head "${BRANCH_NAME}" --json number --jq '.[0].number // empty')"
+          if [ -n "${number}" ]; then
+            url="$(gh pr view "${number}" --json url --jq .url)"
+            echo "exists=true" >> "${GITHUB_OUTPUT}"
+            echo "url=${url}" >> "${GITHUB_OUTPUT}"
+            printf 'An OpenCC %s upgrade PR is already open: %s\n' \
+              '${{ needs.check-release.outputs.latest_version }}' "${url}" >> "${GITHUB_STEP_SUMMARY}"
+          else
+            echo "exists=false" >> "${GITHUB_OUTPUT}"
+          fi
+
+      - name: Prepare exact source, lock, and resource update
+        if: steps.existing.outputs.exists != 'true'
+        id: prepare
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: >-
+          python scripts/opencc/update_upstream.py
+          --root .
+          --pr-body-file "${RUNNER_TEMP}/opencc-upgrade-pr.md"
+
+      - name: Reject time-of-check/time-of-use release drift
+        if: steps.existing.outputs.exists != 'true'
+        env:
+          CHECKED_VERSION: ${{ needs.check-release.outputs.latest_version }}
+          CHECKED_TAG: ${{ needs.check-release.outputs.latest_tag }}
+          CHECKED_COMMIT: ${{ needs.check-release.outputs.latest_commit }}
+          CHECKED_DIGEST: ${{ needs.check-release.outputs.latest_resource_sha256 }}
+          PREPARED_VERSION: ${{ steps.prepare.outputs.latest_version }}
+          PREPARED_TAG: ${{ steps.prepare.outputs.latest_tag }}
+          PREPARED_COMMIT: ${{ steps.prepare.outputs.latest_commit }}
+          PREPARED_DIGEST: ${{ steps.prepare.outputs.latest_resource_sha256 }}
+        run: |
+          test "${{ steps.prepare.outputs.update_available }}" = true
+          test "${CHECKED_VERSION}" = "${PREPARED_VERSION}"
+          test "${CHECKED_TAG}" = "${PREPARED_TAG}"
+          test "${CHECKED_COMMIT}" = "${PREPARED_COMMIT}"
+          test "${CHECKED_DIGEST}" = "${PREPARED_DIGEST}"
+
+      - name: Test updater and verify generated dependency lock
+        if: steps.existing.outputs.exists != 'true'
+        run: |
+          python -m unittest discover -s scripts/opencc/tests -p "test_*.py" -v
+          python scripts/opencc/verify_upstream.py --root .
+          git diff --check
+          git status --short
+
+      - name: Commit and push the automation-owned branch
+        if: steps.existing.outputs.exists != 'true'
+        env:
+          BRANCH_NAME: ${{ steps.prepare.outputs.branch_name }}
+          COMMIT_TITLE: ${{ steps.prepare.outputs.commit_title }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "${BRANCH_NAME}"
+          git add -- \
+            opencc-upstream.properties \
+            opencc-native/src/main/assets/opencc \
+            opencc-native/src/main/cpp/third_party/OpenCC
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo "::error::Validated OpenCC update produced no staged changes."
+            exit 1
+          fi
+          git commit -m "${COMMIT_TITLE}"
+
+          remote_ref="refs/remotes/origin/${BRANCH_NAME}"
+          if git fetch --no-tags origin "refs/heads/${BRANCH_NAME}:${remote_ref}" 2>/dev/null; then
+            lease="$(git rev-parse "${remote_ref}")"
+            git push \
+              --force-with-lease="refs/heads/${BRANCH_NAME}:${lease}" \
+              origin "HEAD:refs/heads/${BRANCH_NAME}"
+          else
+            git push origin "HEAD:refs/heads/${BRANCH_NAME}"
+          fi
+
+      - name: Dispatch mandatory build and documentation gates
+        if: steps.existing.outputs.exists != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH_NAME: ${{ steps.prepare.outputs.branch_name }}
+        run: |
+          gh workflow run build.yml --ref "${BRANCH_NAME}"
+          gh workflow run markdown.yml --ref "${BRANCH_NAME}"
+          printf 'Dispatched Build integrity and Markdown integrity for `%s`.\n' \
+            "${BRANCH_NAME}" >> "${GITHUB_STEP_SUMMARY}"
+
+      - name: Create the review-only pull request
+        if: steps.existing.outputs.exists != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH_NAME: ${{ steps.prepare.outputs.branch_name }}
+          PR_TITLE: ${{ steps.prepare.outputs.commit_title }}
+        run: |
+          if ! pr_url="$(gh pr create \
+            --base master \
+            --head "${BRANCH_NAME}" \
+            --title "${PR_TITLE}" \
+            --body-file "${RUNNER_TEMP}/opencc-upgrade-pr.md")"; then
+            echo "::error::Unable to create the upgrade PR. In Settings > Actions > General, enable 'Allow GitHub Actions to create and approve pull requests', then rerun this workflow. The workflow never submits an approval."
+            exit 1
+          fi
+          printf 'Created review-only upgrade PR: %s\n' "${pr_url}" >> "${GITHUB_STEP_SUMMARY}"
+          printf 'Auto-merge and release creation are intentionally absent.\n' >> "${GITHUB_STEP_SUMMARY}"
