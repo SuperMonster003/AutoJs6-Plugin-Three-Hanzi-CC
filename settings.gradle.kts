@@ -4,7 +4,6 @@ rootProject.name = "autojs6-plugin-opencc"
 
 pluginManagement {
     repositories {
-        mavenLocal()
         gradlePluginPortal()
         mavenCentral()
         google()

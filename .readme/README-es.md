@@ -245,21 +245,6 @@ El complemento solo declara el permiso de complemento usado para comunicarse con
 
 ******
 
-### Permisos y seguridad
-
-******
-
-El complemento y AutoJs6 establecen la confianza mediante los mecanismos de permisos y firmas del sistema Android:
-
-- Permisos mínimos: el manifiesto declara únicamente el permiso de complemento `org.autojs.permission.PLUGIN`, sin ningún permiso sensible del sistema como red, almacenamiento o cámara.
-- Protección bidireccional: el servicio del complemento está protegido por el mismo permiso, de modo que solo los hosts que poseen el permiso de complemento (como AutoJs6) pueden enlazarse a él y llamarlo; otras aplicaciones no tienen acceso.
-- Autorización por firma: AutoJs6 verifica la firma del complemento; los paquetes oficiales se autorizan automáticamente, mientras que las compilaciones con otras firmas deben autorizarse manualmente en el centro de complementos antes de cargarse.
-- Procesamiento local: la conversión ocurre por completo en el dispositivo; el complemento nunca se conecta a la red, no escribe nada en el disco y no recopila datos del usuario.
-
-Obtenga el complemento únicamente desde la página oficial [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases) o desde el centro de complementos de AutoJs6. Los paquetes de origen desconocido pueden no superar la verificación del host u ocultar riesgos aunque el número de versión parezca idéntico.
-
-******
-
 ### Interfaz del complemento
 
 ******
@@ -283,7 +268,7 @@ conversion library: com.github.brooklet:android-opencc:1.2.2
 
 `OpenccPluginService` responde a la acción `org.autojs.plugin.OPENCC` (categoría `opencc`) mediante `org.autojs.plugin.opencc.api.IOpenccPlugin` de opencc-api. La versión 2 del contrato agrega descubrimiento de tipos, conversión por lotes y conversión encadenada después de los métodos originales `getInfo()` y `convert(text, conversionType)`, y anuncia su versión y los tipos admitidos mediante `PluginInfo.capabilities`; los hosts antiguos conservan los métodos y números de transacción originales. También se proporciona una `WakeActivity` para despertar el proceso del complemento.
 
-`PluginInfo.supportedAbis` informa de las cuatro arquitecturas `arm64-v8a`, `armeabi-v7a`, `x86_64` y `x86` para que el host y el centro de complementos puedan identificar las variantes disponibles; la conversión corre a cargo del motor y los diccionarios de OpenCC de `com.github.brooklet:android-opencc:1.2.2`.
+La conversión utiliza el motor y los diccionarios OpenCC de `com.github.brooklet:android-opencc:1.2.2`.
 
 ******
 
@@ -303,13 +288,14 @@ Los planes del complemento y su grado de avance se mantienen como una lista marc
 
 #### v1.1.0
 
-_2026/08/31_
+_2026/09/01_
 
 - `Función` Actualización al contrato de complemento OpenCC versión 2 con `getSupportedConversionTypes()`, para que los hosts recientes descubran los 14 tipos de conversión que admite realmente el complemento
 - `Función` Incorporación de `convertBatch(texts, conversionType)` para convertir hasta 1024 segmentos de texto en una sola ida y vuelta de Binder, manteniendo la ruta por elemento para hosts antiguos
 - `Función` Incorporación de `convertChain(text, conversionTypes)` para ejecutar hasta 32 etapas en una llamada, reduciendo los métodos compuestos en hosts recientes de hasta 3 idas y vueltas de Binder a 1
 - `Mejora` Entrega de instrucciones localizadas mediante `PluginInfo.instruction` y publicación de la versión del contrato y los tipos de conversión admitidos mediante capabilities
 - `Mejora` Conservación de los métodos AIDL y números de transacción originales, con pruebas unitarias y Binder reales para llamadas ampliadas, compatibilidad heredada, límites de tamaño y rutas de error
+- `Mejora` Unificar el diseño del README y la gestión de versiones de la plataforma Gradle
 
 #### v1.0.2
 
@@ -354,7 +340,7 @@ Ejecutar las pruebas unitarias JVM y compilar el APK de pruebas instrumentation:
 .\gradlew.bat :app:testDebugUnitTest :app:assembleDebugAndroidTest
 ```
 
-Compilar los APK release; se firman automáticamente cuando se configura una identidad de firma en `sign.properties`, ignorado por Git, y los artefactos sin firmar no deben publicarse:
+Compilar los APK release:
 
 ```powershell
 .\gradlew.bat :app:assembleRelease
@@ -366,7 +352,7 @@ Recopilar los artefactos de publicación y añadir la versión, la ABI y la suma
 .\gradlew.bat :app:appendDigestToReleasedFiles
 ```
 
-Compilar y verificar los 5 APK firmados con un solo comando, y generar `SHA256SUMS.txt` y `RELEASE_NOTES.md` a partir del CHANGELOG en inglés:
+Compilar los APK release y preparar sumas de comprobación y notas de la versión:
 
 ```powershell
 py scripts\release\prepare_release.py

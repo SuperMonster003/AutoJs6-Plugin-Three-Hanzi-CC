@@ -245,21 +245,6 @@ AutoJs6가 기기에서 이 플러그인을 찾지 못했다는 뜻입니다. �
 
 ******
 
-### 권한 및 보안
-
-******
-
-플러그인과 AutoJs6는 Android의 권한 메커니즘과 서명 메커니즘으로 신뢰 관계를 확립합니다:
-
-- 최소 권한: 매니페스트에는 플러그인 권한 `org.autojs.permission.PLUGIN`만 선언하며, 네트워크, 저장소, 카메라 등 민감한 시스템 권한은 포함하지 않습니다.
-- 양방향 보호: 플러그인 서비스도 같은 권한으로 보호되어, 플러그인 권한을 가진 호스트 (AutoJs6 등)만 바인딩하고 호출할 수 있습니다. 다른 앱은 접근할 수 없습니다.
-- 서명 기반 승인: AutoJs6는 플러그인 서명을 검증합니다. 공식 릴리스 패키지는 자동으로 승인되며, 그 외 서명의 빌드는 플러그인 센터에서 수동 승인하지 않는 한 로드되지 않습니다.
-- 로컬 처리: 변환은 전적으로 기기 안에서 이루어집니다. 플러그인은 네트워크에 연결하지 않고 디스크에 쓰지 않으며 사용자 데이터를 일절 수집하지 않습니다.
-
-플러그인은 공식 [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases) 페이지 또는 AutoJs6 플러그인 센터에서만 받으세요. 출처를 알 수 없는 패키지는 버전 번호가 같아 보여도 호스트 검증을 통과하지 못하거나 위험을 포함할 수 있습니다.
-
-******
-
 ### 플러그인 인터페이스
 
 ******
@@ -283,7 +268,7 @@ conversion library: com.github.brooklet:android-opencc:1.2.2
 
 `OpenccPluginService`는 `org.autojs.plugin.OPENCC` 액션 (카테고리 `opencc`)에 opencc-api의 `org.autojs.plugin.opencc.api.IOpenccPlugin`로 응답합니다. 계약 버전 2는 기존 `getInfo()`와 `convert(text, conversionType)` 뒤에 유형 검색, 일괄 변환, 체인 변환을 추가하고 `PluginInfo.capabilities`를 통해 버전과 지원 유형을 알립니다; 이전 호스트는 기존 메서드와 트랜잭션 번호를 계속 사용합니다. 호스트가 플러그인 프로세스를 깨우기 위한 `WakeActivity`도 제공합니다.
 
-`PluginInfo.supportedAbis`는 `arm64-v8a`, `armeabi-v7a`, `x86_64`, `x86` 네 가지 아키텍처를 보고하여 호스트와 플러그인 센터가 사용 가능한 변형을 식별할 수 있게 합니다; 변환은 `com.github.brooklet:android-opencc:1.2.2`가 제공하는 OpenCC 엔진과 사전으로 수행됩니다.
+변환에는 `com.github.brooklet:android-opencc:1.2.2`의 OpenCC 엔진과 사전을 사용합니다.
 
 ******
 
@@ -303,13 +288,14 @@ conversion library: com.github.brooklet:android-opencc:1.2.2
 
 #### v1.1.0
 
-_2026/08/31_
+_2026/09/01_
 
 - `기능` OpenCC 플러그인 계약을 버전 2로 업그레이드하고 `getSupportedConversionTypes()`를 추가하여 새 호스트가 플러그인이 실제 지원하는 14개 변환 유형을 동적으로 검색할 수 있습니다
 - `기능` `convertBatch(texts, conversionType)`를 추가하여 한 번의 Binder 왕복으로 최대 1024개 텍스트를 변환하며 이전 호스트의 항목별 호출 경로도 유지합니다
 - `기능` `convertChain(text, conversionTypes)`를 추가하여 한 번의 호출로 최대 32개 단계를 순서대로 실행하며 새 호스트의 조합 메서드는 최대 3회이던 Binder 왕복이 1회로 줄어듭니다
 - `개선` `PluginInfo.instruction`으로 호출자 언어에 맞는 플러그인 설명을 제공하고 capabilities를 통해 계약 버전과 지원 변환 유형을 보고합니다
 - `개선` 기존 AIDL 메서드와 트랜잭션 번호를 유지하고 확장 호출, 이전 계약 폴백, 크기 제한, 오류 경로를 단위 테스트와 실제 Binder 테스트로 검증합니다
+- `개선` README 레이아웃과 Gradle 플랫폼 버전 관리 방식을 통일
 
 #### v1.0.2
 
@@ -354,7 +340,7 @@ JVM 단위 테스트를 실행하고 instrumentation 테스트 APK 빌드:
 .\gradlew.bat :app:testDebugUnitTest :app:assembleDebugAndroidTest
 ```
 
-release APK 빌드; 버전 관리에서 제외된 `sign.properties`에 서명 정보를 설정하면 자동으로 서명됩니다. 서명되지 않은 산출물은 배포할 수 없습니다:
+release APK 빌드:
 
 ```powershell
 .\gradlew.bat :app:assembleRelease
@@ -366,7 +352,7 @@ release APK 빌드; 버전 관리에서 제외된 `sign.properties`에 서명 �
 .\gradlew.bat :app:appendDigestToReleasedFiles
 ```
 
-하나의 명령으로 서명된 APK 5개를 빌드하고 검증한 뒤 영어 CHANGELOG에서 `SHA256SUMS.txt`와 `RELEASE_NOTES.md` 생성:
+release APK를 빌드하고 체크섬과 릴리스 노트 준비:
 
 ```powershell
 py scripts\release\prepare_release.py

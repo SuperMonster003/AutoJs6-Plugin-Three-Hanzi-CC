@@ -201,18 +201,6 @@ console.log(opencc.s2t("汉字转换"));
 
 ******
 
-### {{ h3_security }}
-
-******
-
-{{ p_security_intro }}
-
-{{ placeholder_security_points }}
-
-{{ p_security_permission }}
-
-******
-
 ### {{ h3_plugin_interface }}
 
 ******

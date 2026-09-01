@@ -245,21 +245,6 @@ The plugin only declares the plugin permission used to communicate with AutoJs6 
 
 ******
 
-### Permissions and Security
-
-******
-
-The plugin and AutoJs6 establish trust through the Android permission and signature mechanisms:
-
-- Minimal permissions: the manifest declares only the `org.autojs.permission.PLUGIN` plugin permission and no sensitive system permissions such as network, storage, or camera.
-- Two-way protection: the plugin service is guarded by the same permission, so only hosts holding the plugin permission (such as AutoJs6) can bind and call it; other apps have no access.
-- Signature authorization: AutoJs6 verifies the plugin signature; official release packages are authorized automatically, while builds with other signatures must be authorized manually in the plugin center before they are loaded.
-- Local processing: conversion happens entirely on the device; the plugin never goes online, writes nothing to disk, and collects no user data.
-
-Only obtain the plugin from the official [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases) page or the AutoJs6 plugin center. Packages from unknown sources may fail host verification or carry risks even when the version number looks identical.
-
-******
-
 ### Plugin Interface
 
 ******
@@ -283,7 +268,7 @@ conversion library: com.github.brooklet:android-opencc:1.2.2
 
 `OpenccPluginService` responds to the `org.autojs.plugin.OPENCC` action (category `opencc`), using `org.autojs.plugin.opencc.api.IOpenccPlugin` from opencc-api. Contract version 2 appends type discovery, batch conversion, and chained conversion after the original `getInfo()` and `convert(text, conversionType)` methods, and advertises its version and supported types through `PluginInfo.capabilities`; older hosts keep using the original methods and transaction numbers. A `WakeActivity` is also provided so the host can wake the plugin process.
 
-`PluginInfo.supportedAbis` reports the four architectures `arm64-v8a`, `armeabi-v7a`, `x86_64`, and `x86` so the host and the plugin center can identify available variants; conversion is powered by the OpenCC engine and dictionaries from `com.github.brooklet:android-opencc:1.2.2`.
+Conversion is powered by the OpenCC engine and dictionaries from `com.github.brooklet:android-opencc:1.2.2`.
 
 ******
 
@@ -303,13 +288,14 @@ The plugin's plans and progress are maintained as a checkable list in ROADMAP.md
 
 #### v1.1.0
 
-_2026/08/31_
+_2026/09/01_
 
 - `Feature` Upgrade to OpenCC plugin contract version 2 with `getSupportedConversionTypes()`, allowing newer hosts to discover the 14 conversion types actually supported by the plugin
 - `Feature` Add `convertBatch(texts, conversionType)` to convert up to 1024 text segments in one Binder round trip while retaining the per-item path for older hosts
 - `Feature` Add `convertChain(text, conversionTypes)` to run up to 32 stages in one call, reducing composed methods on newer hosts from as many as 3 Binder round trips to 1
 - `Improvement` Deliver localized plugin instructions through `PluginInfo.instruction` and report the contract version and supported conversion types through capabilities
 - `Improvement` Preserve the original AIDL methods and transaction numbers, with unit and real Binder tests covering extended calls, legacy fallback, size limits, and error paths
+- `Improvement` Standardize the README layout and Gradle platform version management
 
 #### v1.0.2
 
@@ -354,7 +340,7 @@ Run JVM unit tests and build the instrumentation test APK:
 .\gradlew.bat :app:testDebugUnitTest :app:assembleDebugAndroidTest
 ```
 
-Build release APKs; they are signed automatically once a signing identity is configured in the untracked `sign.properties`, and unsigned artifacts must not be published:
+Build release APKs:
 
 ```powershell
 .\gradlew.bat :app:assembleRelease
@@ -366,7 +352,7 @@ Collect release artifacts and append the version, ABI, and CRC32 digest to each 
 .\gradlew.bat :app:appendDigestToReleasedFiles
 ```
 
-Build and verify all 5 signed APKs in one command, then generate `SHA256SUMS.txt` and `RELEASE_NOTES.md` from the English CHANGELOG:
+Build release APKs and prepare checksums and release notes:
 
 ```powershell
 py scripts\release\prepare_release.py

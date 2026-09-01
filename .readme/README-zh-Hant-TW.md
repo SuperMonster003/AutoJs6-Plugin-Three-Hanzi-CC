@@ -245,21 +245,6 @@ console.log(opencc.s2t("汉字转换"));
 
 ******
 
-### 權限與安全
-
-******
-
-外掛與 AutoJs6 之間透過 Android 系統的權限與簽章機制建立信任:
-
-- 最小權限: 外掛資訊清單僅宣告 `org.autojs.permission.PLUGIN` 外掛權限, 不含網路, 儲存空間, 相機等任何敏感系統權限.
-- 雙向防護: 外掛服務同樣受該權限保護, 只有持有外掛權限的主程式 (如 AutoJs6) 才能繫結與呼叫, 其他應用程式無法存取.
-- 簽章授權: AutoJs6 會驗證外掛簽章, 官方發布套件自動獲得授權; 非官方簽章的建置需在外掛中心手動授權後才會被載入.
-- 本機處理: 轉換完全在裝置本機完成, 外掛不連線, 不寫入儲存空間, 不收集任何使用者資料.
-
-請僅從官方 [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases) 頁面或 AutoJs6 外掛中心取得外掛. 來源不明的安裝套件即使版本號相同, 也可能無法通過主程式驗證或暗藏風險.
-
-******
-
 ### 外掛介面
 
 ******
@@ -283,7 +268,7 @@ conversion library: com.github.brooklet:android-opencc:1.2.2
 
 `OpenccPluginService` 會回應 `org.autojs.plugin.OPENCC` action (category `opencc`), Binder 介面為 opencc-api 的 `org.autojs.plugin.opencc.api.IOpenccPlugin`. 契約版本 2 在原有 `getInfo()` 與 `convert(text, conversionType)` 之後追加類型探索, 批次轉換與鏈式轉換方法, 並透過 `PluginInfo.capabilities` 公告版本與支援類型; 舊版主程式繼續使用原有方法和交易編號. 另提供 `WakeActivity` 供主程式喚醒外掛處理程序.
 
-`PluginInfo.supportedAbis` 回報 `arm64-v8a`, `armeabi-v7a`, `x86_64`, `x86` 四種架構, 供主程式與外掛中心識別可用變體; 轉換由 `com.github.brooklet:android-opencc:1.2.2` 提供的 OpenCC 引擎與詞典完成.
+轉換由 `com.github.brooklet:android-opencc:1.2.2` 提供的 OpenCC 引擎與詞典完成.
 
 ******
 
@@ -303,13 +288,14 @@ conversion library: com.github.brooklet:android-opencc:1.2.2
 
 #### v1.1.0
 
-_2026/08/31_
+_2026/09/01_
 
 - `新增` 升級至 OpenCC 外掛契約版本 2, 新增 `getSupportedConversionTypes()`, 供新版主程式動態探索目前實際支援的 14 種轉換類型
 - `新增` 新增 `convertBatch(texts, conversionType)`, 單次 Binder 往返最多轉換 1024 段文字, 同時保留舊版主程式逐項呼叫的相容路徑
 - `新增` 新增 `convertChain(text, conversionTypes)`, 單次呼叫最多依序執行 32 個階段, 讓新版主程式的組合方法從最多 3 次 Binder 往返降至 1 次
 - `優化` 透過 `PluginInfo.instruction` 提供呼叫方語言的外掛說明, 並透過 capabilities 回報契約版本與支援的轉換類型
 - `優化` 保持原有 AIDL 方法及交易編號不變, 並為擴充呼叫, 舊契約回退, 大小上限與例外路徑補充單元測試和真實 Binder 測試
+- `優化` 統一 README 版式與 Gradle 平台版本管理方式
 
 #### v1.0.2
 
@@ -354,7 +340,7 @@ _2026/07/14_
 .\gradlew.bat :app:testDebugUnitTest :app:assembleDebugAndroidTest
 ```
 
-建置 release APK; 在不納入版本控制的 `sign.properties` 中設定簽章身分後自動簽署, 未設定簽章時產物不可發布:
+建置 release APK:
 
 ```powershell
 .\gradlew.bat :app:assembleRelease
@@ -366,7 +352,7 @@ _2026/07/14_
 .\gradlew.bat :app:appendDigestToReleasedFiles
 ```
 
-一鍵建置並驗證 5 個已簽署 APK, 產生 `SHA256SUMS.txt` 與以英文 CHANGELOG 為來源的 `RELEASE_NOTES.md`:
+建置 release APK 並準備校驗和與發行說明:
 
 ```powershell
 py scripts\release\prepare_release.py

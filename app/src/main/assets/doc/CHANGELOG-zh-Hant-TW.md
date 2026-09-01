@@ -6,13 +6,14 @@
 
 # v1.1.0
 
-###### 2026/08/31
+###### 2026/09/01
 
 * `新增` 升級至 OpenCC 外掛契約版本 2, 新增 `getSupportedConversionTypes()`, 供新版主程式動態探索目前實際支援的 14 種轉換類型
 * `新增` 新增 `convertBatch(texts, conversionType)`, 單次 Binder 往返最多轉換 1024 段文字, 同時保留舊版主程式逐項呼叫的相容路徑
 * `新增` 新增 `convertChain(text, conversionTypes)`, 單次呼叫最多依序執行 32 個階段, 讓新版主程式的組合方法從最多 3 次 Binder 往返降至 1 次
 * `優化` 透過 `PluginInfo.instruction` 提供呼叫方語言的外掛說明, 並透過 capabilities 回報契約版本與支援的轉換類型
 * `優化` 保持原有 AIDL 方法及交易編號不變, 並為擴充呼叫, 舊契約回退, 大小上限與例外路徑補充單元測試和真實 Binder 測試
+* `優化` 統一 README 版式與 Gradle 平台版本管理方式
 
 # v1.0.2
 

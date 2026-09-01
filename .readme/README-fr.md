@@ -245,21 +245,6 @@ Le plugin déclare uniquement l'autorisation de plugin servant à communiquer av
 
 ******
 
-### Autorisations et sécurité
-
-******
-
-Le plugin et AutoJs6 établissent une relation de confiance via les mécanismes d'autorisation et de signature du système Android:
-
-- Autorisations minimales: le manifeste déclare uniquement l'autorisation de plugin `org.autojs.permission.PLUGIN`, sans aucune autorisation système sensible telle que le réseau, le stockage ou l'appareil photo.
-- Protection bidirectionnelle: le service du plugin est protégé par la même autorisation, si bien que seuls les hôtes détenant l'autorisation de plugin (comme AutoJs6) peuvent s'y lier et l'appeler; les autres applications n'y ont pas accès.
-- Autorisation par signature: AutoJs6 vérifie la signature du plugin; les paquets officiels sont autorisés automatiquement, tandis que les builds portant d'autres signatures doivent être autorisés manuellement dans le centre de plugins avant d'être chargés.
-- Traitement local: la conversion s'effectue entièrement sur l'appareil; le plugin ne se connecte jamais au réseau, n'écrit rien sur le disque et ne collecte aucune donnée utilisateur.
-
-Obtenez le plugin uniquement depuis la page officielle [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases) ou le centre de plugins d'AutoJs6. Les paquets d'origine inconnue peuvent échouer à la vérification de l'hôte ou dissimuler des risques, même lorsque le numéro de version semble identique.
-
-******
-
 ### Interface du plugin
 
 ******
@@ -283,7 +268,7 @@ conversion library: com.github.brooklet:android-opencc:1.2.2
 
 `OpenccPluginService` répond à l'action `org.autojs.plugin.OPENCC` (catégorie `opencc`) avec `org.autojs.plugin.opencc.api.IOpenccPlugin` fourni par opencc-api. La version 2 du contrat ajoute la découverte des types, la conversion par lot et la conversion en chaîne après les méthodes d'origine `getInfo()` et `convert(text, conversionType)`, puis annonce sa version et les types pris en charge via `PluginInfo.capabilities`; les anciens hôtes conservent les méthodes et numéros de transaction d'origine. Une `WakeActivity` permet aussi à l'hôte de réveiller le processus du plugin.
 
-`PluginInfo.supportedAbis` signale les quatre architectures `arm64-v8a`, `armeabi-v7a`, `x86_64` et `x86` afin que l'hôte et le centre de plugins puissent identifier les variantes disponibles; la conversion est assurée par le moteur et les dictionnaires OpenCC de `com.github.brooklet:android-opencc:1.2.2`.
+La conversion utilise le moteur et les dictionnaires OpenCC de `com.github.brooklet:android-opencc:1.2.2`.
 
 ******
 
@@ -303,13 +288,14 @@ Les plans du plugin et leur avancement sont tenus à jour sous forme de liste co
 
 #### v1.1.0
 
-_2026/08/31_
+_2026/09/01_
 
 - `Fonctionnalité` Passage au contrat de plugin OpenCC version 2 avec `getSupportedConversionTypes()`, afin que les hôtes récents découvrent les 14 types de conversion réellement pris en charge
 - `Fonctionnalité` Ajout de `convertBatch(texts, conversionType)` pour convertir jusqu'à 1024 segments de texte en un seul aller-retour Binder, tout en conservant le traitement élément par élément pour les anciens hôtes
 - `Fonctionnalité` Ajout de `convertChain(text, conversionTypes)` pour exécuter jusqu'à 32 étapes en un seul appel, ce qui réduit les méthodes composées des hôtes récents de 3 allers-retours Binder au maximum à 1
 - `Amélioration` Transmission des instructions localisées via `PluginInfo.instruction` et publication de la version du contrat et des types de conversion pris en charge dans les capabilities
 - `Amélioration` Conservation des méthodes AIDL et numéros de transaction d'origine, avec des tests unitaires et Binder réels couvrant les appels étendus, le repli hérité, les limites de taille et les erreurs
+- `Amélioration` Uniformiser la mise en page du README et la gestion des versions de la plateforme Gradle
 
 #### v1.0.2
 
@@ -354,7 +340,7 @@ Exécuter les tests unitaires JVM et compiler l'APK de test instrumentation:
 .\gradlew.bat :app:testDebugUnitTest :app:assembleDebugAndroidTest
 ```
 
-Compiler les APK release; ils sont signés automatiquement dès qu'une identité de signature est configurée dans `sign.properties`, ignoré par Git, et les artefacts non signés ne doivent pas être publiés:
+Compiler les APK release:
 
 ```powershell
 .\gradlew.bat :app:assembleRelease
@@ -366,7 +352,7 @@ Rassembler les artefacts de publication et ajouter la version, l'ABI et la somme
 .\gradlew.bat :app:appendDigestToReleasedFiles
 ```
 
-Compiler et vérifier en une commande les 5 APK signés, puis générer `SHA256SUMS.txt` et `RELEASE_NOTES.md` depuis le CHANGELOG anglais:
+Compiler les APK release et préparer les sommes de contrôle et les notes de version:
 
 ```powershell
 py scripts\release\prepare_release.py

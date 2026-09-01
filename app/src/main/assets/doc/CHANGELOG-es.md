@@ -6,13 +6,14 @@
 
 # v1.1.0
 
-###### 2026/08/31
+###### 2026/09/01
 
 * `Función` Actualización al contrato de complemento OpenCC versión 2 con `getSupportedConversionTypes()`, para que los hosts recientes descubran los 14 tipos de conversión que admite realmente el complemento
 * `Función` Incorporación de `convertBatch(texts, conversionType)` para convertir hasta 1024 segmentos de texto en una sola ida y vuelta de Binder, manteniendo la ruta por elemento para hosts antiguos
 * `Función` Incorporación de `convertChain(text, conversionTypes)` para ejecutar hasta 32 etapas en una llamada, reduciendo los métodos compuestos en hosts recientes de hasta 3 idas y vueltas de Binder a 1
 * `Mejora` Entrega de instrucciones localizadas mediante `PluginInfo.instruction` y publicación de la versión del contrato y los tipos de conversión admitidos mediante capabilities
 * `Mejora` Conservación de los métodos AIDL y números de transacción originales, con pruebas unitarias y Binder reales para llamadas ampliadas, compatibilidad heredada, límites de tamaño y rutas de error
+* `Mejora` Unificar el diseño del README y la gestión de versiones de la plataforma Gradle
 
 # v1.0.2
 

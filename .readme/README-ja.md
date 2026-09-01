@@ -245,21 +245,6 @@ AutoJs6 が端末上で本プラグインを見つけられなかったことを
 
 ******
 
-### 権限とセキュリティ
-
-******
-
-プラグインと AutoJs6 は Android の権限機構と署名機構によって信頼関係を確立します:
-
-- 最小権限: マニフェストにはプラグイン権限 `org.autojs.permission.PLUGIN` のみを宣言し, ネットワーク, ストレージ, カメラなどの機微なシステム権限は含まれません.
-- 双方向の保護: プラグインサービスも同じ権限で保護されており, プラグイン権限を持つホスト (AutoJs6 など) だけがバインドと呼び出しを行えます. 他のアプリはアクセスできません.
-- 署名による承認: AutoJs6 はプラグインの署名を検証します. 公式リリースパッケージは自動的に承認され, それ以外の署名のビルドはプラグインセンターで手動承認しない限りロードされません.
-- ローカル処理: 変換は完全に端末内で行われます. プラグインはネットワークに接続せず, ディスクにも書き込まず, ユーザーデータを一切収集しません.
-
-プラグインは公式の [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases) ページまたは AutoJs6 プラグインセンターからのみ入手してください. 出所不明のパッケージは, バージョン番号が同じに見えてもホストの検証を通過できなかったり, リスクを含んでいたりする可能性があります.
-
-******
-
 ### プラグインインターフェース
 
 ******
@@ -283,7 +268,7 @@ conversion library: com.github.brooklet:android-opencc:1.2.2
 
 `OpenccPluginService` は `org.autojs.plugin.OPENCC` アクション (カテゴリ `opencc`) に opencc-api の `org.autojs.plugin.opencc.api.IOpenccPlugin` で応答します. 契約バージョン 2 は既存の `getInfo()` と `convert(text, conversionType)` の後ろにタイプ検出, 一括変換, チェーン変換を追加し, `PluginInfo.capabilities` でバージョンと対応タイプを通知します; 古いホストは既存のメソッドとトランザクション番号をそのまま使用できます. ホストがプラグインプロセスを起動するための `WakeActivity` も提供します.
 
-`PluginInfo.supportedAbis` は `arm64-v8a`, `armeabi-v7a`, `x86_64`, `x86` の 4 アーキテクチャを報告し, ホストとプラグインセンターが利用可能なバリアントを識別できるようにします; 変換は `com.github.brooklet:android-opencc:1.2.2` が提供する OpenCC エンジンと辞書によって行われます.
+変換には `com.github.brooklet:android-opencc:1.2.2` の OpenCC エンジンと辞書を使用します.
 
 ******
 
@@ -303,13 +288,14 @@ conversion library: com.github.brooklet:android-opencc:1.2.2
 
 #### v1.1.0
 
-_2026/08/31_
+_2026/09/01_
 
 - `機能` OpenCC プラグイン契約をバージョン 2 に更新し, `getSupportedConversionTypes()` を追加しました. 新しいホストはプラグインが実際に対応する 14 種類の変換タイプを動的に検出できます
 - `機能` `convertBatch(texts, conversionType)` を追加し, 1 回の Binder 往復で最大 1024 個のテキストを変換できるようにしました. 古いホスト向けの項目別呼び出しも維持します
 - `機能` `convertChain(text, conversionTypes)` を追加し, 1 回の呼び出しで最大 32 ステージを順に実行できるようにしました. 新しいホストの組み合わせメソッドは最大 3 回の Binder 往復から 1 回に減ります
 - `改善` `PluginInfo.instruction` で呼び出し側の言語に合った説明を提供し, capabilities で契約バージョンと対応変換タイプを報告します
 - `改善` 既存の AIDL メソッドとトランザクション番号を維持し, 拡張呼び出し, 旧契約へのフォールバック, サイズ上限, エラー経路を単体テストと実 Binder テストで検証します
+- `改善` README のレイアウトと Gradle プラットフォームのバージョン管理方式を統一
 
 #### v1.0.2
 
@@ -354,7 +340,7 @@ JVM 単体テストを実行し instrumentation テスト APK をビルド:
 .\gradlew.bat :app:testDebugUnitTest :app:assembleDebugAndroidTest
 ```
 
-release APK をビルド; バージョン管理対象外の `sign.properties` に署名情報を設定すると自動的に署名されます. 未署名の成果物は公開できません:
+release APK をビルド:
 
 ```powershell
 .\gradlew.bat :app:assembleRelease
@@ -366,7 +352,7 @@ release APK をビルド; バージョン管理対象外の `sign.properties` �
 .\gradlew.bat :app:appendDigestToReleasedFiles
 ```
 
-1 つのコマンドで署名済み APK 5 種をビルドして検証し, 英語 CHANGELOG から `SHA256SUMS.txt` と `RELEASE_NOTES.md` を生成:
+release APK をビルドし, チェックサムとリリースノートを準備:
 
 ```powershell
 py scripts\release\prepare_release.py

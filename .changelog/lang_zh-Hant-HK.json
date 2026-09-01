@@ -6,7 +6,7 @@
   "changelog_label_dependency": "依賴",
   "$data": {
     "v1.1.0": {
-      "released_date": "2026/08/31",
+      "released_date": "2026/09/01",
       "feature": [
         "升級至 OpenCC 插件契約版本 2, 新增 `getSupportedConversionTypes()`, 供新版宿主動態發現目前實際支援的 14 種轉換類型",
         "新增 `convertBatch(texts, conversionType)`, 單次 Binder 往返最多轉換 1024 段文本, 同時保留舊宿主逐項調用的兼容路徑",
@@ -14,7 +14,8 @@
       ],
       "improvement": [
         "透過 `PluginInfo.instruction` 提供調用方語言的插件說明, 並透過 capabilities 上報契約版本與支援的轉換類型",
-        "保持原有 AIDL 方法及事務編號不變, 並為擴展調用, 舊契約回退, 大小上限與異常路徑補充單元測試和真實 Binder 測試"
+        "保持原有 AIDL 方法及事務編號不變, 並為擴展調用, 舊契約回退, 大小上限與異常路徑補充單元測試和真實 Binder 測試",
+        "統一 README 版式與 Gradle 平台版本管理方式"
       ]
     },
     "v1.0.2": {
