@@ -4,11 +4,11 @@
 
 ## 结论
 
-M4-A 与 M4-B 已通过仓库级、APK 级和设备级验收。M4-C 已将迁移期 `android-opencc` AAR
-从所有 Gradle 配置和测试代码中彻底删除，官方 OpenCC 1.4.2 是唯一 `default` 后端。差分语料、
-异常路径、性能/内存基准、四 ABI/API 设备矩阵以及 ELF/APK/真实 16 KB 页三层门禁均已完成；
-v1.2.0 / build 19 的五包本地签名发布候选也已生成并验证。尚未完成的是需要维护者授权的源码
-标签、GitHub Release 上传与插件中心索引更新，因此本记录不把本地候选表述为已公开发布。
+M4-A、M4-B 与 M4-C 已通过仓库级、APK 级、设备级和公开发布验收。M4-C 已将迁移期
+`android-opencc` AAR 从所有 Gradle 配置和测试代码中彻底删除，官方 OpenCC 1.4.2 是唯一
+`default` 后端。差分语料、异常路径、性能/内存基准、四 ABI/API 设备矩阵以及 ELF/APK/真实
+16 KB 页三层门禁均已完成；v1.2.0 / build 19 的五个签名包已随源码标签和 GitHub Release
+正式发布，插件中心在线索引也已更新并与 Release 逐项校验一致。
 
 ## 上游追溯
 
@@ -79,14 +79,15 @@ M4-B 迁移窗口曾在测试 APK 中保留 `android-opencc:1.2.2`，并实测�
   API 37 / `PAGE_SIZE=16384` x86_64 模拟器重新通过服务 + restart prepare/verify 三阶段测试；
   测试脚本对没有 `getconf` 的旧 Android 从 `/proc/self/smaps` 的 `KernelPageSize` 回退探测。
 
-## M4-C 本地发布候选
+## M4-C 正式发布产物
 
-`scripts/release/prepare_release.py` 已从最终 minified release APK 原子生成
-`build/release/v1.2.0`。该目录是本地构建产物而非提交内容；五包签名证书 SHA-256 均为
+`scripts/release/prepare_release.py` 已从最终 minified release APK 原子生成并验证
+`build/release/v1.2.0`，随后同一组文件发布至 GitHub Release。该目录是本地构建产物而非提交内容；
+五包签名证书 SHA-256 均为
 `31A681FCFFFB3E428420CAE280DED89292B12A3B0F59E19B7A73E32A8AE4C213`，与仓库留存的
 v1.0.2 正式包一致。
 
-| ABI | 本地候选文件 | 大小 | SHA-256 |
+| ABI | 正式发布文件 | 大小 | SHA-256 |
 |---|---|---:|---|
 | arm64-v8a | `autojs6-plugin-opencc-v1.2.0-arm64-v8a-f663d404.apk` | 1,499,452 B | `aa7007249475bc5312846652bae794c8eadb1c87205af9c7ec266d9934802923` |
 | armeabi-v7a | `autojs6-plugin-opencc-v1.2.0-armeabi-v7a-1c9378a1.apk` | 1,160,706 B | `967b792f1fbe04d7bf689eb03903d927649d564f946511bbe80e03f7ec2cd8f2` |
@@ -94,20 +95,24 @@ v1.0.2 正式包一致。
 | x86 | `autojs6-plugin-opencc-v1.2.0-x86-4dc6b9dc.apk` | 1,461,662 B | `0e69ad0f438c13f6bd6104ecfb8438b9965923fd26bad02fd39e69909db1fc37` |
 | universal | `autojs6-plugin-opencc-v1.2.0-universal-9ff59a9c.apk` | 3,835,001 B | `2b2b03c430be83bc212ed6358c7ec08c13f4141c380f11ee95263afa6b0cc2d3` |
 
-每个原始 release APK 和上述重命名候选均通过签名、精确 ABI、官方资源摘要、旧后端排除、
+每个原始 release APK 和上述正式发布文件均通过签名、精确 ABI、官方资源摘要、旧后端排除、
 R8 JNI 标记、ELF `0x4000`/RELRO 与 `zipalign -c -P 16 4` 门禁。随包生成的
-`SHA256SUMS.txt` 与 `RELEASE_NOTES.md` 已列出同一组文件和经审阅的主要词典变化。
+`SHA256SUMS.txt` 与 `RELEASE_NOTES.md` 已列出同一组文件和经审阅的主要词典变化；GitHub API
+回读的 7 个 Release 资产名称、大小和 SHA-256 与本地文件全部一致。
 
-## M4-C 尚未完成的外部门禁
+## M4-C 外部门禁完成证据
 
-- 经维护者确认后创建并推送 `v1.2.0` 源码标签，发布 GitHub Release 并上传本地候选五包、
-  `SHA256SUMS.txt` 与发行说明。
-- 更新插件中心在线索引中的版本、下载地址、摘要和兼容信息，并与 GitHub Release 交叉核对。
+- `v1.2.0` 轻量标签固定到 `a96beae56dd42b4a419019a40d878aa5d172f638`；
+  [GitHub Release](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases/tag/v1.2.0)
+  以 `1.2.0 @ 2026/09/01` 标题作为 Latest 正式发布，且非 draft / prerelease。
+- 官方插件索引远端工作流生成提交 `a95d0b84eb80c51c51ef4752b0136e5483879aa9`；OpenCC 条目为
+  `v1.2.0` / build 19 / 2026-09-01，四 ABI、五个下载 URL、大小、GitHub SHA-256、图标与多语言
+  说明标签均与 Release 交叉核对一致。
 
-## v1.2.0 本地候选 APK 体积
+## v1.2.0 正式 APK 体积
 
-同一开发机签名配置下，将 v1.2.0 本地候选的 minified release APK 与仓库留存的 v1.0.2
-正式 APK 对比。若发布前代码或资源再次改变，必须重新生成候选并更新本表：
+同一开发机签名配置下，将 v1.2.0 正式发布的 minified release APK 与仓库留存的 v1.0.2
+正式 APK 对比：
 
 | ABI | v1.0.2 | 当前官方后端 | 增量 |
 |---|---:|---:|---:|

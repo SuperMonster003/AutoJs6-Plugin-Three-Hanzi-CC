@@ -102,10 +102,9 @@ M4-A 官方后端原型 ──> M4-B 兼容/性能/16 KB ──> M4-C 正式替�
 | 4 | M4-D | 锁定格式在 M4-A 稳定; 自动改写在 M4-C 后启用 | 每周只读监视先行, 再生成经完整门禁验证的升级 PR | 无更新重放稳定; 有更新只建 PR, 不自动合并或发版 |
 | 5 | M4-E | 官方后端和上游同步流程稳定 | 新配置/自定义词典/宿主路由的独立契约升级 | 每项先有 API 与旧实现回退测试, 不阻塞主线发布 |
 
-当前检查点 (2026-09-01): M4-A 与 M4-B 已完成; M4-C 已删除迁移基线并完成 v1.2.0 的
-本地签名发布候选, 10 语言文档与全部离线/设备门禁, 但尚未创建源码标签, 推送 GitHub Release
-或更新插件中心索引, 因而 M4-C 仍未整体完成. M4-D 的只读监视已提前启用, 自动升级 PR
-仍按顺序等待 M4-C 正式发布完成.
+当前检查点 (2026-09-01): M4-A、M4-B 与 M4-C 已完成; `v1.2.0` 标签、GitHub Release 和
+插件中心在线索引已公开且相互校验一致。M4-D 的只读监视已提前启用，下一步按顺序实现只创建、
+不自动合并或发版的上游升级 PR。
 
 ### M4-A: 官方 OpenCC 原生后端原型 (2026-08-31, 已完成)
 
@@ -128,18 +127,17 @@ M4-A 验收条件: 官方 1.4.2 核心和 JNI 在 `arm64-v8a` / `armeabi-v7a` / 
 
 M4-B 验收条件: 差分结果均可解释并有审阅记录; 新后端在现有四 ABI/API 矩阵无行为回归; 性能和体积报告已归档; 16 KB ELF, ZIP 对齐和真实运行环境全部通过. (已满足)
 
-### M4-C: 正式替换与 v1.2.0 发布 (本地发布候选已完成)
+### M4-C: 正式替换与 v1.2.0 发布 (2026-09-01, 已完成)
 
 - [x] (依赖/插件) 从版本目录和应用的单元测试, instrumentation 及正式配置中删除 `com.github.brooklet:android-opencc`, 删除旧 `ChineseConverter` / `ConversionType` 引用与旧资源初始化逻辑, 将官方后端提升为唯一 `default` 引擎; 三条 Gradle 依赖图均明确返回无匹配依赖.
 - [x] (发布) 补齐 OpenCC, Marisa, Darts Clone 与 RapidJSON 的许可证/NOTICE, 更新 README, 10 语言 CHANGELOG, 插件说明和本 Roadmap, 清楚标注内置 OpenCC 版本/提交, 词典摘要, 离线特性与 16 KB 支持状态; 36 个生成产物通过漂移检查.
 - [x] (发布准备) 版本已提升为 `v1.2.0` / build 19; 既有发布脚本已在 `build/release/v1.2.0` 原子生成 5 个本地签名 APK, `SHA256SUMS.txt` 与 `RELEASE_NOTES.md`, 并通过 CRC32, SHA-256, 精确 ABI, APK/ELF/资源内容及签名连续性门禁. 签名证书 SHA-256 与仓库 v1.0.2 留存包一致 (`31A681FCFFFB3E428420CAE280DED89292B12A3B0F59E19B7A73E32A8AE4C213`).
 - [x] (设备) 删除迁移 AAR 后重新在 API 35 `arm64-v8a`, API 28 `armeabi-v7a` 与 API 37 / 16 KB `x86_64` 环境执行服务 + restart prepare/verify 三阶段测试; 全部通过且测试包清理完成. 旧 Android 无 `getconf` 时, CI 脚本会从 `/proc/self/smaps` 的 `KernelPageSize` 安全回退探测.
-- [ ] (发布) 经维护者确认后创建 `v1.2.0` 源码标签并推送 GitHub Release, 上传上述 5 个已验证 APK, `SHA256SUMS.txt` 与发行说明; Release 必须列出经审阅的主要词典输出变化. 本地候选完成不视为已公开发布.
-- [ ] (发布) 更新插件中心在线索引仓库中的版本, 下载地址, 摘要与兼容信息, 确保索引元数据与 GitHub Release 同步.
+- [x] (发布) `v1.2.0` 标签已固定到 `a96beae56dd42b4a419019a40d878aa5d172f638` 并推送；[GitHub Release](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases/tag/v1.2.0) 已作为 Latest 正式发布，上传上述 5 个已验证 APK、`SHA256SUMS.txt` 与 `RELEASE_NOTES.md`，并列出经审阅的主要词典输出变化。GitHub 回读的 7 个资产名称、大小和 SHA-256 均与本地候选一致。
+- [x] (发布) 插件中心在线索引已由其远端生成工作流更新至提交 `a95d0b84eb80c51c51ef4752b0136e5483879aa9`；OpenCC 条目为 `v1.2.0` / build 19，四 ABI 兼容列表、5 个下载地址、大小和 SHA-256 均与 GitHub Release 逐项一致，图标与多语言说明固定到同一标签。
 
-M4-C 验收条件: 正式产物仅包含官方后端 (本地已满足); v1.2.0 的源码标签, 5 个 APK,
-校验和, GitHub Release 与插件索引相互一致 (外部发布后方可满足); 旧宿主继续使用 v1 接口,
-新宿主继续使用 v2 批量/链式接口. 在标签/Release/索引完成前不得将 M4-C 整体标记为完成.
+M4-C 验收条件: 正式产物仅包含官方后端；v1.2.0 的源码标签、5 个 APK、校验和、GitHub Release
+与插件索引相互一致；旧宿主继续使用 v1 接口，新宿主继续使用 v2 批量/链式接口。(已满足)
 
 ### M4-D: 上游同步自动化
 
