@@ -157,8 +157,10 @@ class OpenccActivity : Activity() {
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        if (event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER && event.isCtrlPressed) {
-            if (activeConversion == null && convertButton.isEnabled) startConversion()
+        if (event.keyCode == KeyEvent.KEYCODE_ENTER && event.isCtrlPressed) {
+            if (event.action == KeyEvent.ACTION_DOWN && activeConversion == null && convertButton.isEnabled) {
+                startConversion()
+            }
             return true
         }
         if (event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ESCAPE) {

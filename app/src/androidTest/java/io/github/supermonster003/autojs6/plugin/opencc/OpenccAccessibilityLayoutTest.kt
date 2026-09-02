@@ -146,12 +146,17 @@ class OpenccAccessibilityLayoutTest {
             source.setSelection(source.text.length)
         }
         val now = SystemClock.uptimeMillis()
-        instrumentation.sendKeySync(
-            KeyEvent(now, now, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER, 0, KeyEvent.META_CTRL_ON),
+        val keyDown = KeyEvent(now, now, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER, 0, KeyEvent.META_CTRL_ON)
+        val keyUp = KeyEvent(
+            now,
+            SystemClock.uptimeMillis(),
+            KeyEvent.ACTION_UP,
+            KeyEvent.KEYCODE_ENTER,
+            0,
+            KeyEvent.META_CTRL_ON,
         )
-        instrumentation.sendKeySync(
-            KeyEvent(now, SystemClock.uptimeMillis(), KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ENTER, 0, KeyEvent.META_CTRL_ON),
-        )
+        assertTrue("Ctrl+Enter key-down must be consumed", onMain { activity.dispatchKeyEvent(keyDown) })
+        assertTrue("Ctrl+Enter key-up must be consumed", onMain { activity.dispatchKeyEvent(keyUp) })
         await("Ctrl+Enter conversion") {
             readText(result) == KEYBOARD_OUTPUT &&
                 readText(status) == activity.getString(R.string.standalone_status_complete)
