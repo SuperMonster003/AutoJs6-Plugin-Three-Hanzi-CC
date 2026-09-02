@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <instrumentation
+        android:name="io.github.supermonster003.autojs6.plugin.opencc.OpenccReleaseProbeInstrumentation"
+        android:targetPackage="io.github.supermonster003.autojs6.plugin.opencc"
+        android:functionalTest="true"
+        android:handleProfiling="false" />
+
+</manifest>

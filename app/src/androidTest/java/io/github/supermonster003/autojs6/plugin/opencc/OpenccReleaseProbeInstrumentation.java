@@ -1,11 +1,5 @@
 package io.github.supermonster003.autojs6.plugin.opencc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.ComponentName;
@@ -26,12 +20,9 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.platform.app.InstrumentationRegistry;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -41,12 +32,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Java-only probe used to drive an installed minified release with the separately signed
- * instrumentation APK. Keeping this class free of Kotlin runtime references avoids assuming that R8
- * retains test-only Kotlin helpers in the release target.
+ * Platform-only probe used to drive an installed minified release with the separately signed
+ * instrumentation APK. It deliberately avoids AndroidX, JUnit, and Kotlin at runtime so the test
+ * process does not assume that R8 retains classes needed only by the normal debug test runner.
  */
-@RunWith(AndroidJUnit4.class)
-public final class OpenccReleaseRuntimeTest {
+public final class OpenccReleaseProbeInstrumentation extends Instrumentation {
 
     private static final String ARG_EXPECTED_VERSION_NAME = "opencc_expected_version_name";
     private static final String ARG_EXPECTED_VERSION_CODE = "opencc_expected_version_code";
@@ -59,33 +49,64 @@ public final class OpenccReleaseRuntimeTest {
     private static final String RESULT = "漢字軟件 😀 𠀀";
     private static final long TIMEOUT_MILLIS = 60_000L;
 
-    private final Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-    private final Context context = instrumentation.getTargetContext();
+    private Bundle arguments;
+    private Context context;
 
-    @Test
-    public void minifiedReleaseRetainsStandaloneAndBinderRuntime() throws Exception {
-        Bundle arguments = InstrumentationRegistry.getArguments();
-        String expectedVersionName = arguments.getString(ARG_EXPECTED_VERSION_NAME, "").trim();
-        String expectedVersionCodeText = arguments.getString(ARG_EXPECTED_VERSION_CODE, "").trim();
-        assertFalse("Expected version name argument is required", expectedVersionName.isEmpty());
-        assertFalse("Expected version code argument is required", expectedVersionCodeText.isEmpty());
-        long expectedVersionCode = Long.parseLong(expectedVersionCodeText);
+    @Override
+    public void onCreate(Bundle arguments) {
+        super.onCreate(arguments);
+        this.arguments = arguments == null ? Bundle.EMPTY : new Bundle(arguments);
+        start();
+    }
 
+    @Override
+    public void onStart() {
+        Bundle result = new Bundle();
+        try {
+            context = getTargetContext();
+            String expectedVersionName = requiredArgument(ARG_EXPECTED_VERSION_NAME);
+            long expectedVersionCode = Long.parseLong(requiredArgument(ARG_EXPECTED_VERSION_CODE));
+            runProbe(expectedVersionName, expectedVersionCode);
+            result.putString(
+                "stream",
+                "\nRELEASE_RUNTIME_OK version=" + expectedVersionName
+                    + " versionCode=" + expectedVersionCode + "\n"
+            );
+            finish(Activity.RESULT_OK, result);
+        } catch (Throwable throwable) {
+            StringWriter stack = new StringWriter();
+            throwable.printStackTrace(new PrintWriter(stack));
+            result.putString("shortMsg", throwable.toString());
+            result.putString("stream", "\nRELEASE_RUNTIME_FAILED\n" + stack + "\n");
+            finish(Activity.RESULT_CANCELED, result);
+        }
+    }
+
+    private void runProbe(String expectedVersionName, long expectedVersionCode) throws Exception {
         PackageManager packageManager = context.getPackageManager();
-        PackageInfo packageInfo = packageManager.getPackageInfo(context.getPackageName(),
-            PackageManager.GET_PERMISSIONS);
-        assertEquals(expectedVersionName, packageInfo.versionName);
-        assertEquals(expectedVersionCode, versionCode(packageInfo));
-        assertEquals(0, packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE);
-        assertEquals(
+        PackageInfo packageInfo = packageManager.getPackageInfo(
+            context.getPackageName(),
+            PackageManager.GET_PERMISSIONS
+        );
+        requireEquals(expectedVersionName, packageInfo.versionName, "Unexpected release versionName");
+        requireEquals(expectedVersionCode, versionCode(packageInfo), "Unexpected release versionCode");
+        require(
+            (packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) == 0,
+            "Release target is debuggable"
+        );
+        requireEquals(
             Collections.singletonList(PLUGIN_PERMISSION),
             packageInfo.requestedPermissions == null
                 ? Collections.emptyList()
-                : java.util.Arrays.asList(packageInfo.requestedPermissions)
+                : Arrays.asList(packageInfo.requestedPermissions),
+            "Unexpected requested permissions"
         );
-        assertNotEquals(
-            PackageManager.PERMISSION_GRANTED,
-            packageManager.checkPermission(android.Manifest.permission.INTERNET, context.getPackageName())
+        require(
+            packageManager.checkPermission(
+                android.Manifest.permission.INTERNET,
+                context.getPackageName()
+            ) != PackageManager.PERMISSION_GRANTED,
+            "Release target unexpectedly has INTERNET"
         );
 
         Activity activity = launchStandalone(packageManager);
@@ -99,45 +120,45 @@ public final class OpenccReleaseRuntimeTest {
                 }
                 return null;
             });
-            instrumentation.waitForIdleSync();
+            waitForIdleSync();
         }
     }
 
     private Activity launchStandalone(PackageManager packageManager) {
         Intent launcher = packageManager.getLaunchIntentForPackage(context.getPackageName());
-        assertNotNull("Release APK has no Launcher activity", launcher);
+        require(launcher != null, "Release APK has no Launcher activity");
         List<ResolveInfo> launchers = packageManager.queryIntentActivities(launcher, 0);
-        assertEquals("Release APK must expose exactly one Launcher", 1, launchers.size());
-        assertTrue(
-            "Unexpected Launcher class: " + launchers.get(0).activityInfo.name,
-            launchers.get(0).activityInfo.name.endsWith(".OpenccActivity")
+        requireEquals(1, launchers.size(), "Release APK must expose exactly one Launcher");
+        require(
+            launchers.get(0).activityInfo.name.endsWith(".OpenccActivity"),
+            "Unexpected Launcher class: " + launchers.get(0).activityInfo.name
         );
         launcher.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        Activity activity = instrumentation.startActivitySync(launcher);
-        assertNotNull(activity);
-        assertEquals(context.getPackageName(), activity.getPackageName());
+        Activity activity = startActivitySync(launcher);
+        require(activity != null, "Could not launch OpenccActivity");
+        requireEquals(context.getPackageName(), activity.getPackageName(), "Unexpected activity package");
         return activity;
     }
 
     private void assertStandaloneConversion(Activity activity) throws Exception {
         EditText source = activity.findViewById(resourceId("source_text"));
         Spinner types = activity.findViewById(resourceId("conversion_type"));
-        TextView result = activity.findViewById(resourceId("result_text"));
+        TextView converted = activity.findViewById(resourceId("result_text"));
         View convert = activity.findViewById(resourceId("convert_button"));
-        assertNotNull(source);
-        assertNotNull(types);
-        assertNotNull(result);
-        assertNotNull(convert);
+        require(source != null, "Missing source editor");
+        require(types != null, "Missing conversion type selector");
+        require(converted != null, "Missing result view");
+        require(convert != null, "Missing conversion action");
 
         onMain(() -> {
             source.setText(SOURCE);
             types.setSelection(0);
-            assertTrue("Release conversion action must be enabled", convert.isEnabled());
-            assertTrue("Release conversion action did not accept the click", convert.performClick());
+            require(convert.isEnabled(), "Release conversion action must be enabled");
+            require(convert.performClick(), "Release conversion action did not accept the click");
             return null;
         });
-        awaitText(result, RESULT);
-        assertEquals(SOURCE, onMain(() -> source.getText().toString()));
+        awaitText(converted, RESULT);
+        requireEquals(SOURCE, onMain(() -> source.getText().toString()), "Source text was mutated");
     }
 
     private void assertBinderConversion(PackageManager packageManager) throws Exception {
@@ -145,9 +166,9 @@ public final class OpenccReleaseRuntimeTest {
             .addCategory(PLUGIN_CATEGORY)
             .setPackage(context.getPackageName());
         List<ResolveInfo> matches = packageManager.queryIntentServices(discovery, 0);
-        assertEquals("Release APK must expose exactly one OpenCC plugin service", 1, matches.size());
+        requireEquals(1, matches.size(), "Release APK must expose exactly one OpenCC plugin service");
         ResolveInfo match = matches.get(0);
-        assertEquals(PLUGIN_PERMISSION, match.serviceInfo.permission);
+        requireEquals(PLUGIN_PERMISSION, match.serviceInfo.permission, "Unexpected service permission");
         Intent explicit = new Intent(discovery).setComponent(
             new ComponentName(match.serviceInfo.packageName, match.serviceInfo.name)
         );
@@ -177,18 +198,16 @@ public final class OpenccReleaseRuntimeTest {
             }
         };
 
-        assertTrue("Release plugin service refused binding", context.bindService(
-            explicit,
-            connection,
-            Context.BIND_AUTO_CREATE
-        ));
+        require(
+            context.bindService(explicit, connection, Context.BIND_AUTO_CREATE),
+            "Release plugin service refused binding"
+        );
         try {
-            assertTrue("Timed out binding the release plugin service",
-                connected.await(20, TimeUnit.SECONDS));
+            require(connected.await(20, TimeUnit.SECONDS), "Timed out binding the release plugin service");
             IBinder binder = binderReference.get();
-            assertNotNull("Release plugin service returned a null Binder", binder);
-            assertEquals(BINDER_DESCRIPTOR, binder.getInterfaceDescriptor());
-            assertEquals(RESULT, rawConvert(binder, SOURCE, "S2T"));
+            require(binder != null, "Release plugin service returned a null Binder");
+            requireEquals(BINDER_DESCRIPTOR, binder.getInterfaceDescriptor(), "Unexpected Binder descriptor");
+            requireEquals(RESULT, rawConvert(binder, SOURCE, "S2T"), "Unexpected Binder conversion");
         } finally {
             context.unbindService(connection);
         }
@@ -201,8 +220,10 @@ public final class OpenccReleaseRuntimeTest {
             data.writeInterfaceToken(BINDER_DESCRIPTOR);
             data.writeString(text);
             data.writeString(conversionType);
-            assertTrue("Legacy convert transaction 2 was not handled",
-                binder.transact(TRANSACTION_CONVERT, data, reply, 0));
+            require(
+                binder.transact(TRANSACTION_CONVERT, data, reply, 0),
+                "Legacy convert transaction 2 was not handled"
+            );
             reply.readException();
             return reply.readString();
         } finally {
@@ -215,26 +236,50 @@ public final class OpenccReleaseRuntimeTest {
         long deadline = SystemClock.elapsedRealtime() + TIMEOUT_MILLIS;
         String actual = "";
         while (SystemClock.elapsedRealtime() < deadline) {
-            instrumentation.waitForIdleSync();
+            waitForIdleSync();
             actual = onMain(() -> view.getText().toString());
             if (expected.equals(actual)) {
                 return;
             }
             SystemClock.sleep(50L);
         }
-        assertEquals("Timed out waiting for release Launcher conversion", expected, actual);
+        requireEquals(expected, actual, "Timed out waiting for release Launcher conversion");
     }
 
     private int resourceId(String name) {
         int id = context.getResources().getIdentifier(name, "id", context.getPackageName());
-        assertNotEquals("Missing release resource id/" + name, 0, id);
+        require(id != 0, "Missing release resource id/" + name);
         return id;
+    }
+
+    private String requiredArgument(String name) {
+        String value = arguments.getString(name, "").trim();
+        require(!value.isEmpty(), "Required instrumentation argument is missing: " + name);
+        return value;
     }
 
     private <T> T onMain(Callable<T> callable) throws Exception {
         FutureTask<T> task = new FutureTask<>(callable);
-        instrumentation.runOnMainSync(task);
+        runOnMainSync(task);
         return task.get(5, TimeUnit.SECONDS);
+    }
+
+    private static void require(boolean condition, String message) {
+        if (!condition) {
+            throw new AssertionError(message);
+        }
+    }
+
+    private static void requireEquals(Object expected, Object actual, String message) {
+        if (expected == null ? actual != null : !expected.equals(actual)) {
+            throw new AssertionError(message + ": expected=" + expected + ", actual=" + actual);
+        }
+    }
+
+    private static void requireEquals(long expected, long actual, String message) {
+        if (expected != actual) {
+            throw new AssertionError(message + ": expected=" + expected + ", actual=" + actual);
+        }
     }
 
     @SuppressWarnings("deprecation")

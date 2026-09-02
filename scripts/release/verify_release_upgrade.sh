@@ -31,7 +31,7 @@ expected_version_name="${EXPECTED_VERSION_NAME:?Set EXPECTED_VERSION_NAME}"
 expected_version_code="${EXPECTED_VERSION_CODE:?Set EXPECTED_VERSION_CODE}"
 target_package="io.github.supermonster003.autojs6.plugin.opencc"
 test_package="${target_package}.test"
-test_class="${target_package}.OpenccReleaseRuntimeTest"
+probe_runner="${target_package}.OpenccReleaseProbeInstrumentation"
 
 cleanup() {
   adb uninstall "$test_package" >/dev/null 2>&1 || true
@@ -162,19 +162,20 @@ esac
 adb install -r -t "$test_apk"
 if output="$(
   adb shell am instrument -w -r \
-    -e class "$test_class" \
     -e opencc_expected_version_name "$expected_version_name" \
     -e opencc_expected_version_code "$expected_version_code" \
-    "${test_package}/androidx.test.runner.AndroidJUnitRunner" 2>&1
+    "${test_package}/${probe_runner}" 2>&1
 )"; then
   instrumentation_status=0
 else
   instrumentation_status=$?
 fi
 printf '%s\n' "$output"
+success_marker="RELEASE_RUNTIME_OK version=${expected_version_name} versionCode=${expected_version_code}"
 if [ "$instrumentation_status" -ne 0 ] || \
-    ! printf '%s\n' "$output" | grep -Fq 'OK (1 test)' || \
-    printf '%s\n' "$output" | grep -Eq 'FAILURES!!!|INSTRUMENTATION_STATUS_CODE: -2|Process crashed|INSTRUMENTATION_ABORTED'; then
+    ! printf '%s\n' "$output" | grep -Fq "$success_marker" || \
+    ! printf '%s\n' "$output" | grep -Fq 'INSTRUMENTATION_CODE: -1' || \
+    printf '%s\n' "$output" | grep -Eq 'RELEASE_RUNTIME_FAILED|INSTRUMENTATION_STATUS_CODE: -2|Process crashed|INSTRUMENTATION_ABORTED'; then
   printf 'Release runtime instrumentation failed (shell status %s)\n' "$instrumentation_status" >&2
   exit 1
 fi

@@ -34,9 +34,10 @@ The fixture suite covers the complete five-package path, missing-package rejecti
 
 ## Signed in-place upgrade and minified runtime probe
 
-`OpenccReleaseRuntimeTest` is deliberately written in Java and does not reference the Kotlin test
-runtime. This lets the separately signed debug instrumentation APK drive an installed minified release
-target without requiring R8 to retain classes used only by Kotlin tests.
+`OpenccReleaseProbeInstrumentation` extends the platform `android.app.Instrumentation` directly and
+avoids AndroidX, JUnit, and Kotlin at runtime. This lets the separately signed debug instrumentation
+APK drive an installed minified release without forcing the production APK to retain test-only
+runner dependencies or Kotlin helpers.
 
 After preparing a signed candidate, run the following on each selected device (set `ANDROID_SERIAL`
 when more than one device is connected):
@@ -55,5 +56,6 @@ sh scripts/release/verify_release_upgrade.sh \
 The script starts from an uninstalled state, installs v1.2.0, requires that it has no Launcher, and
 performs an actual `adb install -r` upgrade. It then requires the same package UID and
 `firstInstallTime`, the expected version name/code, and exactly one `OpenccActivity` Launcher. Finally,
-the Java probe converts Unicode text through both the visible editor and legacy raw Binder transaction
-2 against the signed minified target. Its exit trap removes the target and instrumentation packages.
+the platform-only Java probe converts Unicode text through both the visible editor and legacy raw
+Binder transaction 2 against the signed minified target. Its exit trap removes the target and
+instrumentation packages.
