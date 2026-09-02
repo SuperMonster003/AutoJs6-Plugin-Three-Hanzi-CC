@@ -9,6 +9,12 @@ plugins {
 }
 
 val globalApplicationId = "io.github.supermonster003.autojs6.plugin.opencc"
+val releaseProbeProperty = providers.gradleProperty("openccReleaseProbe").orNull
+val useReleaseProbeInstrumentation = when (releaseProbeProperty) {
+    null, "false" -> false
+    "true" -> true
+    else -> error("openccReleaseProbe must be either true or false")
+}
 
 var isSignsValid = false
 
@@ -22,7 +28,11 @@ android {
         minSdk = versions.sdkVersionMin
         targetSdk = versions.sdkVersionTarget
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = if (useReleaseProbeInstrumentation) {
+            "$globalApplicationId.OpenccReleaseProbeInstrumentation"
+        } else {
+            "androidx.test.runner.AndroidJUnitRunner"
+        }
 
         versionCode = versions.appVersionCode
         versionName = versions.appVersionName

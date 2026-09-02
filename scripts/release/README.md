@@ -43,6 +43,8 @@ After preparing a signed candidate, run the following on each selected device (s
 when more than one device is connected):
 
 ```text
+./gradlew :app:assembleDebugAndroidTest -PopenccReleaseProbe=true
+
 EXPECTED_VERSION_NAME=1.3.0 \
 EXPECTED_VERSION_CODE=20 \
 EXPECTED_PAGE_SIZE=4096 \
@@ -52,6 +54,10 @@ sh scripts/release/verify_release_upgrade.sh \
   app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
   abi
 ```
+
+The Gradle property changes only the generated test APK's single instrumentation runner. Omitting it
+keeps `AndroidJUnitRunner` for the normal debug device suite; setting it to any value other than
+`true` or `false` fails configuration.
 
 The script starts from an uninstalled state, installs v1.2.0, requires that it has no Launcher, and
 performs an actual `adb install -r` upgrade. It then requires the same package UID and
