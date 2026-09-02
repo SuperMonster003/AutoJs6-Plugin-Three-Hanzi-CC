@@ -19,7 +19,7 @@
 | M2 工程化与持续集成 | 已完成 | 构建/测试流水线与发布物料脚本化 | 测试/发布 |
 | M3 转换能力增强 | 开发完成, 待宿主发布 | 类型枚举, 批量与链式转换, 本地化说明, 自定义词典评估 | API/插件/宿主 |
 | M4 运行时与生态演进 | 已启动 | 官方 OpenCC 原生后端, 上游自动跟进, 16 KB 适配与词典生态 | 依赖/插件/测试/宿主/发布 |
-| M5 插件与独立 App 双形态 | M5-A 至 M5-D 已完成 | 共用官方后端的桌面文本转换 UI、原插件入口与十语言无障碍体验 | App/插件/测试/发布 |
+| M5 插件与独立 App 双形态 | 已完成 | v1.3.0 以同一 APK 正式提供共用官方后端的桌面文本转换 UI、原插件入口与十语言无障碍体验 | App/插件/测试/发布 |
 
 依赖顺序:
 
@@ -105,19 +105,18 @@ M4-A 官方后端原型 ──> M4-B 兼容/性能/16 KB ──> M4-C 正式替�
 | 5 | M4-E | 官方后端和上游同步流程稳定 | 新配置/自定义词典/宿主路由的独立契约升级 | 每项先有 API 与旧实现回退测试, 不阻塞主线发布 |
 | 6 | M5 | M4-D-2 自动 PR 流程稳定; 不要求 M4-D-3/M4-D-4 或 M4-E 完成 | 同一 APK 同时保留 AutoJs6 插件服务与独立应用入口, 提供完全离线的文本转换 UI | 独立/插件两种入口共用同一后端且可并发运行, 权限/API/签名/五 ABI/16 KB/可访问性/隐私门禁全部通过 |
 
-当前检查点 (2026-09-03): M4-A、M4-B 与 M4-C 已完成；`v1.2.0` 标签、GitHub Release 和
-插件中心在线索引已公开且相互校验一致。M4-D-2 的原子更新器、升级 PR 正文、最小权限双阶段工作流、
-显式 Build/Markdown 调度和远端 Actions 建 PR 权限均已落地，真实 GitHub 当前版本重放返回无更新、
-无漂移。M4-D-3 的默认分支可信判定器、读/写 job 隔离、精确 SHA 工作流证据、资源/许可证门禁、
-合并前二次判定和离线故障矩阵已实现；远端 `OPENCC_AUTOMATION_MODE=pr-only`，因此当前只产生
-判定摘要而不会写入。`master` 按维护策略保持不受保护；待首个真实或受控更新 PR 完成在线 dry-run
-后，才将策略提升为 `merge`。M4-D-4 不阻塞 M4-E 或 M5。M5-A 已完成同 APK Launcher、共享
-转换协调器与平台 Views 选型；M5-B 已完成 14 类型离线 UI、显式剪贴板/分享、取消与状态恢复。
-M5-C 已完成双入口并发/生命周期/资源首启/API 与最终 APK manifest 安全门禁；M5-D 已完成十语言
-单一来源、RTL/大字体/日夜主题/键盘/旋转/分屏/手机/平板可访问性、两张可复核设备截图，以及
-API 24 x86、API 28 armv7、API 35 arm64 和 API 36 x86_64/16 KB 页的最终设备矩阵。M5-E 继续作为
-后续发布主线；首个双形态候选已按向后兼容功能版本确定为 `v1.3.0` / build 20，并加入签名 release
-原地升级运行时探针，但在签名、升级、tag、Release 与索引全部回读通过前不改变 v1.2.0 线上状态。
+当前检查点 (2026-09-03): M4-A、M4-B 与 M4-C 已完成；`v1.2.0` 的官方后端发布证据保持归档。
+M4-D-2 的原子更新器、升级 PR 正文、最小权限双阶段工作流、显式 Build/Markdown 调度和远端 Actions
+建 PR 权限均已落地，真实 GitHub 当前版本重放返回无更新、无漂移。M4-D-3 的默认分支可信判定器、
+读/写 job 隔离、精确 SHA 工作流证据、资源/许可证门禁、合并前二次判定和离线故障矩阵已实现；远端
+`OPENCC_AUTOMATION_MODE=pr-only`，因此当前只产生判定摘要而不会写入。`master` 按维护策略保持不受
+保护；待首个真实或受控更新 PR 完成在线 dry-run 后，才将策略提升为 `merge`。M4-D-4 不阻塞 M4-E。
+
+M5-A 至 M5-E 已全部完成。`v1.3.0` / build 20 在同一 APK 中正式加入独立 Launcher 和 14 类型离线
+编辑器，同时保持原 Binder 契约、applicationId 与签名证书。签名 minified release 已从 v1.2.0 在
+API 24 x86、API 28 armv7、API 35 arm64 和 API 36 x86_64/16 KB 页原地升级，并通过唯一 Launcher、
+真实 UI 与原始 Binder 事务探针；远端 Build integrity 全绿。标签、GitHub Release 的 7 个资产及官方
+插件索引提交 `3b9b47cf4acd306ab2de63638e1aa761c82c28ad` 已逐项回读一致，v1.3.0 现为公开 Latest。
 
 ### M4-A: 官方 OpenCC 原生后端原型 (2026-08-31, 已完成)
 
@@ -256,13 +255,13 @@ M5-C 验收条件: UI 与 Binder 可在同一进程生命周期内安全并发�
 
 M5-D 验收条件: 10 语言及 47 个生成物无漂移，LTR/RTL、TalkBack、大字体、旋转/分屏和手机/平板布局均有代码、测试与原始截图证据；最终 APK 的 `localeConfig`、资源与文档双路径表述均有自动门禁。 (已满足；详细证据见 `docs/engineering/standalone-app-architecture.md` 与 `docs/images/screenshots/README.md`)
 
-### M5-E: 双形态正式发布
+### M5-E: 双形态正式发布 (2026-09-03, 已完成)
 
-- [ ] (发布) 沿用同一 applicationId、签名证书和五种 ABI 产物，验证从 v1.2.0 及后续纯插件版本原地升级后同时出现 Launcher 且插件中心仍识别同一插件，不创建互相冲突的“App 版/插件版”包名。
-- [ ] (发布) Release、`SHA256SUMS.txt`、官方插件索引与 APK manifest 同时记录独立入口、插件服务、最低 Android、ABI、16 KB 和完全离线能力；发布前重新执行签名连续性、R8、ELF/ZIP、UI 与 Binder 全矩阵。
-- [ ] (发布) M5-A 至 M5-D 全部验收后，首个双形态版本已按向后兼容新增能力确定为 `v1.3.0` / build 20，发布日期候选为 2026-09-03；只有签名候选与原地升级矩阵通过后才可创建 tag/Release，再由官方索引生成器回读，不能因版本号已写入候选就提前视为稳定 App。
+- [x] (发布/设备) 沿用 applicationId `io.github.supermonster003.autojs6.plugin.opencc`、原正式签名证书和五种 ABI 产物；API 24/x86、API 28/armeabi-v7a、API 35/arm64-v8a 与 API 36/x86_64/16 KB 四个环境均先安装 v1.2.0 正式资产，再以 `install-r` 原地升级签名 v1.3.0。每轮均证明 package UID 与首次安装时间不变、只新增一个 Launcher、插件服务仍可发现，并通过真实 UI Unicode 转换和原始 Binder 事务 2；没有创建冲突的“App 版/插件版”包名。
+- [x] (发布/测试) 从固定提交 `0cd4c89f51e587473227a8d6e46c7f17d2455d56` 清洁重建 v1.3.0 / build 20 的五个签名 minified APK；发布脚本及 APK 门禁复核版本/CRC32/SHA-256/签名连续性、精确 ABI、唯一 JNI、官方资源、R8、Manifest/权限/locale、ELF 16 KB/RELRO 和 ZIP 16 KB 对齐。API 24 新增平台专用 release 探针，直接覆盖压缩后 Launcher UI 与原始 Binder 协议；[Build integrity run 33678517379](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33678517379) 的构建、minSdk、arm64、x86_64 4 KB 与 x86_64 16 KB 作业全部通过。
+- [x] (发布/索引) 轻量标签 `v1.3.0` 精确指向上述提交；[GitHub Release](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases/tag/v1.3.0) 已作为非 draft / 非 prerelease 的 Latest 正式发布五个 APK、`SHA256SUMS.txt` 与 `RELEASE_NOTES.md`，GitHub 回读的 7 个资产名称、大小和 SHA-256 与本地候选逐项一致。[官方索引生成 run 33680171383](https://github.com/SuperMonster003/AutoJs6-Official-Plugins-Index/actions/runs/33680171383) 随后更新提交 `3b9b47cf4acd306ab2de63638e1aa761c82c28ad`；线上 OpenCC 条目为 v1.3.0 / build 20，五个下载地址、大小、摘要及固定到同一标签的图标/十语言说明均已回读通过。
 
-M5 总体验收条件: 用户安装同一个正式 APK 后，既可从桌面使用完整离线转换 UI，也可由 AutoJs6 通过原协议调用；两种模式共享官方固定后端且互不破坏，升级、签名、隐私、权限、可访问性、四 ABI 与 16 KB 兼容均有自动化和设备证据。
+M5 总体验收条件: 用户安装同一个正式 APK 后，既可从桌面使用完整离线转换 UI，也可由 AutoJs6 通过原协议调用；两种模式共享官方固定后端且互不破坏，升级、签名、隐私、权限、可访问性、四 ABI 与 16 KB 兼容均有自动化和设备证据。 (已满足；正式产物与完整证据见 `docs/engineering/standalone-app-architecture.md`)
 
 ## 边界 (非目标)
 

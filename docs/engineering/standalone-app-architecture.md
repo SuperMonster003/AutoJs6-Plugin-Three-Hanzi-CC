@@ -1,7 +1,7 @@
-# M5-A/B/C/D 独立 App 双入口、离线 UI、可访问性与安全架构决策
+# M5-A/B/C/D/E 独立 App 双入口、离线 UI、可访问性、安全与正式发布决策
 
 记录日期: 2026-09-03
-状态: Accepted（M5-A/B/C/D 原型；不是新的正式版本承诺）
+状态: Accepted（M5-A 至 M5-E 已完成；v1.3.0 于 2026-09-03 正式发布）
 
 ## 结论
 
@@ -23,6 +23,9 @@ AutoJs6 ──> OpenccPluginService ───┘          │
 
 UI 不通过 Binder 回环调用自身服务，因此独立模式不要求安装或运行 AutoJs6，也不会复制 JNI、
 资源 ZIP、Converter 缓存、类型解析、批量/链式限额或错误模型。
+
+该架构已随 `v1.3.0` / build 20 正式发布；同一签名 APK 可从 v1.2.0 原地升级，桌面入口与既有
+AutoJs6 插件入口并存，不需要用户在“App 版”和“插件版”之间选择不同包。
 
 ## Views 与 Compose 选型
 
@@ -49,22 +52,23 @@ Android 官方说明两套 UI 工具都可使用；官方的迁移度量示例�
 
 ## APK 实测
 
-基线是 GitHub 已公开的 v1.2.0 签名资产；原型是 2026-09-02 至 2026-09-03 在相同版本号下仅用于本地验收的
-minified release 构建，未发布且不会覆盖 v1.2.0：
+基线是 GitHub 已公开的 v1.2.0 签名资产；中间列记录 2026-09-02 至 2026-09-03 的本地 minified
+release 原型，最后两列是固定提交 `0cd4c89f51e587473227a8d6e46c7f17d2455d56` 的 v1.3.0 正式资产及
+相对 v1.2.0 的最终增量：
 
-| APK | v1.2.0 | M5-A 原型 | M5-B 原型 | M5-C 原型 | M5 总增量 |
-|---|---:|---:|---:|---:|---:|
-| arm64-v8a | 1,499,452 B | 1,528,088 B | 1,542,276 B | 1,542,312 B | +42,860 B |
-| armeabi-v7a | 1,160,706 B | 1,189,342 B | 1,203,530 B | 1,203,566 B | +42,860 B |
-| x86_64 | 1,508,249 B | 1,536,885 B | 1,551,073 B | 1,551,109 B | +42,860 B |
-| x86 | 1,461,662 B | 1,490,298 B | 1,504,486 B | 1,504,522 B | +42,860 B |
-| universal | 3,835,001 B | 3,863,637 B | 3,877,825 B | 3,877,861 B | +42,860 B |
+| APK | v1.2.0 | M5-A 原型 | M5-B 原型 | M5-C 原型 | v1.3.0 正式版 | 正式版总增量 |
+|---|---:|---:|---:|---:|---:|---:|
+| arm64-v8a | 1,499,452 B | 1,528,088 B | 1,542,276 B | 1,542,312 B | 1,553,948 B | +54,496 B |
+| armeabi-v7a | 1,160,706 B | 1,189,342 B | 1,203,530 B | 1,203,566 B | 1,215,154 B | +54,448 B |
+| x86_64 | 1,508,249 B | 1,536,885 B | 1,551,073 B | 1,551,109 B | 1,562,729 B | +54,480 B |
+| x86 | 1,461,662 B | 1,490,298 B | 1,504,486 B | 1,504,522 B | 1,516,110 B | +54,448 B |
+| universal | 3,835,001 B | 3,863,637 B | 3,877,825 B | 3,877,861 B | 3,889,481 B | +54,480 B |
 
 M5-A 的五种产物固定增加 `28,636 B`；M5-B 再固定增加 `14,188 B`，来自 Activity 操作/状态逻辑、
 扩展 XML 和 10 语言类型/操作文案；M5-C 仅因显式禁止明文流量的最终 Manifest 属性再增加 `36 B`，
-测试与静态门禁代码均不进入正式 APK，ABI 原生载荷不变。构建期间项目的平台版本插件正在由维护者
-独立升级，因此这些数字用于记录当前原型资产，而不作为跨工具链的字节级长期阈值。真正的 M5
-发布仍会在固定提交和工具链上重新建立基线。
+测试与静态门禁代码均不进入正式 APK，ABI 原生载荷不变。M5-D 的最终本地化/可访问性资源和发布前
+兼容修复使正式版总增量约为 54.4 KiB；这些数字是固定提交与工具链的发布证据，不作为跨工具链的
+字节级长期阈值。
 
 ## 生命周期与线程
 
@@ -227,10 +231,48 @@ unsigned release 各五个最终 APK 均通过组件/权限、localeConfig、资
 `LOAD >= 0x4000`、RELRO 与原生条目检查。GitHub Actions 另新增 API 24/x86/minSdk 完整设备门禁，
 并保留 arm64/x86_64 4 KB 与 x86_64 16 KB 作业。
 
-## 后续边界
+## M5-E 正式发布证据
 
-M5-A/B/C/D 验收完成后，第一个双形态候选按向后兼容功能版本确定为 `v1.3.0` / build 20。版本号进入
-候选源码不等于公开发布：M5-E 仍须从固定提交重建并签名五种 ABI，使用仅依赖 Android 平台的 Java release 探针验证
-v1.2.0 原地升级后 UID/首次安装时间不变、唯一 Launcher、真实 UI 转换和原始 Binder 事务，再核对
-插件中心识别、发布说明、tag、GitHub 资产与在线索引回读一致。在这些门禁完成前，v1.2.0 仍是公开
-Latest，候选不得覆盖其标签、Release 或索引。
+最终候选从提交 `0cd4c89f51e587473227a8d6e46c7f17d2455d56` 清洁重建并以既有正式证书签名；
+证书 SHA-256 为 `31A681FCFFFB3E428420CAE280DED89292B12A3B0F59E19B7A73E32A8AE4C213`。
+`prepare_release.py` 对五个 minified APK 执行版本、CRC32、SHA-256、签名连续性、精确 ABI、Manifest、
+R8/JNI、官方资源、ELF `LOAD >= 0x4000`、RELRO、未压缩 native entry 与 `zipalign -P 16` 门禁：
+
+| ABI | 正式文件 | 大小 | SHA-256 |
+|---|---|---:|---|
+| arm64-v8a | `autojs6-plugin-opencc-v1.3.0-arm64-v8a-b1392e35.apk` | 1,553,948 B | `c4049b3eec477dde0d2381464b79bf7338f26c3a4fc47f4036484b7c100d018c` |
+| armeabi-v7a | `autojs6-plugin-opencc-v1.3.0-armeabi-v7a-a7003615.apk` | 1,215,154 B | `c3fcedec487387100283b3e744e3bb8d84d4da618214ae081ef034240f9717aa` |
+| x86_64 | `autojs6-plugin-opencc-v1.3.0-x86_64-00da7436.apk` | 1,562,729 B | `503e1f3006fd8f078a40c7adf2e99cecd96beb7217941ad870e86445c978457e` |
+| x86 | `autojs6-plugin-opencc-v1.3.0-x86-4fb929dd.apk` | 1,516,110 B | `13befc05a88b9c9b438173af32ad179843b905d1d228d2d35fcbc95674b45e3f` |
+| universal | `autojs6-plugin-opencc-v1.3.0-universal-324e0e7c.apk` | 3,889,481 B | `2a1dfe9599954b7209dd773d2e32357171153134a9b00dcebd225813e06727ff` |
+
+签名包原地升级矩阵均先安装 GitHub 上的 v1.2.0 对应正式资产，再以 `adb install -r` 安装 v1.3.0；
+每轮核对 applicationId、签名、package UID 与 `firstInstallTime` 连续，恰好一个 Launcher 可解析，随后
+从真实页面执行包含 emoji/非 BMP 的转换，并用只依赖 Android 平台的 Java instrumentation 直接发送
+旧协议 Binder 事务 2：
+
+| Android / API | 环境 | ABI | 页大小 | 结果 |
+|---|---|---|---:|---|
+| Android 7.0 / API 24 | 模拟器 | x86 | 4 KB | 原地升级、Launcher UI、原始 Binder 全部通过 |
+| Android 9 / API 28 | 真机 | armeabi-v7a | 4 KB | 原地升级、Launcher UI、原始 Binder 全部通过 |
+| Android 15 / API 35 | 真机 | arm64-v8a | 4 KB | 原地升级、Launcher UI、原始 Binder 全部通过 |
+| Android 16 / API 36 | 模拟器 | x86_64 | 16 KB | 原地升级、Launcher UI、原始 Binder 全部通过 |
+
+发布前的 minified x86 包在 API 24 揭示了仅 release 资源优化路径可触发的 Android 7 `TextView`
+`fontFamily` 解析异常。页面原本显式指定的 `android:fontFamily=sans` 与父主题默认值重复；删除日间/夜间
+样式中的冗余覆盖并继承系统 sans 后，同一签名 release 探针在 API 24 通过。为防止以后“debug 正常但
+release 启动失败”，`verify_minified_release_runtime.sh` 已成为 Actions 的独立 minSdk 门禁：CI 使用临时、
+非生产证书把 unsigned release 与平台探针签成同一身份，实际启动 Launcher 并重放 UI 与原始 Binder，
+临时密钥不进入缓存或 artifact。
+
+远端 [Build integrity run 33678517379](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33678517379)
+已通过构建/静态审计、API 24 minified release、arm64、x86_64 4 KB 和 x86_64 16 KB 全部作业。16 KB
+作业第一次运行时是 UID 1000 的 `system_server` 在 `SettingsProvider.odex` 中空指针崩溃；仅重跑该作业
+后完整通过，应用测试没有以放宽断言或重试单测掩盖故障。
+
+轻量标签 `v1.3.0` 精确指向上述源码提交。[GitHub Release](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases/tag/v1.3.0)
+于 2026-09-03 作为 Latest 正式发布，非 draft / prerelease；服务端回读的五个 APK、`SHA256SUMS.txt`
+和 `RELEASE_NOTES.md` 名称、大小与 SHA-256 全部等于本地候选。[官方索引生成 run 33680171383](https://github.com/SuperMonster003/AutoJs6-Official-Plugins-Index/actions/runs/33680171383)
+随后更新 `plugins.official.generated.json` 至提交 `3b9b47cf4acd306ab2de63638e1aa761c82c28ad`；线上
+OpenCC 条目为 v1.3.0 / build 20，包含精确五资产 URL/摘要，图标与 10 语言插件说明全部固定到同一标签。
+至此 M5-A 至 M5-E 的实现、设备、签名、发布与分发索引验收全部完成。
