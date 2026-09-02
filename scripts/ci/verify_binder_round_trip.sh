@@ -92,6 +92,8 @@ run_instrumentation() {
 run_instrumentation \
   io.github.supermonster003.autojs6.plugin.opencc.OpenccPluginServiceTest
 run_instrumentation \
+  io.github.supermonster003.autojs6.plugin.opencc.OpenccDualEntryTest
+run_instrumentation \
   io.github.supermonster003.autojs6.plugin.opencc.OpenccResourceRestartTest \
   -e opencc_resource_restart_phase prepare
 run_instrumentation \

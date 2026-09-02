@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="opencc_accent">#9CCAFF</color>
+    <color name="opencc_window_background">#121316</color>
+    <color name="opencc_system_bar">#1B1C20</color>
+</resources>

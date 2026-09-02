@@ -30,6 +30,9 @@ FORBIDDEN_DEX_MARKERS = {
     b"com/zqc/opencc/android/lib/ChineseConverter": "legacy ChineseConverter JNI reference",
 }
 REQUIRED_DEX_MARKERS = {
+    b"Lio/github/supermonster003/autojs6/plugin/opencc/OpenccActivity;": (
+        "standalone OpenccActivity class descriptor"
+    ),
     b"Lio/github/supermonster003/autojs6/plugin/opencc/nativebridge/OpenccNativeEngine;": (
         "OpenccNativeEngine class descriptor"
     ),

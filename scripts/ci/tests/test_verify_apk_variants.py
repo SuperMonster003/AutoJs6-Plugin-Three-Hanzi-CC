@@ -12,6 +12,10 @@ import verify_apk_variants  # noqa: E402
 
 
 class VerifyApkVariantsTest(unittest.TestCase):
+    def test_standalone_entry_is_required_in_every_target_apk(self) -> None:
+        marker = b"Lio/github/supermonster003/autojs6/plugin/opencc/OpenccActivity;"
+        self.assertIn(marker, verify_apk_variants.REQUIRED_DEX_MARKERS)
+
     def test_signed_release_uses_public_artifact_names(self) -> None:
         names = set(verify_apk_variants.expected_apks("release"))
         self.assertIn("app-arm64-v8a-release.apk", names)

@@ -2,4 +2,17 @@
 <resources>
     <string name="plugin_description">用于中文文本转换的 OpenCC 插件</string>
     <string name="error_unsupported_conversion_type">不支持的 OpenCC 转换类型: %1$s</string>
+    <string name="standalone_subtitle">使用内置 OpenCC 词典在设备本地转换中文文本, 不使用网络连接.</string>
+    <string name="standalone_source_label">来源文本</string>
+    <string name="standalone_source_hint">输入或粘贴中文文本</string>
+    <string name="standalone_conversion_type_label">转换类型</string>
+    <string name="standalone_convert_action">转换</string>
+    <string name="standalone_result_label">转换结果</string>
+    <string name="standalone_result_hint">转换后的文本将显示在这里</string>
+    <string name="standalone_status_converting">正在转换…</string>
+    <string name="standalone_status_complete">转换完成</string>
+    <string name="standalone_status_failed">转换失败: %1$s</string>
+    <string name="standalone_error_unknown">未知错误</string>
+    <string name="standalone_progress_description">正在转换文本</string>
+    <string name="standalone_runtime_identity">OpenCC %1$s · %2$s\n资源 %3$s</string>
 </resources>

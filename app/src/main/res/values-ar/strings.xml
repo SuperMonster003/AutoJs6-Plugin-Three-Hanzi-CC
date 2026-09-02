@@ -2,4 +2,17 @@
 <resources>
     <string name="plugin_description">مكون OpenCC الإضافي لتحويل النص الصيني</string>
     <string name="error_unsupported_conversion_type">نوع تحويل OpenCC غير مدعوم: %1$s</string>
+    <string name="standalone_subtitle">حوّل النص الصيني محليًا باستخدام قواميس OpenCC المضمّنة. لا يُستخدم اتصال بالشبكة.</string>
+    <string name="standalone_source_label">النص المصدر</string>
+    <string name="standalone_source_hint">أدخل النص الصيني أو الصقه</string>
+    <string name="standalone_conversion_type_label">نوع التحويل</string>
+    <string name="standalone_convert_action">تحويل</string>
+    <string name="standalone_result_label">النتيجة</string>
+    <string name="standalone_result_hint">سيظهر النص المحوّل هنا</string>
+    <string name="standalone_status_converting">جارٍ التحويل…</string>
+    <string name="standalone_status_complete">اكتمل التحويل</string>
+    <string name="standalone_status_failed">تعذّر التحويل: %1$s</string>
+    <string name="standalone_error_unknown">خطأ غير معروف</string>
+    <string name="standalone_progress_description">جارٍ تحويل النص</string>
+    <string name="standalone_runtime_identity">OpenCC %1$s · %2$s\nالموارد %3$s</string>
 </resources>

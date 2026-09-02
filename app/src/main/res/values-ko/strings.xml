@@ -2,4 +2,17 @@
 <resources>
     <string name="plugin_description">중국어 텍스트 변환용 OpenCC 플러그인</string>
     <string name="error_unsupported_conversion_type">지원되지 않는 OpenCC 변환 유형: %1$s</string>
+    <string name="standalone_subtitle">내장 OpenCC 사전을 사용해 기기에서 중국어 텍스트를 변환합니다. 네트워크 연결을 사용하지 않습니다.</string>
+    <string name="standalone_source_label">원본 텍스트</string>
+    <string name="standalone_source_hint">중국어 텍스트 입력 또는 붙여넣기</string>
+    <string name="standalone_conversion_type_label">변환 유형</string>
+    <string name="standalone_convert_action">변환</string>
+    <string name="standalone_result_label">결과</string>
+    <string name="standalone_result_hint">변환된 텍스트가 여기에 표시됩니다</string>
+    <string name="standalone_status_converting">변환 중…</string>
+    <string name="standalone_status_complete">변환 완료</string>
+    <string name="standalone_status_failed">변환 실패: %1$s</string>
+    <string name="standalone_error_unknown">알 수 없는 오류</string>
+    <string name="standalone_progress_description">텍스트 변환 중</string>
+    <string name="standalone_runtime_identity">OpenCC %1$s · %2$s\n리소스 %3$s</string>
 </resources>

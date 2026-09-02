@@ -2,4 +2,17 @@
 <resources>
     <string name="plugin_description">中国語テキスト変換用 OpenCC プラグイン</string>
     <string name="error_unsupported_conversion_type">サポートされていない OpenCC 変換タイプ: %1$s</string>
+    <string name="standalone_subtitle">内蔵の OpenCC 辞書を使って, 中国語テキストを端末内で変換します. ネットワーク接続は使用しません.</string>
+    <string name="standalone_source_label">変換元テキスト</string>
+    <string name="standalone_source_hint">中国語テキストを入力または貼り付け</string>
+    <string name="standalone_conversion_type_label">変換タイプ</string>
+    <string name="standalone_convert_action">変換</string>
+    <string name="standalone_result_label">変換結果</string>
+    <string name="standalone_result_hint">変換されたテキストがここに表示されます</string>
+    <string name="standalone_status_converting">変換中…</string>
+    <string name="standalone_status_complete">変換が完了しました</string>
+    <string name="standalone_status_failed">変換に失敗しました: %1$s</string>
+    <string name="standalone_error_unknown">不明なエラー</string>
+    <string name="standalone_progress_description">テキストを変換中</string>
+    <string name="standalone_runtime_identity">OpenCC %1$s · %2$s\nリソース %3$s</string>
 </resources>

@@ -2,4 +2,17 @@
 <resources>
     <string name="plugin_description">Плагин OpenCC для преобразования китайского текста</string>
     <string name="error_unsupported_conversion_type">Неподдерживаемый тип преобразования OpenCC: %1$s</string>
+    <string name="standalone_subtitle">Преобразуйте китайский текст локально с помощью встроенных словарей OpenCC. Подключение к сети не используется.</string>
+    <string name="standalone_source_label">Исходный текст</string>
+    <string name="standalone_source_hint">Введите или вставьте китайский текст</string>
+    <string name="standalone_conversion_type_label">Тип преобразования</string>
+    <string name="standalone_convert_action">Преобразовать</string>
+    <string name="standalone_result_label">Результат</string>
+    <string name="standalone_result_hint">Преобразованный текст появится здесь</string>
+    <string name="standalone_status_converting">Преобразование…</string>
+    <string name="standalone_status_complete">Преобразование завершено</string>
+    <string name="standalone_status_failed">Ошибка преобразования: %1$s</string>
+    <string name="standalone_error_unknown">Неизвестная ошибка</string>
+    <string name="standalone_progress_description">Выполняется преобразование текста</string>
+    <string name="standalone_runtime_identity">OpenCC %1$s · %2$s\nРесурсы %3$s</string>
 </resources>

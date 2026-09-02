@@ -110,15 +110,16 @@ M4-A 官方后端原型 ──> M4-B 兼容/性能/16 KB ──> M4-C 正式替�
 无漂移。M4-D-3 的默认分支可信判定器、读/写 job 隔离、精确 SHA 工作流证据、资源/许可证门禁、
 合并前二次判定和离线故障矩阵已实现；远端 `OPENCC_AUTOMATION_MODE=pr-only`，因此当前只产生
 判定摘要而不会写入。`master` 按维护策略保持不受保护；待首个真实或受控更新 PR 完成在线 dry-run
-后，才将策略提升为 `merge`。M4-D-4 不阻塞 M4-E 或 M5，M5 已按同 APK 双形态 App/UI 目标进入
-后续产品主线。
+后，才将策略提升为 `merge`。M4-D-4 不阻塞 M4-E 或 M5。M5-A 已完成同 APK Launcher、共享
+转换协调器、平台 Views 选型和 16 KB 双入口实测；M5-B 至 M5-E 继续作为后续产品主线，当前
+不改变 v1.2.0 Release 或在线索引。
 
 ### M4-A: 官方 OpenCC 原生后端原型 (2026-08-31, 已完成)
 
 - [x] (依赖) 以 Git 子模块引入官方 OpenCC, 固定 `ver.1.4.2` / `025f371dc76b598d77384fbdab90c937471844d8`; `opencc-upstream.properties` 记录完整上游身份, 清洁构建不依赖本地绝对路径.
 - [x] (依赖/插件) 引入同版本 `opencc-v1.4.2-resources.zip`; 构建脚本与在线监视器校验 GitHub Release digest, ZIP manifest 和逐文件摘要, 设备端以单个版本化 ZIP 原子安装并校验.
 - [x] (插件) 新建内部 `:opencc-native` Android Library, 使用 NDK 28.2/CMake 构建官方 OpenCC 与 Marisa, 为四 ABI 静态链接单一 `libopencc_jni.so`, 不执行上游宿主机字典/CLI 目标.
-- [x] (插件) 实现薄 JNI 与 JVM 门面: 14 配置白名单, Converter 缓存, 标准 UTF-8/UTF-16 转换, emoji/非 BMP 保真, C++ 异常边界, 资源修复及服务销毁清理均有设备测试.
+- [x] (插件) 实现薄 JNI 与 JVM 门面: 14 配置白名单, Converter 缓存, 标准 UTF-8/UTF-16 转换, emoji/非 BMP 保真, C++ 异常边界与资源修复均有设备测试；M5-A 后缓存生命周期由共享协调器提升到应用进程级.
 - [x] (插件/API) Binder 服务已切换到官方后端且维持 v1/v2 契约; capabilities 新增 OpenCC 版本, commit 和资源 SHA-256, 最低宿主版本不变.
 - [x] (测试) M4-A/M4-B 期间将 `android-opencc:1.2.2` 严格限制为 JVM/仪器差分基线; APK 门禁证明正式 5 APK 不含旧类库的 native/resources 或动态 C++ 运行时, M4-C 随后已将该测试依赖彻底删除.
 
@@ -214,14 +215,14 @@ Converter 缓存、类型白名单和错误模型；独立 UI 不通过一次无
 既有 AIDL 事务编号、插件 ID、`default` 变体或宿主能力探测结果。M4-E 的新增配置若尚未发布，M5 首版只展示
 当前稳定的 14 种类型；未来新增类型必须通过能力数据驱动 UI，而不是硬编码假定所有后端都支持。
 
-### M5-A: 双入口架构与最小原型
+### M5-A: 双入口架构与最小原型 (2026-09-02, 已完成)
 
-- [ ] (插件/App) 从 `OpenccPluginService` 中提取可由服务和 Activity 共同调用的应用层转换协调器；原生门面、资源校验和缓存仍保持单一实现，不复制 JNI 或资源 ZIP。
-- [ ] (App) 新增普通 Launcher Activity，同时保留受插件权限保护、无界面的 `WakeActivity` 与现有服务声明；从桌面启动不要求 `org.autojs.permission.PLUGIN`，第三方应用仍不能绕过权限直接绑定服务。
-- [ ] (App/依赖) 在 Android Views 与 Compose 之间依据 minSdk 24、APK 增量、冷启动、RTL/可访问性和现有 Gradle 工具链形成书面选型，不为 UI 引入网络、账号、分析或动态资源依赖。
-- [ ] (测试) 最小仪器测试分别从 Launcher 和 AutoJs6 Binder 路径执行同一固定转换，并证明两种入口得到相同结果和运行时 OpenCC 身份。
+- [x] (插件/App) 从 `OpenccPluginService` 提取进程级惰性 `OpenccConversionCoordinator`；服务和 Activity 共用同一 engine/锁/类型解析/限额，原生门面、资源校验、Converter 缓存、JNI 和资源 ZIP 均没有复制。服务销毁不再关闭另一入口仍可能使用的缓存。
+- [x] (App) 新增普通 `MAIN`/`LAUNCHER` `OpenccActivity`，同时保留受插件权限保护、无界面的 `WakeActivity` 与现有服务；桌面入口不要求 `org.autojs.permission.PLUGIN`，服务与 Wake 仍由 PackageManager 仪器断言该权限。
+- [x] (App/依赖) 依据 minSdk 24、实测五 APK 固定增量 28,636 B、惰性冷启动、RTL/可访问性和现有工具链选用平台 Android Views/XML；未新增 UI runtime、网络、账号、分析或动态资源依赖，决策与复核数据见 `docs/engineering/standalone-app-architecture.md`。
+- [x] (测试) `OpenccDualEntryTest` 从 Launcher 和 Binder 路径转换同一组含 emoji/非 BMP 的 `S2T` 文本，核对相同输出与 OpenCC version/commit/resource SHA-256，并审计单一 Launcher、组件权限及无 `INTERNET`；CI Binder 脚本已在所有设备 job 纳入该测试。
 
-M5-A 验收条件: 同一 debug APK 可从桌面启动并继续被插件协议发现；UI 与服务共享后端，现有 Binder 三阶段测试、五 APK 内容门禁和 16 KB 设备测试无回归。
+M5-A 验收条件: 同一 debug APK 可从桌面启动并继续被插件协议发现；UI 与服务共享后端，现有 Binder 三阶段测试、五 APK 内容门禁和 16 KB 设备测试无回归。 (已满足；API 35/arm64 与 API 28/32-bit armv7 真机通过双入口测试，Android 16/API 36/x86_64/`PAGE_SIZE=16384` 通过 Launcher + Binder + restart 三阶段，debug/release 各五 APK 通过 R8/签名/资源/ELF/ZIP 门禁，证据见 `docs/engineering/standalone-app-architecture.md`)
 
 ### M5-B: 离线文本转换 UI
 

@@ -2,4 +2,17 @@
 <resources>
     <string name="plugin_description">OpenCC plugin for Chinese text conversion</string>
     <string name="error_unsupported_conversion_type">Unsupported OpenCC conversion type: %1$s</string>
+    <string name="standalone_subtitle">Convert Chinese text locally with the embedded OpenCC dictionaries. No network connection is used.</string>
+    <string name="standalone_source_label">Source text</string>
+    <string name="standalone_source_hint">Enter or paste Chinese text</string>
+    <string name="standalone_conversion_type_label">Conversion type</string>
+    <string name="standalone_convert_action">Convert</string>
+    <string name="standalone_result_label">Result</string>
+    <string name="standalone_result_hint">The converted text appears here</string>
+    <string name="standalone_status_converting">Converting…</string>
+    <string name="standalone_status_complete">Conversion complete</string>
+    <string name="standalone_status_failed">Conversion failed: %1$s</string>
+    <string name="standalone_error_unknown">Unknown error</string>
+    <string name="standalone_progress_description">Conversion in progress</string>
+    <string name="standalone_runtime_identity">OpenCC %1$s · %2$s\nResources %3$s</string>
 </resources>
