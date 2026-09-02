@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="opencc_page_horizontal_padding">24dp</dimen>
+    <dimen name="opencc_editor_min_height">144dp</dimen>
+    <dimen name="opencc_editor_max_height">280dp</dimen>
+</resources>

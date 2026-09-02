@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-"""Generate localized README and CHANGELOG artifacts from JSON sources.
+"""Generate localized documentation and Android string resources from JSON sources.
 
 Source of truth:
   .readme/common.json              language-neutral facts (URLs, IDs, limits)
   .readme/lang_<code>.json         localized README copy (10 languages)
+  .readme/android_strings.json     localized standalone UI copy (10 languages)
   .readme/template_readme.md       README skeleton with {{ placeholder }} slots
   .readme/template_plugin_instruction.md
                                     plugin-center instruction skeleton
@@ -11,17 +12,16 @@ Source of truth:
   .changelog/template_changelog.md changelog skeleton
   version.properties               VERSION_NAME (must match the newest changelog entry)
 
-Generated artifacts (36 in total, never edit them by hand):
+Generated artifacts (47 in total, never edit them by hand):
   .readme/README-<code>.md                       x 10
   README.md                                      copy of the default language
   app/src/main/assets/doc/CHANGELOG-<name>.md    x 13 (zh-Hans/HK/TW expand to Android aliases)
   app/src/main/assets/doc/CHANGELOG.md           copy of the default language
   app/src/main/res/raw*/plugin_instruction.md    x 11 (10 locales plus the English default)
+  app/src/main/res/values*/strings.xml           x 11 (10 locales plus the English default)
 
 Validated but not generated:
-  app/src/main/res/values*/strings.xml           key parity, plugin_description sync
-  docs/images/screenshots/plugin-center-enabled.png
-                                                  PNG format, dimensions, SHA-256, README reference
+  docs/images/screenshots/*.png                    PNG format, dimensions, SHA-256, README reference
 
 Usage:
   py .python/generate_markdown.py            regenerate all artifacts
@@ -40,7 +40,6 @@ import sys
 import unicodedata
 from pathlib import Path
 from typing import Any
-from xml.etree import ElementTree
 
 LANGUAGE_CODES = [
     "zh-Hans",
@@ -93,12 +92,32 @@ CHANGELOG_DATA_KEY = "$data"
 README_LIST_KEYS = ["features", "usage_steps", "security_points"]
 README_FAQ_KEY = "faq"
 
-EXPECTED_ARTIFACT_COUNT = 36
+EXPECTED_ARTIFACT_COUNT = 47
 README_LATEST_RELEASES = 3
 
-SCREENSHOT_FILENAME = "plugin-center-enabled.png"
-SCREENSHOT_DIMENSIONS = (720, 1280)
-SCREENSHOT_SHA256 = "EA87F97D5CA5A82B95F0FF397E90AC564AF59205BAFBF86F7C761AB77F364E01"
+SCREENSHOT_SPECS = (
+    (
+        "plugin-center-enabled.png",
+        (720, 1280),
+        8,
+        6,
+        "EA87F97D5CA5A82B95F0FF397E90AC564AF59205BAFBF86F7C761AB77F364E01",
+    ),
+    (
+        "standalone-phone-light.png",
+        (1080, 1920),
+        8,
+        2,
+        "BC9A577A0CF9892BAE81B66CD2DD137C578BF6C8C71156C4503978CF5662ED4C",
+    ),
+    (
+        "standalone-rtl-large-dark.png",
+        (1080, 1920),
+        8,
+        2,
+        "BCCBF805931990C056AB1E78E628F63F0DAE733081827AE899E1BC31D4900F6F",
+    ),
+)
 
 PLACEHOLDER_MARKERS = (
     "TODO_TRANSLATION",
@@ -107,6 +126,7 @@ PLACEHOLDER_MARKERS = (
 )
 TEMPLATE_PATTERN = re.compile(r"\{\{\s*([A-Za-z0-9_$.-]+)\s*\}\}")
 RELEASED_DATE_PATTERN = re.compile(r"^\d{4}/\d{2}/\d{2}$")
+ANDROID_FORMAT_ARGUMENT_PATTERN = re.compile(r"%(?:\d+\$)?[A-Za-z]")
 
 
 class MarkdownGenerationError(Exception):
@@ -168,51 +188,61 @@ def load_json(path: Path) -> dict[str, Any]:
     return data
 
 
-def validate_screenshot_asset(root: Path, readme_template: str) -> None:
+def validate_screenshot_assets(root: Path, readme_template: str) -> None:
     screenshot_dir = root / "docs" / "images" / "screenshots"
-    screenshot_path = screenshot_dir / SCREENSHOT_FILENAME
     notes_path = screenshot_dir / "README.md"
 
     notes = load_text(notes_path)
-    require(SCREENSHOT_FILENAME in notes, f"Screenshot capture notes do not list {SCREENSHOT_FILENAME!r}")
-    require(SCREENSHOT_SHA256 in notes, "Screenshot capture notes do not contain the expected SHA-256")
-
-    require(screenshot_path.is_file(), f"Missing screenshot asset: {screenshot_path}")
-    require(not screenshot_path.is_symlink(), f"Refusing to read symlink: {screenshot_path}")
-    try:
-        data = screenshot_path.read_bytes()
-    except OSError as error:
-        raise MarkdownGenerationError(f"Cannot read screenshot asset {screenshot_path}: {error}") from None
-
-    header = data[:26]
+    expected_files = {filename for filename, *_ in SCREENSHOT_SPECS}
+    actual_files = {path.name for path in screenshot_dir.glob("*.png")}
     require(
-        len(header) == 26 and header[:8] == b"\x89PNG\r\n\x1a\n" and header[12:16] == b"IHDR",
-        f"Screenshot asset is not a valid PNG: {screenshot_path}",
-    )
-    dimensions = (
-        int.from_bytes(header[16:20], "big"),
-        int.from_bytes(header[20:24], "big"),
-    )
-    bit_depth = header[24]
-    color_type = header[25]
-    require(
-        dimensions == SCREENSHOT_DIMENSIONS and bit_depth == 8 and color_type == 6,
-        f"Unexpected screenshot format for {screenshot_path}: "
-        f"dimensions={dimensions}, bit_depth={bit_depth}, color_type={color_type}",
+        actual_files == expected_files,
+        f"Screenshot inventory mismatch: missing={sorted(expected_files - actual_files)} "
+        f"extra={sorted(actual_files - expected_files)}",
     )
 
-    digest = hashlib.sha256(data).hexdigest().upper()
-    require(
-        digest == SCREENSHOT_SHA256,
-        f"Screenshot SHA-256 mismatch for {screenshot_path}: expected={SCREENSHOT_SHA256} actual={digest}",
-    )
+    for filename, expected_dimensions, expected_bit_depth, expected_color_type, expected_sha256 in SCREENSHOT_SPECS:
+        screenshot_path = screenshot_dir / filename
+        require(filename in notes, f"Screenshot capture notes do not list {filename!r}")
+        require(expected_sha256 in notes, f"Screenshot capture notes do not contain the SHA-256 for {filename!r}")
+        require(not screenshot_path.is_symlink(), f"Refusing to read symlink: {screenshot_path}")
+        try:
+            data = screenshot_path.read_bytes()
+        except OSError as error:
+            raise MarkdownGenerationError(f"Cannot read screenshot asset {screenshot_path}: {error}") from None
 
-    marker = f"docs/images/screenshots/{SCREENSHOT_FILENAME}?raw=true"
-    reference_count = readme_template.count(marker)
-    require(
-        reference_count == 1,
-        f"Screenshot must appear exactly once in the README template: references={reference_count}",
-    )
+        header = data[:26]
+        require(
+            len(header) == 26 and header[:8] == b"\x89PNG\r\n\x1a\n" and header[12:16] == b"IHDR",
+            f"Screenshot asset is not a valid PNG: {screenshot_path}",
+        )
+        dimensions = (
+            int.from_bytes(header[16:20], "big"),
+            int.from_bytes(header[20:24], "big"),
+        )
+        bit_depth = header[24]
+        color_type = header[25]
+        require(
+            dimensions == expected_dimensions and
+            bit_depth == expected_bit_depth and
+            color_type == expected_color_type,
+            f"Unexpected screenshot format for {screenshot_path}: dimensions={dimensions}, "
+            f"bit_depth={bit_depth}, color_type={color_type}",
+        )
+
+        digest = hashlib.sha256(data).hexdigest().upper()
+        require(
+            digest == expected_sha256,
+            f"Screenshot SHA-256 mismatch for {screenshot_path}: expected={expected_sha256} actual={digest}",
+        )
+
+        marker = f"docs/images/screenshots/{filename}?raw=true"
+        reference_count = readme_template.count(marker)
+        require(
+            reference_count == 1,
+            f"Screenshot {filename!r} must appear exactly once in the README template: "
+            f"references={reference_count}",
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -350,56 +380,61 @@ def validate_version_alignment(root: Path, changelog_sources: dict[str, dict[str
 
 
 # ---------------------------------------------------------------------------
-# Android resource validation (validated, never generated)
+# Android resource source validation and rendering
 # ---------------------------------------------------------------------------
 
-def android_string_value(raw: str) -> str:
-    return raw.replace("\\'", "'").replace('\\"', '"').replace("\\n", "\n")
-
-
-def read_android_strings(path: Path) -> dict[str, str]:
-    try:
-        tree = ElementTree.fromstring(load_text(path))
-    except ElementTree.ParseError as error:
-        raise MarkdownGenerationError(f"Invalid XML in {path}: {error}") from None
-    strings: dict[str, str] = {}
-    for element in tree.iter("string"):
-        name = element.get("name")
-        require(bool(name), f"Nameless <string> element in {path}")
-        require(name not in strings, f"Duplicate <string name={name!r}> in {path}")
-        strings[name] = android_string_value(element.text or "")
-    return strings
-
-
-def validate_localized_resources(root: Path, languages: dict[str, dict[str, Any]]) -> None:
-    resources = root / "app" / "src" / "main" / "res"
-    default_strings = read_android_strings(resources / "values" / "strings.xml")
-    reference_keys = set(default_strings)
-
-    directories = dict(ANDROID_STRING_DIRECTORIES)
-    for code, directory in directories.items():
-        strings = read_android_strings(resources / directory / "strings.xml")
-        missing = sorted(reference_keys - set(strings))
-        extra = sorted(set(strings) - reference_keys)
-        require(
-            not missing and not extra,
-            f"strings.xml key mismatch in {directory}: missing={missing} extra={extra}",
-        )
-        synopsis = languages[code]["text_plugin_synopsis"]
-        require(
-            strings["plugin_description"] == synopsis,
-            f"plugin_description in {directory} does not match text_plugin_synopsis of {code!r}",
-        )
+def validate_android_string_sources(strings: dict[str, dict[str, Any]]) -> None:
     require(
-        default_strings["plugin_description"] == languages[ANDROID_DEFAULT_LANGUAGE]["text_plugin_synopsis"],
-        f"plugin_description in values does not match text_plugin_synopsis of {ANDROID_DEFAULT_LANGUAGE!r}",
+        set(strings) == set(LANGUAGE_CODES),
+        "Android string languages differ from the supported README languages: "
+        f"missing={sorted(set(LANGUAGE_CODES) - set(strings))} "
+        f"extra={sorted(set(strings) - set(LANGUAGE_CODES))}",
     )
-    for directory in ["values", *directories.values()]:
-        description = read_android_strings(resources / directory / "strings.xml")["plugin_description"]
-        require(
-            not description.endswith((".", "!", "?")),
-            f"plugin_description in {directory} must not end with terminal punctuation",
-        )
+    validate_key_parity(strings, "Android strings")
+    reference = strings[LANGUAGE_CODE_DEFAULT]
+    require("error_unsupported_conversion_type" in reference, "Android strings are missing the service error")
+    require(
+        all(key == "error_unsupported_conversion_type" or key.startswith("standalone_") for key in reference),
+        "Android string sources may contain only the service error and standalone UI keys",
+    )
+    for code, localized in strings.items():
+        for key, value in localized.items():
+            require(isinstance(value, str) and value, f"Android string {code}.{key} must be non-empty text")
+            expected_arguments = sorted(ANDROID_FORMAT_ARGUMENT_PATTERN.findall(reference[key]))
+            actual_arguments = sorted(ANDROID_FORMAT_ARGUMENT_PATTERN.findall(value))
+            require(
+                actual_arguments == expected_arguments,
+                f"Android format arguments differ for {code}.{key}: "
+                f"expected={expected_arguments} actual={actual_arguments}",
+            )
+
+
+def escape_android_string(value: str) -> str:
+    escaped = (
+        value.replace("\\", "\\\\")
+        .replace("\n", "\\n")
+        .replace("'", "\\'")
+        .replace('"', '\\"')
+    )
+    return escaped.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+def render_android_strings(language: dict[str, Any]) -> str:
+    description = language["text_plugin_synopsis"]
+    require(
+        not description.endswith((".", "!", "?")),
+        "plugin_description must not end with terminal punctuation",
+    )
+    localized = language["android_strings"]
+    lines = ['<?xml version="1.0" encoding="utf-8"?>', "<resources>"]
+    for name, value in localized.items():
+        if name == "error_unsupported_conversion_type":
+            lines.append(
+                f'    <string name="plugin_description">{escape_android_string(description)}</string>',
+            )
+        lines.append(f'    <string name="{name}">{escape_android_string(value)}</string>')
+    lines.append("</resources>")
+    return "\n".join(lines) + "\n"
 
 # ---------------------------------------------------------------------------
 # Rendering helpers
@@ -451,10 +486,12 @@ def load_languages(root: Path) -> tuple[dict[str, dict[str, Any]], dict[str, dic
     version_name = current_version_label(root).removeprefix("v")
 
     raw_languages = {code: load_json(readme_dir / f"lang_{code}.json") for code in LANGUAGE_CODES}
+    raw_android_strings = load_json(readme_dir / "android_strings.json")
     raw_changelogs = {code: load_json(changelog_dir / f"lang_{code}.json") for code in LANGUAGE_CODES}
 
     validate_key_parity(raw_languages, "README")
     validate_collection_shapes(raw_languages, "README")
+    validate_android_string_sources(raw_android_strings)
     for code in LANGUAGE_CODES:
         validate_readme_language(code, raw_languages[code])
         validate_changelog_language(code, raw_changelogs[code])
@@ -464,7 +501,12 @@ def load_languages(root: Path) -> tuple[dict[str, dict[str, Any]], dict[str, dic
     languages: dict[str, dict[str, Any]] = {}
     changelogs: dict[str, dict[str, Any]] = {}
     for code in LANGUAGE_CODES:
-        merged_language = {**common, **raw_languages[code], "version_name": version_name}
+        merged_language = {
+            **common,
+            **raw_languages[code],
+            "android_strings": raw_android_strings[code],
+            "version_name": version_name,
+        }
         languages[code] = render_dynamic(merged_language, merged_language)
 
         raw_changelog = raw_changelogs[code]
@@ -475,7 +517,6 @@ def load_languages(root: Path) -> tuple[dict[str, dict[str, Any]], dict[str, dic
             "data": render_dynamic(raw_changelog[CHANGELOG_DATA_KEY], {**common, **changelog_values}),
         }
 
-    validate_localized_resources(root, languages)
     return languages, changelogs
 
 
@@ -545,7 +586,7 @@ def build_artifacts(root: Path) -> dict[Path, str]:
 
     languages, changelogs = load_languages(root)
     readme_template = load_text(readme_dir / "template_readme.md")
-    validate_screenshot_asset(root, readme_template)
+    validate_screenshot_assets(root, readme_template)
     instruction_template = load_text(readme_dir / "template_plugin_instruction.md")
     changelog_template = load_text(changelog_dir / "template_changelog.md")
 
@@ -573,6 +614,13 @@ def build_artifacts(root: Path) -> dict[Path, str]:
         if code == ANDROID_DEFAULT_LANGUAGE:
             artifacts[android_resource_dir / "raw" / "plugin_instruction.md"] = output
 
+    for code in LANGUAGE_CODES:
+        output = render_android_strings(languages[code])
+        directory = ANDROID_STRING_DIRECTORIES[code]
+        artifacts[android_resource_dir / directory / "strings.xml"] = output
+        if code == ANDROID_DEFAULT_LANGUAGE:
+            artifacts[android_resource_dir / "values" / "strings.xml"] = output
+
     require(
         len(artifacts) == EXPECTED_ARTIFACT_COUNT,
         f"Expected {EXPECTED_ARTIFACT_COUNT} artifacts, produced {len(artifacts)}",
@@ -588,6 +636,7 @@ def generated_inventory(root: Path) -> set[Path]:
     inventory.update((root / ".readme").glob("README-*.md"))
     inventory.update((root / "app" / "src" / "main" / "assets" / "doc").glob("CHANGELOG*.md"))
     inventory.update((root / "app" / "src" / "main" / "res").glob("raw*/plugin_instruction.md"))
+    inventory.update((root / "app" / "src" / "main" / "res").glob("values*/strings.xml"))
     return inventory
 
 

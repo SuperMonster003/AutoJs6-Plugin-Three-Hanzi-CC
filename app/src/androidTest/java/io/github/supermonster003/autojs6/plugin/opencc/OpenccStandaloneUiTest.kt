@@ -7,6 +7,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.ComponentName
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
@@ -40,7 +41,7 @@ class OpenccStandaloneUiTest {
     @Test
     fun allStandaloneActionsRemainExplicitCancellableAndRestorable() {
         var activity = launchActivity()
-        val clipboard = activity.getSystemService(ClipboardManager::class.java)
+        val clipboard = onMain { activity.getSystemService(ClipboardManager::class.java) }
         val previousClip = clipboard.primaryClip
         try {
             var views = views(activity)
@@ -184,17 +185,23 @@ class OpenccStandaloneUiTest {
     }
 
     private fun assertExplicitShareAction(activity: OpenccActivity, views: Views) {
-        val monitor = ShareIntentMonitor()
+        val sharedText = readText(views.result)
+        val chooser = onMain { activity.createShareChooserIntent(sharedText) }
+        assertEquals(Intent.ACTION_CHOOSER, chooser.action)
+        val sendIntent = requireNotNull(chooser.shareTarget()) { "Share target intent is missing" }
+        assertEquals(Intent.ACTION_SEND, sendIntent.action)
+        assertEquals("text/plain", sendIntent.type)
+        assertEquals(sharedText, sendIntent.getStringExtra(Intent.EXTRA_TEXT))
+
+        val monitor = Instrumentation.ActivityMonitor(
+            IntentFilter(Intent.ACTION_CHOOSER),
+            Instrumentation.ActivityResult(Activity.RESULT_CANCELED, null),
+            true,
+        )
         instrumentation.addMonitor(monitor)
         try {
             onMain { views.share.performClick() }
-            assertTrue("Share chooser was not started", monitor.started.await(5, TimeUnit.SECONDS))
-            val chooser = requireNotNull(monitor.intent.get()) { "Share chooser intent is missing" }
-            assertEquals(Intent.ACTION_CHOOSER, chooser.action)
-            val sendIntent = requireNotNull(chooser.shareTarget()) { "Share target intent is missing" }
-            assertEquals(Intent.ACTION_SEND, sendIntent.action)
-            assertEquals("text/plain", sendIntent.type)
-            assertEquals("软件", sendIntent.getStringExtra(Intent.EXTRA_TEXT))
+            await("share chooser start") { monitor.hits == 1 }
             assertEquals(
                 context.getString(R.string.standalone_status_share_opened),
                 readText(views.status),
@@ -330,18 +337,6 @@ class OpenccStandaloneUiTest {
             getParcelableExtra(Intent.EXTRA_INTENT, Intent::class.java)
         } else {
             getParcelableExtra(Intent.EXTRA_INTENT)
-        }
-    }
-
-    private class ShareIntentMonitor : Instrumentation.ActivityMonitor() {
-        val started = CountDownLatch(1)
-        val intent = AtomicReference<Intent?>()
-
-        override fun onStartActivity(candidate: Intent): Instrumentation.ActivityResult? {
-            if (candidate.action != Intent.ACTION_CHOOSER) return null
-            intent.compareAndSet(null, Intent(candidate))
-            started.countDown()
-            return Instrumentation.ActivityResult(Activity.RESULT_CANCELED, null)
         }
     }
 

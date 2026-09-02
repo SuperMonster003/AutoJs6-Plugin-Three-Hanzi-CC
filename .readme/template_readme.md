@@ -56,8 +56,20 @@
 <table>
   <tr>
     <td align="center">
+      <img src="{{ repo_url }}/blob/master/docs/images/screenshots/standalone-phone-light.png?raw=true"
+           alt="{{ screenshot_standalone_light_caption }}" width="280" />
+      <br />
+      <sub>{{ screenshot_standalone_light_caption }}</sub>
+    </td>
+    <td align="center">
+      <img src="{{ repo_url }}/blob/master/docs/images/screenshots/standalone-rtl-large-dark.png?raw=true"
+           alt="{{ screenshot_standalone_rtl_caption }}" width="280" />
+      <br />
+      <sub>{{ screenshot_standalone_rtl_caption }}</sub>
+    </td>
+    <td align="center">
       <img src="{{ repo_url }}/blob/master/docs/images/screenshots/plugin-center-enabled.png?raw=true"
-           alt="{{ screenshot_plugin_center_caption }}" width="360" />
+           alt="{{ screenshot_plugin_center_caption }}" width="280" />
       <br />
       <sub>{{ screenshot_plugin_center_caption }}</sub>
     </td>
@@ -201,6 +213,18 @@ console.log(opencc.s2t("汉字转换"));
 
 ******
 
+### {{ h3_security }}
+
+******
+
+{{ p_security_intro }}
+
+{{ placeholder_security_points }}
+
+{{ p_security_permission }}
+
+******
+
 ### {{ h3_plugin_interface }}
 
 ******
@@ -304,6 +328,7 @@ py .python\generate_markdown.py --check
 
 ```text
 .readme/common.json
+.readme/android_strings.json
 .readme/lang_*.json
 .readme/template_readme.md
 .readme/template_plugin_instruction.md
@@ -312,6 +337,8 @@ py .python\generate_markdown.py --check
 .python/generate_markdown.py
 docs/images/screenshots/README.md
 docs/images/screenshots/plugin-center-enabled.png
+docs/images/screenshots/standalone-phone-light.png
+docs/images/screenshots/standalone-rtl-large-dark.png
 app/src/main/assets/doc/CHANGELOG-*.md
 app/src/main/res/values-*/strings.xml
 app/src/main/res/raw-*/plugin_instruction.md

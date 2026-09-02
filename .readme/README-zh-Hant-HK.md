@@ -8,7 +8,7 @@
     </picture>
   </p>
 
-  <p>用於中文文本轉換的 OpenCC 插件</p>
+  <p>可獨立使用並兼容 AutoJs6 的離線 OpenCC 中文轉換器</p>
 
   <p>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/SuperMonster003/AutoJs6-Plugin-OpenCC?label=Release"/></a>
@@ -42,9 +42,9 @@
 
 ******
 
-OpenCC 插件 (OpenCC Plugin) 為 AutoJs6 提供基於 [OpenCC](https://github.com/BYVoid/OpenCC) 的中文文本轉換能力. 安裝本插件後, AutoJs6 腳本中的全局對象 `opencc` 即可正常工作, 一行代碼即可在簡體, 繁體, 香港繁體, 台灣正體與日文新字體之間完成轉換, 無需導入模組, 無需連線.
+OpenCC 只需安裝一個 APK, 即可透過兩種入口使用基於 [OpenCC](https://github.com/BYVoid/OpenCC) 的中文文本轉換: 直接從桌面啟動完全離線的 Android App, 或讓 AutoJs6 將同一個 APK 識別為插件並在腳本中使用全局對象 `opencc`. 兩條路徑均涵蓋簡體, 通用繁體, 香港繁體, 台灣正體與日文新字體.
 
-插件採用宿主與插件分工的設計: AutoJs6 宿主提供腳本直接調用的 `opencc` API, 插件以獨立應用程式的形式攜帶 OpenCC 轉換引擎與詞典. 從 AutoJs6 6.8.0 起宿主不再內置 OpenCC 運行時, 中文轉換功能由本插件按需提供; 這樣宿主安裝包保持精簡, 轉換引擎也可以獨立於宿主更新.
+獨立編輯器與受權限保護的 AutoJs6 Binder 服務共用唯一的官方 OpenCC 引擎, 同一組固定詞典, 快取, 轉換類型和錯誤模型. 獨立 App 不要求安裝 AutoJs6; 插件模式則保持現有腳本 API, 並允許轉換引擎獨立於宿主更新.
 
 ******
 
@@ -52,13 +52,13 @@ OpenCC 插件 (OpenCC Plugin) 為 AutoJs6 提供基於 [OpenCC](https://github.c
 
 ******
 
-- 開箱即用: 插件安裝到裝置後由 AutoJs6 自動發現, 無需重啟宿主, 無需任何配置, 腳本即可直接調用 `opencc` 全局對象.
+- 一個 APK, 兩種用法: 無需 AutoJs6 即可從桌面圖示進入可視化轉換頁面, 亦可讓 AutoJs6 腳本透過同一次安裝調用 `opencc`.
 - 14 種標準轉換: 覆蓋 OpenCC 的簡繁轉換, 香港/台灣地區用字轉換與日文新字體轉換, 並支援台灣常用詞彙轉換 (如 `软件` 與 `軟體` 的互換).
 - 33 個腳本方法: 除通用的 `opencc.convert(text, type)` 外, 每種轉換類型都有同名快捷方法, 還提供 `s2jp`, `tw2hk` 等 18 個別名與組合方法.
 - 完全離線: 轉換基於插件內置詞典在裝置本地完成, 插件不申請網絡權限, 不收集任何數據.
 - 按需選包: 提供 4 種單架構安裝包與包含全部架構的 `universal` 包, 裝置只需安裝匹配的包, 體積更小.
-- 多語言: 插件資訊, 使用說明, README 與更新日誌覆蓋 10 種語言.
-- 輕量背景服務: 插件無獨立介面, 由宿主按需喚醒與綁定, 空閒時自動釋放連接.
+- 多語言: 獨立 UI, 插件資訊, 使用說明, README 與更新日誌覆蓋 10 種語言.
+- 共用後端: 編輯器與輕量插件服務重用同一份已校驗資源和原生引擎, 插件連接空閒時自動釋放.
 
 ******
 
@@ -66,13 +66,25 @@ OpenCC 插件 (OpenCC Plugin) 為 AutoJs6 提供基於 [OpenCC](https://github.c
 
 ******
 
-以下為 AutoJs6 插件中心的真實運行截圖. OpenCC 1.0.2 (17) 已被宿主識別, 右側開關處於啟用狀態. 畫面保留原始 Android 截圖, 未經裁剪或調色.
+以下均為未經修飾的 Android 真實運行截圖, 依次展示日間模式獨立編輯器, 170% 字體下的阿拉伯語 RTL 夜間佈局, 以及原有 AutoJs6 插件中心入口.
 
 <table>
   <tr>
     <td align="center">
+      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/images/screenshots/standalone-phone-light.png?raw=true"
+           alt="日間主題下的獨立離線轉換" width="280" />
+      <br />
+      <sub>日間主題下的獨立離線轉換</sub>
+    </td>
+    <td align="center">
+      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/images/screenshots/standalone-rtl-large-dark.png?raw=true"
+           alt="夜間主題, 170% 字體下的阿拉伯語 RTL 佈局" width="280" />
+      <br />
+      <sub>夜間主題, 170% 字體下的阿拉伯語 RTL 佈局</sub>
+    </td>
+    <td align="center">
       <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/images/screenshots/plugin-center-enabled.png?raw=true"
-           alt="插件中心已識別並啟用 OpenCC 1.0.2" width="360" />
+           alt="插件中心已識別並啟用 OpenCC 1.0.2" width="280" />
       <br />
       <sub>插件中心已識別並啟用 OpenCC 1.0.2</sub>
     </td>
@@ -85,12 +97,13 @@ OpenCC 插件 (OpenCC Plugin) 為 AutoJs6 提供基於 [OpenCC](https://github.c
 
 ******
 
-1. 將 AutoJs6 升級到內部版本號 3923 (6.7.1 Alpha4) 及以上; 6.8.0 正式版及更新版本均滿足要求.
-2. 從 [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases) 頁面或 AutoJs6 插件中心下載並安裝插件 APK; 不確定選哪個安裝包時, 可直接選 `universal` 包, 或參考下方 `如何選擇安裝包`.
-3. 開啟 AutoJs6 的插件中心, 確認 `OpenCC` 插件已被識別並處於啟用狀態; 官方發佈包會自動通過簽名校驗, 無需手動授權.
-4. 在腳本中直接使用 `opencc` 全局對象, 例如 `opencc.s2t("汉字")`; 無需 require 或 import, 安裝插件後也無需重啟 AutoJs6.
+1. 從 [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases) 頁面或 AutoJs6 插件中心下載並安裝一個 APK. 選擇與裝置 ABI 匹配的安裝包; 不確定時選擇 `universal`, 或參考下方 `如何選擇安裝包`.
+2. 獨立使用時, 從桌面啟動 `OpenCC`, 輸入或主動貼上文本, 選擇 14 種轉換類型之一並按 `轉換`. 此路徑不要求安裝 AutoJs6, 亦不要求用戶授予插件權限.
+3. 作為插件使用時, 將 AutoJs6 升級到內部版本號 3923 (6.7.1 Alpha4) 或以上; 6.8.0 正式版及更新版本均滿足要求.
+4. 開啟 AutoJs6 插件中心, 確認 `OpenCC` 已被識別並處於啟用狀態. 官方發佈包會自動通過簽名校驗, 無需手動授權.
+5. 在腳本中直接使用 `opencc` 全局對象, 例如 `opencc.s2t("汉字")`; 無需 require, import 或重啟宿主.
 
-> 插件支援 Android 7.0 (API 24) 及以上的裝置. 若腳本運行時提示缺少插件或宿主版本過低, 請參考下方 `常見問題`.
+> 兩種模式均支援 Android 7.0 (API 24) 或以上裝置. 最低 AutoJs6 版本只約束插件腳本, 獨立 App 不依賴宿主. 若腳本提示缺少插件或宿主版本過低, 請參考下方 `常見問題`.
 
 ******
 
@@ -219,9 +232,9 @@ console.log(opencc.s2t("汉字转换"));
 
 開啟 AutoJs6 的插件中心, 能看到 `OpenCC` 插件並處於啟用狀態即表示宿主已識別; 再運行上方 `快速自檢` 腳本, 輸出 `漢字轉換` 即為生效.
 
-#### 為什麼應用程式列表裏沒有插件的圖示?
+#### 不安裝 AutoJs6 也可以使用 OpenCC 嗎?
 
-這是正常現象. 插件沒有獨立介面, 也不在桌面建立啟動圖示, 安裝後由 AutoJs6 在背景自動發現和調用, 全部互動都在 AutoJs6 內完成.
+可以. 從桌面開啟 `OpenCC` 圖示即可在完全離線的編輯器中轉換文本. 只有腳本透過全局對象 `opencc` 調用插件時才需要 AutoJs6; 兩種模式來自同一個 APK.
 
 #### 腳本提示 `缺少 "OpenCC plugin" 所需的插件`, 怎麼辦?
 
@@ -242,6 +255,21 @@ console.log(opencc.s2t("汉字转换"));
 #### 插件會申請哪些權限? 數據安全嗎?
 
 插件僅聲明用於與 AutoJs6 通訊的插件權限, 不申請網絡, 儲存空間等任何敏感系統權限; 服務本身也受同一權限保護, 其他應用程式無法調用. 待轉換的文本只在裝置記憶體中處理, 不會被儲存或上傳.
+
+******
+
+### 權限與安全
+
+******
+
+獨立 App 與 AutoJs6 插件入口具有互相分離且明確的安全邊界:
+
+- 最小權限: 清單只聲明用於整合的 `org.autojs.permission.PLUGIN`, 不含網絡, 儲存空間, 相機等敏感系統權限; 獨立用戶無需授予插件權限.
+- 明確編輯操作: Launcher 不接收外部分享文本或 URI, 只有按 `貼上` 才讀取剪貼簿, 只有按 `分享` 才開啟系統分享面板.
+- 受保護的插件服務: 只有持有插件權限的宿主 (如 AutoJs6) 才能綁定調用, AutoJs6 亦會校驗安裝包簽名; 其他應用程式無法調用服務.
+- 本地處理: 兩種入口均使用內置詞典完全離線轉換. 輸入和結果不會記錄日誌, 持久化, 備份, 上傳或收集.
+
+請僅從官方 [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases) 頁面或 AutoJs6 插件中心獲取插件. 來源不明的安裝包即使版本號相同, 也可能無法通過宿主校驗或暗藏風險.
 
 ******
 
@@ -379,6 +407,7 @@ py .python\generate_markdown.py --check
 
 ```text
 .readme/common.json
+.readme/android_strings.json
 .readme/lang_*.json
 .readme/template_readme.md
 .readme/template_plugin_instruction.md
@@ -387,12 +416,14 @@ py .python\generate_markdown.py --check
 .python/generate_markdown.py
 docs/images/screenshots/README.md
 docs/images/screenshots/plugin-center-enabled.png
+docs/images/screenshots/standalone-phone-light.png
+docs/images/screenshots/standalone-rtl-large-dark.png
 app/src/main/assets/doc/CHANGELOG-*.md
 app/src/main/res/values-*/strings.xml
 app/src/main/res/raw-*/plugin_instruction.md
 ```
 
-`strings.xml` 提供本地化插件描述與錯誤資訊, `plugin_instruction.md` 提供宿主插件中心內展示的使用說明. README 與更新日誌一律修改 `.readme/` 與 `.changelog/` 下的 JSON 源文件, 再運行 `py .python/generate_markdown.py` 重新生成, 生成產物不手工編輯; 運行 `py .python/generate_markdown.py --check` 可校驗源文件與生成產物是否同步.
+`.readme/android_strings.json` 是獨立 UI 與服務錯誤文案的單一來源, 各語言 JSON 則提供 README 和插件中心文案. 一律修改 `.readme/` 與 `.changelog/` 下的 JSON 源文件, 再運行 `py .python/generate_markdown.py`; 生成的 `strings.xml`, `plugin_instruction.md`, README 和更新日誌均不手工編輯. `--check` 會校驗全部 47 個生成產物.
 
 ******
 

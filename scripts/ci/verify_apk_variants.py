@@ -361,6 +361,11 @@ def verify_manifest_tree(root: ManifestElement, label: str) -> None:
         {"allowBackup": False, "usesCleartextTraffic": False},
         {"permission", "process", "taskAffinity", "allowTaskReparenting"},
     )
+    locale_config = application.attributes.get("localeConfig")
+    if type(locale_config) is not int or locale_config == 0:
+        raise VerificationError(
+            f"{label} application must reference a compiled localeConfig resource: {locale_config!r}",
+        )
 
     disallowed_components = {
         name: len(_children(application, name))

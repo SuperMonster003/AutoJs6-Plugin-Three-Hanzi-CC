@@ -1,6 +1,6 @@
-El complemento OpenCC (OpenCC Plugin) aporta a AutoJs6 la conversión de texto chino basada en [OpenCC](https://github.com/BYVoid/OpenCC). Una vez instalado el complemento, el objeto global `opencc` de los scripts de AutoJs6 funciona de inmediato: una sola línea de código convierte el texto entre chino simplificado, chino tradicional, chino tradicional de Hong Kong, chino tradicional de Taiwán y shinjitai japonés, sin necesidad de importar módulos y sin acceso a la red.
+OpenCC reúne en una sola instalación dos formas de usar la conversión de texto chino basada en [OpenCC](https://github.com/BYVoid/OpenCC). Inicie directamente la aplicación Android totalmente sin conexión, o deje que AutoJs6 reconozca el mismo APK como complemento y use el objeto global `opencc` en los scripts. Ambas rutas cubren chino simplificado, tradicional, variantes de Hong Kong y Taiwán, y shinjitai japonés.
 
-Esta versión integra OpenCC oficial 1.4.2 y sus diccionarios fijados de la misma versión. Todo el procesamiento sigue siendo local y los paquetes nativos admiten dispositivos Android con páginas de memoria de 16 KB.
+El mismo APK también puede iniciarse directamente como aplicación de conversión sin conexión, sin AutoJs6. El editor independiente y esta entrada de complemento usan OpenCC oficial 1.4.2 y los diccionarios fijados de la misma versión; los paquetes nativos admiten páginas de memoria Android de 16 KB.
 
 ### Inicio rápido
 

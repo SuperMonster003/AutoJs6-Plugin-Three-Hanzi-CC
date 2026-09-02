@@ -104,6 +104,37 @@ jobs:
           profile: pixel_7
           script: EXPECTED_PAGE_SIZE=4096 sh scripts/ci/verify_binder_round_trip.sh "${{ matrix.abi }}"
 
+  verify-min-sdk:
+    name: Standalone and Binder round trip (x86, API 24 minSdk)
+    needs: verify-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Download debug and test APKs
+        uses: actions/download-artifact@v8
+        with:
+          name: build-test-apks
+          path: ci-apks
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Verify standalone UI and plugin contract at minSdk
+        uses: reactivecircus/android-emulator-runner@v2.38.0
+        with:
+          api-level: 24
+          target: google_apis
+          arch: x86
+          profile: Nexus 5
+          script: EXPECTED_PAGE_SIZE=4096 sh scripts/ci/verify_binder_round_trip.sh x86
+
   verify-16kb:
     name: Binder round trip (x86_64, 16 KB pages)
     needs: verify-build

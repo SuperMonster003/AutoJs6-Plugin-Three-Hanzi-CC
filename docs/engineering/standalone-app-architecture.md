@@ -1,7 +1,7 @@
-# M5-A/B/C 独立 App 双入口、离线 UI 与安全架构决策
+# M5-A/B/C/D 独立 App 双入口、离线 UI、可访问性与安全架构决策
 
 记录日期: 2026-09-03
-状态: Accepted（M5-A/B/C 原型；不是新的正式版本承诺）
+状态: Accepted（M5-A/B/C/D 原型；不是新的正式版本承诺）
 
 ## 结论
 
@@ -169,8 +169,66 @@ OpenCC 资源继续位于 `noBackupFilesDir`，Android 本身也会排除该目�
   Android 16/API 36 x86_64/`PAGE_SIZE=16384` 模拟器通过；每轮均执行两个资源首启阶段、服务全契约、
   双入口/manifest、并发生命周期、完整 UI 和两阶段真实进程重建，并在结束时卸载目标/测试包。
 
+## M5-D 单一来源与本地化
+
+- `.readme/android_strings.json` 是独立 UI 文案的唯一人工维护源；它与 10 份 README 语言 JSON、
+  README 模板和插件说明模板一起由 `.python/generate_markdown.py` 校验并生成。受控清单现为 47 份：
+  10 份本地化 README、根 README、14 份 CHANGELOG、11 份 Android `plugin_instruction.md` 和
+  11 份 `strings.xml`。生成器的 `--check` 会拒绝缺失/孤立产物、locale/key 集不一致、格式参数漂移和模板
+  未替换占位符。
+- `res/xml/locales_config.xml` 精确声明 `ar`、`en`、`es`、`fr`、`ja`、`ko`、`ru`、`zh-Hans`、
+  `zh-Hant-HK` 和 `zh-Hant-TW`，Manifest 通过 `android:localeConfig` 公开相同集合；Python 测试同时核对 JSON、
+  Android 资源目录和 locale config，最终 APK 门禁再要求二进制 Manifest 中存在非零 localeConfig
+  资源引用。
+- 每种语言的简介、使用步骤、FAQ、安全边界和插件说明都明确：这是同一个 APK，既可不安装 AutoJs6
+  而从桌面独立启动，也可由 AutoJs6 按原插件协议调用。独立路径不需要授予插件权限；宿主版本与启用
+  插件步骤只属于插件路径。JP 配置始终描述为汉字字形转换，不宣称中文与日文互译。
+
+## M5-D 可访问性与响应式布局
+
+- 标题标记为 accessibility heading；来源、类型、结果均有显式标签，并通过 `labelFor` 关联对应控件；
+  状态使用 polite live region，进度条有动态 content description。XML 和仪器测试固定来源 → 粘贴 → 清空 →
+  类型 → 转换 → 结果 → 复制 → 交换 → 分享 → 来源的循环焦点链；取消按钮出现时回到转换按钮。所有操作
+  目标最小尺寸为 48 dp。
+- 来源和结果区域都支持长内容的独立滚动与文本选择。类型选择器使用可换行的自定义 spinner item/dropdown，
+  避免 14 个地区/字形名称在窄屏或大字体下被单行截断；硬件键盘 `Ctrl+Enter` 转换、`Escape` 取消。
+- 布局使用 start/end 语义并同时验证日间与夜间前景/背景对比关系。合成配置覆盖阿拉伯语 RTL、170% 字号、
+  夜间 320 x 480 手机；2 倍字体 360 x 360 分屏；1.3 倍字体 960 x 600、`sw600dp` 平板。真实 Activity
+  从设备当前方向旋转到相反方向并恢复原方向，验证转换类型及含 emoji/非 BMP/RTL 的来源和结果不丢失；
+  因而测试不依赖设备初始为手机竖屏。
+
+## M5-D 截图与设备矩阵
+
+两张新增截图均由 `OpenccDocumentationScreenshotTest` 在 Android 16/API 36/x86_64/16 KB 页模拟器上
+以确定性示例生成，经 `UiAutomation` 原样保存，没有裁剪、调色或个人数据；README 三栏同时保留既有
+插件中心截图：
+
+| 文件 | 场景 | PNG | SHA-256 |
+|---|---|---|---|
+| `standalone-phone-light.png` | 英语、日间、独立 App 完整操作流 | 1080 x 1920、8-bit RGB | `BC9A577A0CF9892BAE81B66CD2DD137C578BF6C8C71156C4503978CF5662ED4C` |
+| `standalone-rtl-large-dark.png` | 阿拉伯语 RTL、170% 字号、夜间与可滚动布局 | 1080 x 1920、8-bit RGB | `BCCBF805931990C056AB1E78E628F63F0DAE733081827AE899E1BC31D4900F6F` |
+
+生成器固定三张文档 PNG 的完整资产清单、尺寸、位深、颜色类型、SHA-256 和模板唯一引用；采集命令与
+环境恢复说明见 `docs/images/screenshots/README.md`。
+
+最终设备脚本逐环境安装单 ABI debug APK 和 instrumentation APK，执行资源首次安装、可访问性、服务
+全契约、双入口、并发/生命周期、独立 UI 与两阶段进程重启，并在退出时恢复 locale/字号/夜间模式和
+卸载两个包：
+
+| Android / API | 环境 | ABI | 页大小 | M5-D 重点 |
+|---|---|---|---:|---|
+| Android 7.0 / API 24 | 模拟器 | x86 | 4 KB | minSdk、旧 Clipboard/ActivityMonitor 路径与完整 UI |
+| Android 9 / API 28 | 真机 | armeabi-v7a | 4 KB | 32-bit ARM、旧 Android 与完整矩阵 |
+| Android 15 / API 35 | 真机 | arm64-v8a | 4 KB | 平板初始横屏、自适应旋转；阿拉伯语/170%/夜间增强重放 |
+| Android 16 / API 36 | 模拟器 | x86_64 | 16 KB | 当前高 API、真实 16 KB 运行时；阿拉伯语/170%/夜间增强重放 |
+
+清洁工作树构建通过 JVM 测试、debug/androidTest/release 五变体和 R8 共 199 个 Gradle 任务；debug 与
+unsigned release 各五个最终 APK 均通过组件/权限、localeConfig、资源、旧后端排除、R8/JNI、ELF
+`LOAD >= 0x4000`、RELRO 与原生条目检查。GitHub Actions 另新增 API 24/x86/minSdk 完整设备门禁，
+并保留 arm64/x86_64 4 KB 与 x86_64 16 KB 作业。
+
 ## 后续边界
 
-M5-D 继续完成十语言单一来源、可访问性和设备截图；M5-E 才确定并公开第一个双形态版本号。
-M5-A/B/C 原型不会修改 v1.2.0 标签、Release 或
-在线插件索引。
+M5-E 才确定并公开第一个双形态版本号。M5-A/B/C/D 原型不会修改 v1.2.0 标签、Release 或在线插件
+索引；正式候选仍须从固定提交重建并签名，验证 v1.2.0 原地升级、插件中心识别、五种 ABI、发布说明与
+在线资产回读一致。

@@ -26,7 +26,7 @@
     <string name="standalone_terminology_mainland">Mainland terminology</string>
     <string name="standalone_conversion_direction">%1$s -&gt; %2$s (%3$s)</string>
     <string name="standalone_conversion_direction_with_terminology">%1$s -&gt; %2$s, %3$s (%4$s)</string>
-    <string name="plugin_description">OpenCC plugin for Chinese text conversion</string>
+    <string name="plugin_description">Offline OpenCC Chinese converter for standalone use and AutoJs6</string>
     <string name="error_unsupported_conversion_type">Unsupported OpenCC conversion type: %1$s</string>
     <string name="standalone_subtitle">Convert Chinese text locally with the embedded OpenCC dictionaries. No network connection is used.</string>
     <string name="standalone_source_label">Source text</string>

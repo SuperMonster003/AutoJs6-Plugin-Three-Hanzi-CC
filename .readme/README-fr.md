@@ -8,7 +8,7 @@
     </picture>
   </p>
 
-  <p>Plugin OpenCC pour la conversion de texte chinois</p>
+  <p>Convertisseur chinois OpenCC hors ligne, autonome et compatible avec AutoJs6</p>
 
   <p>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/SuperMonster003/AutoJs6-Plugin-OpenCC?label=Release"/></a>
@@ -42,9 +42,9 @@ Le README.md actuel prend en charge les langues suivantes:
 
 ******
 
-Le plugin OpenCC (OpenCC Plugin) apporte à AutoJs6 la conversion de texte chinois basée sur [OpenCC](https://github.com/BYVoid/OpenCC). Une fois le plugin installé, l'objet global `opencc` des scripts AutoJs6 fonctionne immédiatement: une seule ligne de code convertit le texte entre chinois simplifié, chinois traditionnel, chinois traditionnel de Hong Kong, chinois traditionnel de Taïwan et shinjitai japonais, sans import de module et sans accès au réseau.
+OpenCC réunit dans une seule installation deux accès à la conversion de texte chinois basée sur [OpenCC](https://github.com/BYVoid/OpenCC). Lancez directement l'application Android entièrement hors ligne, ou laissez AutoJs6 reconnaître le même APK comme plugin et utilisez l'objet global `opencc` dans les scripts. Les deux voies couvrent le chinois simplifié, le chinois traditionnel, les variantes de Hong Kong et de Taïwan, ainsi que le shinjitai japonais.
 
-Le plugin suit une répartition des rôles entre hôte et plugin: l'hôte AutoJs6 fournit l'API `opencc` que les scripts appellent directement, tandis que le plugin embarque le moteur de conversion OpenCC et ses dictionnaires sous forme d'application autonome. Depuis AutoJs6 6.8.0, l'hôte n'intègre plus l'environnement d'exécution OpenCC et s'appuie sur ce plugin; le paquet de l'hôte reste ainsi léger, et le moteur de conversion peut être mis à jour indépendamment de l'hôte.
+L'éditeur autonome et le service Binder AutoJs6 protégé par autorisation partagent un seul moteur OpenCC officiel, les mêmes dictionnaires verrouillés, le cache, les types de conversion et le modèle d'erreur. L'application ne nécessite pas AutoJs6, tandis que le mode plugin conserve l'API de script existante et permet de mettre le moteur à jour indépendamment de l'hôte.
 
 ******
 
@@ -52,13 +52,13 @@ Le plugin suit une répartition des rôles entre hôte et plugin: l'hôte AutoJs
 
 ******
 
-- Prêt à l'emploi: une fois le plugin installé, AutoJs6 le découvre automatiquement; aucun redémarrage de l'hôte ni aucune configuration ne sont nécessaires avant que les scripts puissent appeler l'objet global `opencc`.
+- Un APK, deux usages: ouvrez l'icône de lancement pour convertir visuellement du texte sans AutoJs6, ou utilisez la même installation via l'API de script `opencc` d'AutoJs6.
 - 14 conversions standard: couvre la conversion simplifié-traditionnel d'OpenCC, les variantes de Hong Kong et de Taïwan ainsi que le shinjitai japonais, y compris la conversion du vocabulaire courant de Taïwan (comme l'échange entre `软件` et `軟體`).
 - 33 méthodes de script: outre la méthode générale `opencc.convert(text, type)`, chaque type de conversion dispose d'une méthode raccourcie du même nom, plus 18 méthodes d'alias et méthodes composées telles que `s2jp` et `tw2hk`.
 - Entièrement hors ligne: la conversion s'effectue localement sur les dictionnaires intégrés du plugin; le plugin ne demande aucune autorisation réseau et ne collecte aucune donnée.
 - Paquets au plus juste: 4 paquets à ABI unique et un paquet `universal` regroupant toutes les ABI, afin que chaque appareil n'installe que le nécessaire.
-- Multilingue: les métadonnées du plugin, les instructions d'utilisation, le README et le changelog couvrent 10 langues.
-- Service d'arrière-plan léger: le plugin n'a pas d'interface propre; l'hôte le réveille et s'y lie à la demande, et les connexions inactives sont libérées automatiquement.
+- Multilingue: l'interface autonome, les métadonnées du plugin, les instructions, le README et le changelog couvrent 10 langues.
+- Un backend partagé: l'éditeur et le service léger réutilisent les mêmes ressources vérifiées et le même moteur natif; les connexions inactives du plugin sont libérées automatiquement.
 
 ******
 
@@ -66,13 +66,25 @@ Le plugin suit une répartition des rôles entre hôte et plugin: l'hôte AutoJs
 
 ******
 
-Cette capture réelle montre le centre de plugins AutoJs6. OpenCC 1.0.2 (17) est reconnu par l'hôte et l'interrupteur à droite est activé. La capture Android originale est conservée sans recadrage ni correction des couleurs.
+Ces captures Android non retouchées montrent l'éditeur autonome en mode jour, la disposition arabe RTL avec une police à 170% en mode nuit, puis l'entrée existante du centre de plugins AutoJs6.
 
 <table>
   <tr>
     <td align="center">
+      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/images/screenshots/standalone-phone-light.png?raw=true"
+           alt="Conversion autonome hors ligne avec le thème clair" width="280" />
+      <br />
+      <sub>Conversion autonome hors ligne avec le thème clair</sub>
+    </td>
+    <td align="center">
+      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/images/screenshots/standalone-rtl-large-dark.png?raw=true"
+           alt="Disposition arabe RTL à 170% avec le thème sombre" width="280" />
+      <br />
+      <sub>Disposition arabe RTL à 170% avec le thème sombre</sub>
+    </td>
+    <td align="center">
       <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/images/screenshots/plugin-center-enabled.png?raw=true"
-           alt="OpenCC 1.0.2 reconnu et activé dans le centre de plugins" width="360" />
+           alt="OpenCC 1.0.2 reconnu et activé dans le centre de plugins" width="280" />
       <br />
       <sub>OpenCC 1.0.2 reconnu et activé dans le centre de plugins</sub>
     </td>
@@ -85,12 +97,13 @@ Cette capture réelle montre le centre de plugins AutoJs6. OpenCC 1.0.2 (17) est
 
 ******
 
-1. Mettez AutoJs6 à jour vers le build interne 3923 (6.7.1 Alpha4) ou ultérieur; la version officielle 6.8.0 et toutes les versions plus récentes satisfont cette exigence.
-2. Téléchargez et installez l'APK du plugin depuis la page [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases) ou depuis le centre de plugins d'AutoJs6; en cas de doute, choisissez le paquet `universal` ou consultez `Comment choisir un paquet` ci-dessous.
-3. Ouvrez le centre de plugins d'AutoJs6 et vérifiez que le plugin `OpenCC` est reconnu et activé; les paquets officiels réussissent automatiquement la vérification de signature, sans aucune autorisation manuelle.
-4. Utilisez directement l'objet global `opencc` dans les scripts, par exemple `opencc.s2t("汉字")`; aucun require ni import n'est requis, et AutoJs6 n'a pas besoin d'être redémarré après l'installation du plugin.
+1. Téléchargez et installez un APK depuis la page [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases) ou le centre de plugins AutoJs6. Choisissez le paquet correspondant à l'ABI de l'appareil; en cas de doute, choisissez `universal` ou consultez `Comment choisir un paquet` ci-dessous.
+2. Pour un usage autonome, ouvrez `OpenCC` depuis le lanceur, saisissez ou collez explicitement le texte, choisissez l'un des 14 types et touchez `Convertir`. AutoJs6 et l'octroi d'une autorisation de plugin ne sont pas requis.
+3. Pour le mode plugin, mettez AutoJs6 à jour vers le build interne 3923 (6.7.1 Alpha4) ou ultérieur; la version 6.8.0 et les suivantes satisfont cette exigence.
+4. Ouvrez le centre de plugins AutoJs6 et vérifiez que `OpenCC` est reconnu et activé. Les paquets officiels passent automatiquement la vérification de signature, sans autorisation manuelle.
+5. Utilisez directement l'objet global `opencc` dans les scripts, par exemple `opencc.s2t("汉字")`; aucun require, import ni redémarrage de l'hôte n'est nécessaire.
 
-> Le plugin prend en charge les appareils sous Android 7.0 (API 24) et versions ultérieures. Si un script signale un plugin manquant ou un hôte trop ancien, consultez les `Questions fréquentes` ci-dessous.
+> Les deux modes prennent en charge Android 7.0 (API 24) ou ultérieur. Le build AutoJs6 minimal ne concerne que les scripts du plugin; l'application autonome ne dépend d'aucun hôte. Si un script signale un plugin absent ou un hôte ancien, consultez les `Questions fréquentes`.
 
 ******
 
@@ -219,9 +232,9 @@ Une sortie `漢字轉換` signifie que toute la chaîne du plugin fonctionne. Si
 
 Ouvrez le centre de plugins d'AutoJs6; voir le plugin `OpenCC` répertorié et activé signifie que l'hôte l'a reconnu. Exécutez ensuite le script `Autodiagnostic rapide` ci-dessus; une sortie `漢字轉換` confirme qu'il fonctionne.
 
-#### Pourquoi n'y a-t-il pas d'icône du plugin dans la liste des applications?
+#### Puis-je utiliser OpenCC sans installer AutoJs6?
 
-C'est normal. Le plugin n'a pas d'interface propre et ne crée aucune icône de lancement; après l'installation, AutoJs6 le découvre et l'appelle en arrière-plan, et toutes les interactions ont lieu dans AutoJs6.
+Oui. Ouvrez l'icône `OpenCC` et convertissez le texte dans l'éditeur hors ligne. AutoJs6 n'est nécessaire que lorsqu'un script appelle le plugin via l'objet global `opencc`; les deux modes proviennent du même APK.
 
 #### Un script signale `Missing required plugin for "OpenCC plugin"`. Que faire?
 
@@ -242,6 +255,21 @@ Aucun réseau n'est nécessaire; toute la conversion s'effectue localement sur l
 #### Quelles autorisations le plugin demande-t-il? Mes données sont-elles en sécurité?
 
 Le plugin déclare uniquement l'autorisation de plugin servant à communiquer avec AutoJs6 et ne demande aucune autorisation système sensible telle que le réseau ou le stockage; son service est protégé par la même autorisation, de sorte que les autres applications ne peuvent pas l'appeler. Le texte en cours de conversion reste dans la mémoire de l'appareil et n'est jamais stocké ni téléversé.
+
+******
+
+### Autorisations et sécurité
+
+******
+
+L'application autonome et l'entrée plugin AutoJs6 ont des limites distinctes et explicites:
+
+- Autorisations minimales: le manifeste ne déclare que `org.autojs.permission.PLUGIN` pour l'intégration, sans autorisation sensible de réseau, stockage ou caméra; l'utilisateur autonome n'accorde pas cette autorisation.
+- Actions explicites: le Launcher n'accepte ni texte partagé ni URI, ne lit le presse-papiers qu'après `Coller` et n'ouvre la feuille de partage qu'après `Partager`.
+- Service protégé: seuls les hôtes possédant l'autorisation, comme AutoJs6, peuvent s'y lier et l'appeler. AutoJs6 vérifie aussi la signature du paquet; les autres applications ne peuvent pas invoquer le service.
+- Traitement local: les deux entrées utilisent les dictionnaires intégrés entièrement hors ligne. Entrées et résultats ne sont ni journalisés, ni conservés, ni sauvegardés, ni envoyés, ni collectés.
+
+Obtenez le plugin uniquement depuis la page officielle [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases) ou le centre de plugins d'AutoJs6. Les paquets d'origine inconnue peuvent échouer à la vérification de l'hôte ou dissimuler des risques, même lorsque le numéro de version semble identique.
 
 ******
 
@@ -379,6 +407,7 @@ La compilation nécessite JDK 17 ou ultérieur ainsi que le SDK Android 36; les 
 
 ```text
 .readme/common.json
+.readme/android_strings.json
 .readme/lang_*.json
 .readme/template_readme.md
 .readme/template_plugin_instruction.md
@@ -387,12 +416,14 @@ La compilation nécessite JDK 17 ou ultérieur ainsi que le SDK Android 36; les 
 .python/generate_markdown.py
 docs/images/screenshots/README.md
 docs/images/screenshots/plugin-center-enabled.png
+docs/images/screenshots/standalone-phone-light.png
+docs/images/screenshots/standalone-rtl-large-dark.png
 app/src/main/assets/doc/CHANGELOG-*.md
 app/src/main/res/values-*/strings.xml
 app/src/main/res/raw-*/plugin_instruction.md
 ```
 
-`strings.xml` contient la description localisée du plugin et les messages d'erreur, et `plugin_instruction.md` contient les instructions d'utilisation affichées dans le centre de plugins de l'hôte. Pour le README et le changelog, modifiez toujours les sources JSON sous `.readme/` et `.changelog/`, puis relancez `py .python/generate_markdown.py`; les fichiers générés ne sont jamais modifiés à la main. Exécutez `py .python/generate_markdown.py --check` pour vérifier que les sources et les fichiers générés sont synchronisés.
+`.readme/android_strings.json` est la source unique des textes de l'interface autonome et des erreurs du service; les JSON de langue fournissent le README et le texte du centre de plugins. Modifiez toujours les sources JSON sous `.readme/` et `.changelog/`, puis relancez `py .python/generate_markdown.py`; les `strings.xml`, `plugin_instruction.md`, README et changelogs générés ne sont jamais modifiés à la main. `--check` vérifie les 47 fichiers générés.
 
 ******
 

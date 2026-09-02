@@ -26,7 +26,7 @@
     <string name="standalone_terminology_mainland">중국 본토 용어</string>
     <string name="standalone_conversion_direction">%1$s -&gt; %2$s (%3$s)</string>
     <string name="standalone_conversion_direction_with_terminology">%1$s -&gt; %2$s, %3$s (%4$s)</string>
-    <string name="plugin_description">중국어 텍스트 변환용 OpenCC 플러그인</string>
+    <string name="plugin_description">단독 및 AutoJs6에서 쓰는 오프라인 OpenCC 중국어 변환기</string>
     <string name="error_unsupported_conversion_type">지원되지 않는 OpenCC 변환 유형: %1$s</string>
     <string name="standalone_subtitle">내장 OpenCC 사전을 사용해 기기에서 중국어 텍스트를 변환합니다. 네트워크 연결을 사용하지 않습니다.</string>
     <string name="standalone_source_label">원본 텍스트</string>

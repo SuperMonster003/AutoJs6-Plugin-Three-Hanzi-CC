@@ -1,33 +1,36 @@
 {
   "$name": "Español",
   "text_current_lowercase": "actual",
-  "text_plugin_synopsis": "Complemento OpenCC para la conversión de texto chino",
+  "text_plugin_synopsis": "Conversor chino OpenCC sin conexión, independiente y compatible con AutoJs6",
   "h3_languages_with_ascii": "Idiomas (Languages)",
   "p_languages_all_supported_for_readme": "El README.md actual admite los siguientes idiomas",
   "h3_introduction": "Introducción",
-  "p_introduction_what": "El complemento OpenCC (OpenCC Plugin) aporta a AutoJs6 la conversión de texto chino basada en [OpenCC]({{ opencc_official_url }}). Una vez instalado el complemento, el objeto global `opencc` de los scripts de AutoJs6 funciona de inmediato: una sola línea de código convierte el texto entre chino simplificado, chino tradicional, chino tradicional de Hong Kong, chino tradicional de Taiwán y shinjitai japonés, sin necesidad de importar módulos y sin acceso a la red.",
-  "p_introduction_how": "El complemento sigue un reparto de tareas entre host y complemento: el host AutoJs6 proporciona la API `opencc` que los scripts llaman directamente, mientras que el complemento incorpora el motor de conversión y los diccionarios de OpenCC como una aplicación independiente. Desde AutoJs6 6.8.0, el host ya no integra el entorno de ejecución de OpenCC y se apoya en este complemento; así el paquete del host se mantiene ligero y el motor de conversión puede actualizarse con independencia del host.",
+  "p_introduction_what": "OpenCC reúne en una sola instalación dos formas de usar la conversión de texto chino basada en [OpenCC]({{ opencc_official_url }}). Inicie directamente la aplicación Android totalmente sin conexión, o deje que AutoJs6 reconozca el mismo APK como complemento y use el objeto global `opencc` en los scripts. Ambas rutas cubren chino simplificado, tradicional, variantes de Hong Kong y Taiwán, y shinjitai japonés.",
+  "p_introduction_how": "El editor independiente y el servicio Binder de AutoJs6 protegido por permiso comparten un único motor OpenCC oficial, los mismos diccionarios fijados, caché, tipos de conversión y modelo de errores. La aplicación no requiere AutoJs6; el modo complemento conserva la API de scripts existente y permite actualizar el motor con independencia del host.",
   "h3_features": "Funciones destacadas",
   "features": [
-    "Funciona desde el primer momento: una vez instalado, AutoJs6 descubre el complemento automáticamente; no hace falta reiniciar el host ni configurar nada antes de que los scripts puedan llamar al objeto global `opencc`.",
+    "Un APK, dos usos: abra el icono del lanzador para convertir texto visualmente sin AutoJs6, o use la misma instalación mediante la API de scripts `opencc` de AutoJs6.",
     "14 conversiones estándar: cubre la conversión entre simplificado y tradicional de OpenCC, las variantes de Hong Kong y Taiwán y el shinjitai japonés, incluida la conversión al vocabulario habitual de Taiwán (como el intercambio entre `软件` y `軟體`).",
     "33 métodos de script: además del método general `opencc.convert(text, type)`, cada tipo de conversión tiene un método abreviado con el mismo nombre, más 18 métodos de alias y métodos compuestos como `s2jp` y `tw2hk`.",
     "Totalmente sin conexión: la conversión se realiza localmente sobre los diccionarios integrados del complemento; el complemento no solicita permiso de red y no recopila ningún dato.",
     "Paquetes a medida: 4 paquetes de una sola ABI y un paquete `universal` con todas las ABI, de modo que cada dispositivo instala solo lo que necesita.",
-    "Multilingüe: los metadatos del complemento, las instrucciones de uso, el README y el changelog cubren 10 idiomas.",
-    "Servicio en segundo plano ligero: el complemento no tiene interfaz propia; el host lo despierta y se enlaza a él bajo demanda, y las conexiones inactivas se liberan automáticamente."
+    "Multilingüe: la interfaz independiente, los metadatos, las instrucciones, el README y el changelog cubren 10 idiomas.",
+    "Un backend compartido: el editor y el servicio ligero reutilizan los mismos recursos verificados y el mismo motor nativo; las conexiones inactivas del complemento se liberan automáticamente."
   ],
   "h3_screenshots": "Captura de pantalla",
-  "p_screenshots_intro": "Esta captura real muestra el centro de complementos de AutoJs6. OpenCC 1.0.2 (17) está reconocido por el anfitrión y el interruptor de la derecha está activado. Se conserva la captura original de Android sin recortes ni ajustes de color.",
+  "p_screenshots_intro": "Estas capturas Android sin retoques muestran el editor independiente en modo claro, el diseño árabe RTL con fuente al 170% en modo oscuro y la entrada existente del centro de complementos AutoJs6.",
+  "screenshot_standalone_light_caption": "Conversión independiente sin conexión con tema claro",
+  "screenshot_standalone_rtl_caption": "Diseño árabe RTL al 170% con tema oscuro",
   "screenshot_plugin_center_caption": "OpenCC 1.0.2 reconocido y activado en el centro de complementos",
   "h3_usage": "Cómo se usa",
   "usage_steps": [
-    "Actualice AutoJs6 a la compilación interna {{ required_host_version_code }} ({{ required_host_version_name }}) o superior; la versión oficial 6.8.0 y todas las posteriores cumplen este requisito.",
-    "Descargue e instale el APK del complemento desde la página [Releases]({{ repo_url }}/releases) o desde el centro de complementos de AutoJs6; en caso de duda, elija el paquete `universal` o consulte `Cómo elegir un paquete` más abajo.",
-    "Abra el centro de complementos de AutoJs6 y confirme que el complemento `OpenCC` está reconocido y habilitado; los paquetes oficiales superan automáticamente la verificación de firma, sin necesidad de autorización manual.",
-    "Use directamente el objeto global `opencc` en los scripts, por ejemplo `opencc.s2t(\"汉字\")`; no se necesita require ni import, y no hace falta reiniciar AutoJs6 después de instalar el complemento."
+    "Descargue e instale un APK desde [Releases]({{ repo_url }}/releases) o el centro de complementos AutoJs6. Elija el paquete que coincida con la ABI del dispositivo; si duda, elija `universal` o consulte `Cómo elegir un paquete`.",
+    "Para uso independiente, abra `OpenCC` desde el lanzador, escriba o pegue texto de forma explícita, elija uno de los 14 tipos y pulse `Convertir`. No se requiere AutoJs6 ni conceder un permiso de complemento.",
+    "Para usarlo como complemento, actualice AutoJs6 a la compilación interna {{ required_host_version_code }} ({{ required_host_version_name }}) o superior; la versión 6.8.0 y posteriores cumplen el requisito.",
+    "Abra el centro de complementos AutoJs6 y confirme que `OpenCC` está reconocido y habilitado. Los paquetes oficiales superan automáticamente la verificación de firma, sin autorización manual.",
+    "Use directamente el objeto global `opencc` en los scripts, por ejemplo `opencc.s2t(\"汉字\")`; no se necesita require, import ni reiniciar el host."
   ],
-  "p_usage_note": "El complemento es compatible con dispositivos con Android {{ min_android_version }} (API {{ android_min_sdk }}) o superior. Si un script indica que falta el complemento o que el host está desactualizado, consulte las `Preguntas frecuentes` más abajo.",
+  "p_usage_note": "Ambos modos admiten Android {{ min_android_version }} (API {{ android_min_sdk }}) o superior. La compilación mínima de AutoJs6 solo se aplica a los scripts del complemento; la aplicación independiente no depende de un host. Si un script informa de un complemento ausente o un host antiguo, consulte las `Preguntas frecuentes`.",
   "h3_quick_start": "Inicio rápido",
   "p_quick_start_intro": "Tras la instalación, el siguiente script se ejecuta tal cual; los comentarios muestran la salida esperada",
   "p_quick_start_convert": "Los métodos abreviados son equivalentes al método general `opencc.convert(text, type)`; el propio objeto `opencc` también puede llamarse como una función, y los nombres de los tipos de conversión no distinguen mayúsculas de minúsculas",
@@ -78,8 +81,8 @@
       "a": "Abra el centro de complementos de AutoJs6; ver el complemento `OpenCC` en la lista y habilitado significa que el host lo ha reconocido. Después ejecute el script de `Autocomprobación rápida` anterior; una salida de `漢字轉換` confirma que funciona."
     },
     {
-      "q": "¿Por qué no hay un icono del complemento en la lista de aplicaciones?",
-      "a": "Es lo esperado. El complemento no tiene interfaz propia ni crea ningún icono de inicio; tras la instalación, AutoJs6 lo descubre y lo llama en segundo plano, y toda la interacción ocurre dentro de AutoJs6."
+      "q": "¿Puedo usar OpenCC sin instalar AutoJs6?",
+      "a": "Sí. Abra el icono `OpenCC` y convierta texto en el editor sin conexión. AutoJs6 solo es necesario cuando un script llama al complemento mediante el objeto global `opencc`; ambos modos proceden del mismo APK."
     },
     {
       "q": "Un script informa `Missing required plugin for \"OpenCC plugin\"`. ¿Qué debo hacer?",
@@ -103,12 +106,12 @@
     }
   ],
   "h3_security": "Permisos y seguridad",
-  "p_security_intro": "El complemento y AutoJs6 establecen la confianza mediante los mecanismos de permisos y firmas del sistema Android:",
+  "p_security_intro": "La aplicación independiente y la entrada de complemento AutoJs6 tienen límites separados y explícitos:",
   "security_points": [
-    "Permisos mínimos: el manifiesto declara únicamente el permiso de complemento `org.autojs.permission.PLUGIN`, sin ningún permiso sensible del sistema como red, almacenamiento o cámara.",
-    "Protección bidireccional: el servicio del complemento está protegido por el mismo permiso, de modo que solo los hosts que poseen el permiso de complemento (como AutoJs6) pueden enlazarse a él y llamarlo; otras aplicaciones no tienen acceso.",
-    "Autorización por firma: AutoJs6 verifica la firma del complemento; los paquetes oficiales se autorizan automáticamente, mientras que las compilaciones con otras firmas deben autorizarse manualmente en el centro de complementos antes de cargarse.",
-    "Procesamiento local: la conversión ocurre por completo en el dispositivo; el texto convertido nunca se almacena ni se sube, y el complemento no recopila datos del usuario."
+    "Permisos mínimos: el manifiesto solo declara `org.autojs.permission.PLUGIN` para la integración, sin permisos sensibles de red, almacenamiento o cámara; el usuario independiente no concede ese permiso.",
+    "Acciones explícitas: el Launcher no acepta texto compartido ni URI, solo lee el portapapeles tras `Pegar` y abre la hoja del sistema únicamente tras `Compartir`.",
+    "Servicio protegido: solo los hosts con el permiso, como AutoJs6, pueden enlazarse y llamarlo. AutoJs6 también verifica la firma del paquete; otras aplicaciones no pueden invocar el servicio.",
+    "Procesamiento local: ambas entradas usan los diccionarios integrados totalmente sin conexión. Entrada y resultado no se registran, conservan, respaldan, suben ni recopilan."
   ],
   "p_security_permission": "Obtenga el complemento únicamente desde la página oficial [Releases]({{ repo_url }}/releases) o desde el centro de complementos de AutoJs6. Los paquetes de origen desconocido pueden no superar la verificación del host u ocultar riesgos aunque el número de versión parezca idéntico.",
   "h3_plugin_interface": "Interfaz del complemento",
@@ -130,7 +133,7 @@
   "p_build_docs_check": "Comprobar que las fuentes de la documentación multilingüe y los archivos generados están sincronizados (la integración continua también lo comprueba)",
   "p_build_requirements": "La compilación requiere JDK 17 o superior y el SDK de Android 36; las versiones de Gradle y de los plugins se gestionan de forma centralizada mediante `version.properties` y `io.github.supermonster003.autojs6-platform-versions`.",
   "h3_resource_layout": "Localización y generación de documentos",
-  "p_resource_layout": "`strings.xml` contiene la descripción localizada del complemento y los mensajes de error, y `plugin_instruction.md` contiene las instrucciones de uso que se muestran en el centro de complementos del host. Para el README y el changelog, edite siempre las fuentes JSON bajo `.readme/` y `.changelog/` y vuelva a ejecutar `py .python/generate_markdown.py`; los archivos generados nunca se editan a mano. Ejecute `py .python/generate_markdown.py --check` para comprobar que las fuentes y los archivos generados están sincronizados.",
+  "p_resource_layout": "`.readme/android_strings.json` es la única fuente para la interfaz independiente y los errores del servicio; los JSON de idioma proporcionan el README y el texto del centro de complementos. Edite siempre las fuentes JSON bajo `.readme/` y `.changelog/` y ejecute de nuevo `py .python/generate_markdown.py`; los `strings.xml`, `plugin_instruction.md`, README y changelogs generados no se editan a mano. `--check` verifica los 47 archivos generados.",
   "h3_license": "Licencia",
   "p_license": "El código del proyecto se distribuye bajo la [Mozilla Public License 2.0]({{ license_url }}). La conversión de chino usa directamente [OpenCC]({{ opencc_official_url }}) (Apache License 2.0); las fuentes y licencias incluidas de OpenCC, Marisa Trie, Darts Clone y RapidJSON se detallan en los [avisos de terceros]({{ third_party_notices_url }}).",
   "h3_links": "Enlaces",
@@ -139,5 +142,5 @@
   "text_link_opencc_official": "Proyecto oficial OpenCC",
   "text_link_third_party_notices": "Avisos de terceros",
   "p_instruction_more": "Consulte la [documentación de AutoJs6 OpenCC]({{ docs_opencc_url }}) y el [README del proyecto]({{ repo_url }}) para ver la lista completa de métodos y la referencia de tipos de conversión.",
-  "p_instruction_backend": "Esta versión integra OpenCC oficial {{ opencc_version }} y sus diccionarios fijados de la misma versión. Todo el procesamiento sigue siendo local y los paquetes nativos admiten dispositivos Android con páginas de memoria de 16 KB."
+  "p_instruction_backend": "El mismo APK también puede iniciarse directamente como aplicación de conversión sin conexión, sin AutoJs6. El editor independiente y esta entrada de complemento usan OpenCC oficial {{ opencc_version }} y los diccionarios fijados de la misma versión; los paquetes nativos admiten páginas de memoria Android de 16 KB."
 }

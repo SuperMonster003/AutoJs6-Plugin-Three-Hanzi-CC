@@ -26,7 +26,7 @@
     <string name="standalone_terminology_mainland">中國大陸用語</string>
     <string name="standalone_conversion_direction">%1$s -&gt; %2$s (%3$s)</string>
     <string name="standalone_conversion_direction_with_terminology">%1$s -&gt; %2$s, %3$s (%4$s)</string>
-    <string name="plugin_description">用於中文文字轉換的 OpenCC 外掛</string>
+    <string name="plugin_description">可獨立使用並相容 AutoJs6 的離線 OpenCC 中文轉換器</string>
     <string name="error_unsupported_conversion_type">不支援的 OpenCC 轉換類型: %1$s</string>
     <string name="standalone_subtitle">使用內建 OpenCC 詞典在裝置本機轉換中文文字, 不使用網路連線.</string>
     <string name="standalone_source_label">來源文字</string>

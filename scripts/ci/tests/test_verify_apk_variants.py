@@ -76,7 +76,11 @@ class VerifyApkVariantsTest(unittest.TestCase):
                 element("uses-permission", {"name": permission}),
                 element(
                     "application",
-                    {"allowBackup": False, "usesCleartextTraffic": False},
+                    {
+                        "allowBackup": False,
+                        "usesCleartextTraffic": False,
+                        "localeConfig": 0x7F110001,
+                    },
                     [launcher, wake, service],
                 ),
             ],
@@ -85,6 +89,13 @@ class VerifyApkVariantsTest(unittest.TestCase):
     def test_standalone_entry_is_required_in_every_target_apk(self) -> None:
         marker = b"Lio/github/supermonster003/autojs6/plugin/opencc/OpenccActivity;"
         self.assertIn(marker, verify_apk_variants.REQUIRED_DEX_MARKERS)
+
+    def test_application_locale_config_is_required(self) -> None:
+        manifest = self.expected_manifest()
+        application = next(child for child in manifest.children if child.name == "application")
+        del application.attributes["localeConfig"]
+        with self.assertRaisesRegex(verify_apk_variants.VerificationError, "localeConfig"):
+            verify_apk_variants.verify_manifest_tree(manifest, "fixture.apk")
 
     def test_opencc_api_compatibility_artifact_is_pinned(self) -> None:
         self.assertEqual(

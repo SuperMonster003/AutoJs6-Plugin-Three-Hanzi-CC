@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.text.BidiFormatter
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.KeyEvent
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -69,10 +70,11 @@ class OpenccActivity : Activity() {
         applySystemBarInsets(root)
         conversionType.adapter = ArrayAdapter(
             this,
-            android.R.layout.simple_spinner_item,
+            R.layout.opencc_spinner_item,
+            R.id.opencc_spinner_text,
             conversionTypes.map(::conversionTypeLabel),
         ).apply {
-            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            setDropDownViewResource(R.layout.opencc_spinner_dropdown_item)
         }
 
         val identity = coordinator.runtimeIdentity
@@ -152,6 +154,17 @@ class OpenccActivity : Activity() {
         cancelConversion(announce = false)
         conversionExecutor.shutdownNow()
         super.onDestroy()
+    }
+
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER && event.isCtrlPressed) {
+            if (activeConversion == null && convertButton.isEnabled) startConversion()
+            return true
+        }
+        if (event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ESCAPE) {
+            if (cancelConversion(announce = true)) return true
+        }
+        return super.dispatchKeyEvent(event)
     }
 
     private fun startConversion() {

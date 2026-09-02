@@ -26,7 +26,7 @@
     <string name="standalone_terminology_mainland">Терминология материкового Китая</string>
     <string name="standalone_conversion_direction">%1$s -&gt; %2$s (%3$s)</string>
     <string name="standalone_conversion_direction_with_terminology">%1$s -&gt; %2$s, %3$s (%4$s)</string>
-    <string name="plugin_description">Плагин OpenCC для преобразования китайского текста</string>
+    <string name="plugin_description">Автономный офлайн-конвертер OpenCC для китайского текста и AutoJs6</string>
     <string name="error_unsupported_conversion_type">Неподдерживаемый тип преобразования OpenCC: %1$s</string>
     <string name="standalone_subtitle">Преобразуйте китайский текст локально с помощью встроенных словарей OpenCC. Подключение к сети не используется.</string>
     <string name="standalone_source_label">Исходный текст</string>

@@ -8,7 +8,7 @@
     </picture>
   </p>
 
-  <p>中国語テキスト変換用 OpenCC プラグイン</p>
+  <p>単独でも AutoJs6 でも使えるオフライン OpenCC 中国語変換</p>
 
   <p>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/SuperMonster003/AutoJs6-Plugin-OpenCC?label=Release"/></a>
@@ -42,9 +42,9 @@
 
 ******
 
-OpenCC プラグイン (OpenCC Plugin) は, [OpenCC](https://github.com/BYVoid/OpenCC) ベースの中国語テキスト変換機能を AutoJs6 に提供します. 本プラグインをインストールすると, AutoJs6 スクリプトのグローバルオブジェクト `opencc` がそのまま利用可能になり, 簡体字, 繁体字, 香港繁体字, 台湾正体字, 日本語新字体の間の変換が 1 行のコードで完結します. モジュールのインポートもネットワーク接続も不要です.
+OpenCC は 1 つのインストールで, [OpenCC](https://github.com/BYVoid/OpenCC) ベースの中国語テキスト変換を 2 つの入口から利用できます. 完全オフラインの Android アプリとして直接起動するか, 同じ APK を AutoJs6 プラグインとして認識させてスクリプトのグローバルオブジェクト `opencc` を使用します. どちらも簡体字, 繁体字, 香港/台湾の字形, 日本語新字体をカバーします.
 
-プラグインはホストとプラグインの分業設計を採用しています: AutoJs6 ホストはスクリプトが直接呼び出す `opencc` API を提供し, プラグインは OpenCC 変換エンジンと辞書を独立したアプリとして同梱します. AutoJs6 6.8.0 以降, ホストは OpenCC ランタイムを内蔵せず, 中国語変換機能は本プラグインが必要に応じて提供します; これによりホストのインストールパッケージは軽量に保たれ, 変換エンジンをホストとは独立して更新できます.
+単独エディターと権限で保護された AutoJs6 Binder サービスは, 1 つの公式 OpenCC エンジン, 同じ固定辞書, キャッシュ, 変換タイプ, エラーモデルを共有します. アプリ単独では AutoJs6 は不要で, プラグインモードでは既存のスクリプト API を維持したまま変換エンジンをホストと独立して更新できます.
 
 ******
 
@@ -52,13 +52,13 @@ OpenCC プラグイン (OpenCC Plugin) は, [OpenCC](https://github.com/BYVoid/O
 
 ******
 
-- すぐに使える: 端末にインストールするだけで AutoJs6 が自動的にプラグインを検出します. ホストの再起動も設定も不要で, スクリプトからすぐにグローバルオブジェクト `opencc` を呼び出せます.
+- 1 つの APK を 2 通りに使用: ランチャーアイコンから AutoJs6 なしで画面変換を行うか, 同じインストールを AutoJs6 の `opencc` スクリプト API から利用できます.
 - 14 種類の標準変換: OpenCC の簡体字と繁体字の変換, 香港/台湾の地域字形変換, 日本語新字体変換をカバーし, 台湾の常用語彙変換 (`软件` と `軟體` の相互変換など) にも対応します.
 - 33 個のスクリプトメソッド: 汎用の `opencc.convert(text, type)` に加え, 各変換タイプに同名のショートカットメソッドがあり, さらに `s2jp` や `tw2hk` など 18 個のエイリアスと組み合わせメソッドを提供します.
 - 完全オフライン: 変換はプラグイン内蔵の辞書により端末内で完結します. プラグインはネットワーク権限を要求せず, データも一切収集しません.
 - 必要な分だけ選べるパッケージ: 4 種類の単一アーキテクチャ版と全アーキテクチャ入りの `universal` 版を提供し, 端末に合ったパッケージだけをインストールできるためサイズを抑えられます.
-- 多言語対応: プラグイン情報, 使用説明, README, 更新履歴が 10 言語をカバーします.
-- 軽量なバックグラウンド動作: プラグインは独自の画面を持たず, ホストが必要時にウェイクアップとバインドを行い, アイドル時は接続が自動的に解放されます.
+- 多言語対応: 単独 UI, プラグイン情報, 使用説明, README, 更新履歴が 10 言語をカバーします.
+- 共有バックエンド: エディターと軽量プラグインサービスは同じ検証済みリソースとネイティブエンジンを再利用し, アイドル接続は自動的に解放されます.
 
 ******
 
@@ -66,13 +66,25 @@ OpenCC プラグイン (OpenCC Plugin) は, [OpenCC](https://github.com/BYVoid/O
 
 ******
 
-以下は AutoJs6 プラグインセンターの実際の画面です. OpenCC 1.0.2 (17) はホストに認識され, 右側のスイッチが有効になっています. 元の Android スクリーンショットは切り抜きや色調整をせず保持しています.
+未加工の Android 実行画面として, ライトテーマの単独エディター, 文字サイズ 170% のアラビア語 RTL ダークレイアウト, 既存の AutoJs6 プラグインセンター入口を示します.
 
 <table>
   <tr>
     <td align="center">
+      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/images/screenshots/standalone-phone-light.png?raw=true"
+           alt="ライトテーマでの単独オフライン変換" width="280" />
+      <br />
+      <sub>ライトテーマでの単独オフライン変換</sub>
+    </td>
+    <td align="center">
+      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/images/screenshots/standalone-rtl-large-dark.png?raw=true"
+           alt="ダークテーマ, 文字サイズ 170% のアラビア語 RTL レイアウト" width="280" />
+      <br />
+      <sub>ダークテーマ, 文字サイズ 170% のアラビア語 RTL レイアウト</sub>
+    </td>
+    <td align="center">
       <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/images/screenshots/plugin-center-enabled.png?raw=true"
-           alt="プラグインセンターで認識され有効になった OpenCC 1.0.2" width="360" />
+           alt="プラグインセンターで認識され有効になった OpenCC 1.0.2" width="280" />
       <br />
       <sub>プラグインセンターで認識され有効になった OpenCC 1.0.2</sub>
     </td>
@@ -85,12 +97,13 @@ OpenCC プラグイン (OpenCC Plugin) は, [OpenCC](https://github.com/BYVoid/O
 
 ******
 
-1. AutoJs6 を内部ビルド番号 3923 (6.7.1 Alpha4) 以上に更新します; リリース版 6.8.0 以降はすべて要件を満たします.
-2. [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases) ページまたは AutoJs6 のプラグインセンターからプラグイン APK をダウンロードしてインストールします; どのパッケージを選ぶか迷ったら `universal` 版を選ぶか, 下記の `インストールパッケージの選び方` を参照してください.
-3. AutoJs6 のプラグインセンターを開き, `OpenCC` プラグインが認識され有効になっていることを確認します; 公式リリースパッケージは署名検証を自動的に通過するため, 手動での承認は不要です.
-4. スクリプト内でグローバルオブジェクト `opencc` を直接使います. 例: `opencc.s2t("汉字")`; require や import は不要で, プラグインのインストール後に AutoJs6 を再起動する必要もありません.
+1. [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases) または AutoJs6 プラグインセンターから 1 つの APK をダウンロードしてインストールします. 端末の ABI に合う版を選び, 不明な場合は `universal` または下記の `インストールパッケージの選び方` を参照します.
+2. 単独で使う場合はランチャーから `OpenCC` を開き, テキストを入力または明示的に貼り付け, 14 タイプから選んで `変換` を押します. AutoJs6 もプラグイン権限の付与も不要です.
+3. プラグインとして使う場合は AutoJs6 を内部ビルド 3923 (6.7.1 Alpha4) 以上に更新します. リリース 6.8.0 以降は要件を満たします.
+4. AutoJs6 プラグインセンターで `OpenCC` が認識され有効であることを確認します. 公式パッケージは署名検証を自動通過し, 手動承認は不要です.
+5. スクリプトでグローバルオブジェクト `opencc` を直接使います. 例: `opencc.s2t("汉字")`; require, import, ホスト再起動は不要です.
 
-> プラグインは Android 7.0 (API 24) 以上の端末に対応しています. スクリプト実行時にプラグインの欠落やホストのバージョン不足が表示された場合は, 下記の `よくある質問` を参照してください.
+> 両モードとも Android 7.0 (API 24) 以上に対応します. AutoJs6 の最小ビルド要件はプラグインスクリプトだけに適用され, 単独アプリはホストに依存しません. スクリプトで不足が表示された場合は `よくある質問` を参照してください.
 
 ******
 
@@ -219,9 +232,9 @@ console.log(opencc.s2t("汉字转换"));
 
 AutoJs6 のプラグインセンターを開き, `OpenCC` プラグインが表示され有効になっていればホストに認識されています; 続けて上記の `クイックセルフチェック` スクリプトを実行し, `漢字轉換` が出力されれば動作しています.
 
-#### アプリ一覧にプラグインのアイコンがないのはなぜ?
+#### AutoJs6 をインストールせずに OpenCC を使える?
 
-これは正常な動作です. プラグインは独自の画面を持たず, ランチャーアイコンも作成しません. インストール後は AutoJs6 がバックグラウンドで自動的に検出して呼び出し, すべての操作は AutoJs6 内で完結します.
+はい. ランチャーの `OpenCC` アイコンを開けば, オフラインエディターで変換できます. AutoJs6 が必要なのはスクリプトからグローバルオブジェクト `opencc` 経由で呼び出す場合だけで, 両モードは同じ APK に含まれます.
 
 #### スクリプトで `"OpenCC plugin" に必要なプラグインがありません` と表示されたら?
 
@@ -242,6 +255,21 @@ AutoJs6 が端末上で本プラグインを見つけられなかったことを
 #### プラグインはどの権限を要求する? データは安全?
 
 プラグインは AutoJs6 との通信に使うプラグイン権限のみを宣言し, ネットワークやストレージなどの機微なシステム権限は一切要求しません; サービス自体も同じ権限で保護されており, 他のアプリからは呼び出せません. 変換対象のテキストは端末のメモリ内でのみ処理され, 保存もアップロードもされません.
+
+******
+
+### 権限とセキュリティ
+
+******
+
+単独アプリと AutoJs6 プラグイン入口には分離された明確な境界があります:
+
+- 最小権限: マニフェストは連携用の `org.autojs.permission.PLUGIN` だけを宣言し, ネットワーク, ストレージ, カメラなどの機微な権限はありません. 単独利用者がプラグイン権限を付与する必要もありません.
+- 明示操作: Launcher は共有テキストや URI を受け付けず, `貼り付け` 後だけクリップボードを読み, `共有` 後だけシステム共有画面を開きます.
+- 保護されたサービス: AutoJs6 など権限を持つホストだけがバインドして呼び出せます. AutoJs6 はパッケージ署名も検証し, 他のアプリはサービスを呼び出せません.
+- ローカル処理: 両入口とも内蔵辞書で完全オフライン変換します. 入力と結果をログ, 永続化, バックアップ, 送信, 収集しません.
+
+プラグインは公式の [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases) ページまたは AutoJs6 プラグインセンターからのみ入手してください. 出所不明のパッケージは, バージョン番号が同じに見えてもホストの検証を通過できなかったり, リスクを含んでいたりする可能性があります.
 
 ******
 
@@ -379,6 +407,7 @@ py .python\generate_markdown.py --check
 
 ```text
 .readme/common.json
+.readme/android_strings.json
 .readme/lang_*.json
 .readme/template_readme.md
 .readme/template_plugin_instruction.md
@@ -387,12 +416,14 @@ py .python\generate_markdown.py --check
 .python/generate_markdown.py
 docs/images/screenshots/README.md
 docs/images/screenshots/plugin-center-enabled.png
+docs/images/screenshots/standalone-phone-light.png
+docs/images/screenshots/standalone-rtl-large-dark.png
 app/src/main/assets/doc/CHANGELOG-*.md
 app/src/main/res/values-*/strings.xml
 app/src/main/res/raw-*/plugin_instruction.md
 ```
 
-`strings.xml` はローカライズされたプラグイン説明とエラーメッセージを, `plugin_instruction.md` はホストのプラグインセンター内に表示される使用説明を提供します. README と更新履歴は必ず `.readme/` と `.changelog/` 配下の JSON ソースを編集してから `py .python/generate_markdown.py` を実行して再生成します. 生成物を手で編集することはありません; `py .python/generate_markdown.py --check` を実行すると, ソースと生成物が同期しているかを検証できます.
+`.readme/android_strings.json` が単独 UI とサービスエラー文字列の唯一のソースで, 言語 JSON が README とプラグインセンター文を提供します. `.readme/` と `.changelog/` の JSON を編集して `py .python/generate_markdown.py` を再実行し, 生成された `strings.xml`, `plugin_instruction.md`, README, 更新履歴は手で編集しません. `--check` は 47 生成物を検証します.
 
 ******
 

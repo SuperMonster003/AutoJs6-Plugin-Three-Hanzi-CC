@@ -1,6 +1,6 @@
-OpenCC 外掛 (OpenCC Plugin) 為 AutoJs6 提供基於 [OpenCC](https://github.com/BYVoid/OpenCC) 的中文文字轉換能力. 安裝本外掛後, AutoJs6 腳本中的全域物件 `opencc` 即可正常運作, 一行程式碼即可在簡體, 繁體, 香港繁體, 台灣正體與日文新字體之間完成轉換, 無需匯入模組, 無需連線.
+OpenCC 只需安裝一個 APK, 即可透過兩種入口使用基於 [OpenCC](https://github.com/BYVoid/OpenCC) 的中文文字轉換: 直接從桌面啟動完全離線的 Android App, 或讓 AutoJs6 將同一個 APK 識別為外掛並在腳本中使用全域物件 `opencc`. 兩條路徑都涵蓋簡體, 通用繁體, 香港繁體, 台灣正體與日文新字體.
 
-本版本內建官方 OpenCC 1.4.2 及固定於同一發行版的配套詞典. 所有處理繼續完全離線, 原生安裝套件支援使用 16 KB 記憶體頁面的 Android 裝置.
+同一個 APK 也可在不安裝 AutoJs6 時從桌面直接啟動, 作為離線文字轉換 App 使用. 獨立編輯器與本外掛入口均使用官方 OpenCC 1.4.2 及固定於同一發行版的詞典, 原生安裝套件支援 16 KB 記憶體頁面的 Android 裝置.
 
 ### 快速上手
 

@@ -26,7 +26,7 @@
     <string name="standalone_terminology_mainland">中国大陸用語</string>
     <string name="standalone_conversion_direction">%1$s -&gt; %2$s (%3$s)</string>
     <string name="standalone_conversion_direction_with_terminology">%1$s -&gt; %2$s, %3$s (%4$s)</string>
-    <string name="plugin_description">中国語テキスト変換用 OpenCC プラグイン</string>
+    <string name="plugin_description">単独でも AutoJs6 でも使えるオフライン OpenCC 中国語変換</string>
     <string name="error_unsupported_conversion_type">サポートされていない OpenCC 変換タイプ: %1$s</string>
     <string name="standalone_subtitle">内蔵の OpenCC 辞書を使って, 中国語テキストを端末内で変換します. ネットワーク接続は使用しません.</string>
     <string name="standalone_source_label">変換元テキスト</string>

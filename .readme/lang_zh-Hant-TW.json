@@ -1,33 +1,36 @@
 {
   "$name": "繁體中文 (台灣)",
   "text_current_lowercase": "目前",
-  "text_plugin_synopsis": "用於中文文字轉換的 OpenCC 外掛",
+  "text_plugin_synopsis": "可獨立使用並相容 AutoJs6 的離線 OpenCC 中文轉換器",
   "h3_languages_with_ascii": "語言 (Languages)",
   "p_languages_all_supported_for_readme": "目前 README.md 支援以下語言",
   "h3_introduction": "簡介",
-  "p_introduction_what": "OpenCC 外掛 (OpenCC Plugin) 為 AutoJs6 提供基於 [OpenCC]({{ opencc_official_url }}) 的中文文字轉換能力. 安裝本外掛後, AutoJs6 腳本中的全域物件 `opencc` 即可正常運作, 一行程式碼即可在簡體, 繁體, 香港繁體, 台灣正體與日文新字體之間完成轉換, 無需匯入模組, 無需連線.",
-  "p_introduction_how": "外掛採用主程式與外掛分工的設計: AutoJs6 主程式提供腳本直接呼叫的 `opencc` API, 外掛以獨立應用程式的形式攜帶 OpenCC 轉換引擎與詞典. 從 AutoJs6 6.8.0 起主程式不再內建 OpenCC 執行環境, 中文轉換功能由本外掛視需要提供; 這樣主程式安裝套件保持精簡, 轉換引擎也可以獨立於主程式更新.",
+  "p_introduction_what": "OpenCC 只需安裝一個 APK, 即可透過兩種入口使用基於 [OpenCC]({{ opencc_official_url }}) 的中文文字轉換: 直接從桌面啟動完全離線的 Android App, 或讓 AutoJs6 將同一個 APK 識別為外掛並在腳本中使用全域物件 `opencc`. 兩條路徑都涵蓋簡體, 通用繁體, 香港繁體, 台灣正體與日文新字體.",
+  "p_introduction_how": "獨立編輯器與受權限保護的 AutoJs6 Binder 服務共用唯一的官方 OpenCC 引擎, 同一組固定詞典, 快取, 轉換類型和錯誤模型. 獨立 App 不要求安裝 AutoJs6; 外掛模式則保持現有腳本 API, 並允許轉換引擎獨立於主程式更新.",
   "h3_features": "功能亮點",
   "features": [
-    "開箱即用: 外掛安裝到裝置後由 AutoJs6 自動發現, 無需重新啟動主程式, 無需任何設定, 腳本即可直接呼叫 `opencc` 全域物件.",
+    "一個 APK, 兩種用法: 無需 AutoJs6 即可從桌面圖示進入視覺化轉換頁面, 也可讓 AutoJs6 腳本透過同一次安裝呼叫 `opencc`.",
     "14 種標準轉換: 涵蓋 OpenCC 的簡繁轉換, 香港/台灣地區用字轉換與日文新字體轉換, 並支援台灣常用詞彙轉換 (如 `软件` 與 `軟體` 的互換).",
     "33 個腳本方法: 除通用的 `opencc.convert(text, type)` 外, 每種轉換類型都有同名快捷方法, 還提供 `s2jp`, `tw2hk` 等 18 個別名與組合方法.",
     "完全離線: 轉換基於外掛內建詞典在裝置本機完成, 外掛不申請網路權限, 不收集任何資料.",
     "依需求選擇套件: 提供 4 種單一架構安裝套件與包含全部架構的 `universal` 套件, 裝置只需安裝相符的套件, 體積更小.",
-    "多語言: 外掛資訊, 使用說明, README 與更新日誌涵蓋 10 種語言.",
-    "輕量背景服務: 外掛無獨立介面, 由主程式視需要喚醒與繫結, 閒置時自動釋放連線."
+    "多語言: 獨立 UI, 外掛資訊, 使用說明, README 與更新日誌涵蓋 10 種語言.",
+    "共用後端: 編輯器與輕量外掛服務重用同一份已驗證資源和原生引擎, 外掛連線閒置時自動釋放."
   ],
   "h3_screenshots": "介面截圖",
-  "p_screenshots_intro": "以下為 AutoJs6 外掛中心的實際執行畫面. OpenCC 1.0.2 (17) 已由宿主識別, 右側開關處於啟用狀態. 畫面保留原始 Android 截圖, 未經裁切或調色.",
+  "p_screenshots_intro": "以下均為未經修飾的 Android 實際執行畫面, 依序展示日間模式獨立編輯器, 170% 字型下的阿拉伯語 RTL 夜間版面, 以及原有 AutoJs6 外掛中心入口.",
+  "screenshot_standalone_light_caption": "日間主題下的獨立離線轉換",
+  "screenshot_standalone_rtl_caption": "夜間主題, 170% 字型下的阿拉伯語 RTL 版面",
   "screenshot_plugin_center_caption": "外掛中心已識別並啟用 OpenCC 1.0.2",
   "h3_usage": "使用方法",
   "usage_steps": [
-    "將 AutoJs6 升級到內部版本號 {{ required_host_version_code }} ({{ required_host_version_name }}) 及以上; 6.8.0 正式版及更新版本均符合要求.",
-    "從 [Releases]({{ repo_url }}/releases) 頁面或 AutoJs6 外掛中心下載並安裝外掛 APK; 不確定該選哪個安裝套件時, 可直接選 `universal` 套件, 或參考下方 `如何選擇安裝套件`.",
-    "開啟 AutoJs6 的外掛中心, 確認 `OpenCC` 外掛已被識別並處於啟用狀態; 官方發布套件會自動通過簽章驗證, 無需手動授權.",
-    "在腳本中直接使用 `opencc` 全域物件, 例如 `opencc.s2t(\"汉字\")`; 無需 require 或 import, 安裝外掛後也無需重新啟動 AutoJs6."
+    "從 [Releases]({{ repo_url }}/releases) 頁面或 AutoJs6 外掛中心下載並安裝一個 APK. 選擇與裝置 ABI 相符的安裝套件; 不確定時選擇 `universal`, 或參考下方 `如何選擇安裝套件`.",
+    "獨立使用時, 從桌面啟動 `OpenCC`, 輸入或主動貼上文字, 選擇 14 種轉換類型之一並點選 `轉換`. 此路徑不要求安裝 AutoJs6, 也不要求使用者授予外掛權限.",
+    "作為外掛使用時, 將 AutoJs6 升級到內部版本號 {{ required_host_version_code }} ({{ required_host_version_name }}) 及以上; 6.8.0 正式版及更新版本均符合要求.",
+    "開啟 AutoJs6 外掛中心, 確認 `OpenCC` 已被識別並處於啟用狀態. 官方發布套件會自動通過簽章驗證, 無需手動授權.",
+    "在腳本中直接使用 `opencc` 全域物件, 例如 `opencc.s2t(\"汉字\")`; 無需 require, import 或重新啟動主程式."
   ],
-  "p_usage_note": "外掛支援 Android {{ min_android_version }} (API {{ android_min_sdk }}) 及以上的裝置. 若腳本執行時提示缺少外掛或主程式版本過低, 請參考下方 `常見問題`.",
+  "p_usage_note": "兩種模式都支援 Android {{ min_android_version }} (API {{ android_min_sdk }}) 及以上裝置. 最低 AutoJs6 版本只約束外掛腳本, 獨立 App 不依賴主程式. 若腳本提示缺少外掛或主程式版本過低, 請參考下方 `常見問題`.",
   "h3_quick_start": "快速上手",
   "p_quick_start_intro": "安裝完成後, 以下腳本可直接執行, 註解為預期輸出",
   "p_quick_start_convert": "快捷方法與通用方法 `opencc.convert(text, type)` 等價; `opencc` 物件本身也可以作為函式呼叫, 轉換類型名稱不區分大小寫",
@@ -78,8 +81,8 @@
       "a": "開啟 AutoJs6 的外掛中心, 能看到 `OpenCC` 外掛並處於啟用狀態即表示主程式已識別; 再執行上方 `快速自我檢查` 腳本, 輸出 `漢字轉換` 即為生效."
     },
     {
-      "q": "為什麼應用程式清單裡沒有外掛的圖示?",
-      "a": "這是正常現象. 外掛沒有獨立介面, 也不會在桌面建立啟動圖示, 安裝後由 AutoJs6 在背景自動發現和呼叫, 全部互動都在 AutoJs6 內完成."
+      "q": "不安裝 AutoJs6 也可以使用 OpenCC 嗎?",
+      "a": "可以. 從桌面開啟 `OpenCC` 圖示即可在完全離線的編輯器中轉換文字. 只有腳本透過全域物件 `opencc` 呼叫外掛時才需要 AutoJs6; 兩種模式來自同一個 APK."
     },
     {
       "q": "腳本提示 `缺少 \"OpenCC plugin\" 所需的外掛`, 怎麼辦?",
@@ -103,12 +106,12 @@
     }
   ],
   "h3_security": "權限與安全",
-  "p_security_intro": "外掛與 AutoJs6 之間透過 Android 系統的權限與簽章機制建立信任:",
+  "p_security_intro": "獨立 App 與 AutoJs6 外掛入口具有相互分離且明確的安全邊界:",
   "security_points": [
-    "最小權限: 外掛資訊清單僅宣告 `org.autojs.permission.PLUGIN` 外掛權限, 不含網路, 儲存空間, 相機等任何敏感系統權限.",
-    "雙向防護: 外掛服務同樣受該權限保護, 只有持有外掛權限的主程式 (如 AutoJs6) 才能繫結與呼叫, 其他應用程式無法存取.",
-    "簽章授權: AutoJs6 會驗證外掛簽章, 官方發布套件自動獲得授權; 非官方簽章的建置需在外掛中心手動授權後才會被載入.",
-    "本機處理: 轉換完全在裝置本機完成, 轉換文字不會持久化或上傳, 外掛不收集任何使用者資料."
+    "最小權限: 資訊清單只宣告用於整合的 `org.autojs.permission.PLUGIN`, 不含網路, 儲存空間, 相機等敏感系統權限; 獨立使用者無需授予外掛權限.",
+    "明確編輯操作: Launcher 不接收外部分享文字或 URI, 只有點選 `貼上` 才讀取剪貼簿, 只有點選 `分享` 才開啟系統分享面板.",
+    "受保護的外掛服務: 只有持有外掛權限的主程式 (如 AutoJs6) 才能繫結呼叫, AutoJs6 還會驗證安裝套件簽章; 其他應用程式無法呼叫服務.",
+    "本機處理: 兩種入口都使用內建詞典完全離線轉換. 輸入和結果不會記錄日誌, 持久化, 備份, 上傳或收集."
   ],
   "p_security_permission": "請僅從官方 [Releases]({{ repo_url }}/releases) 頁面或 AutoJs6 外掛中心取得外掛. 來源不明的安裝套件即使版本號相同, 也可能無法通過主程式驗證或暗藏風險.",
   "h3_plugin_interface": "外掛介面",
@@ -130,7 +133,7 @@
   "p_build_docs_check": "驗證多語言文件來源檔與產生產物是否同步 (持續整合也會執行)",
   "p_build_requirements": "建置需要 JDK 17 及以上與 Android SDK 36; Gradle 與各外掛版本由 `version.properties` 及 `io.github.supermonster003.autojs6-platform-versions` 統一管理.",
   "h3_resource_layout": "在地化與文件產生",
-  "p_resource_layout": "`strings.xml` 提供在地化的外掛描述與錯誤訊息, `plugin_instruction.md` 提供主程式外掛中心內顯示的使用說明. README 與更新日誌一律修改 `.readme/` 與 `.changelog/` 下的 JSON 來源檔案, 再執行 `py .python/generate_markdown.py` 重新產生, 產生產物不手動編輯; 執行 `py .python/generate_markdown.py --check` 可驗證來源檔案與產生產物是否同步.",
+  "p_resource_layout": "`.readme/android_strings.json` 是獨立 UI 與服務錯誤文案的單一來源, 各語言 JSON 則提供 README 和外掛中心文案. 一律修改 `.readme/` 與 `.changelog/` 下的 JSON 來源檔案, 再執行 `py .python/generate_markdown.py`; 產生的 `strings.xml`, `plugin_instruction.md`, README 和更新日誌都不手動編輯. `--check` 會驗證全部 47 個產生產物.",
   "h3_license": "授權",
   "p_license": "專案程式碼採用 [Mozilla Public License 2.0]({{ license_url }}). 中文轉換能力直接來自 [OpenCC]({{ opencc_official_url }}) (Apache License 2.0); 內建 OpenCC, Marisa Trie, Darts Clone 與 RapidJSON 的來源和授權請見[第三方聲明]({{ third_party_notices_url }}).",
   "h3_links": "相關連結",
@@ -139,5 +142,5 @@
   "text_link_opencc_official": "OpenCC 官方專案",
   "text_link_third_party_notices": "第三方聲明",
   "p_instruction_more": "更多方法與完整轉換類型說明請參閱 [AutoJs6 OpenCC 文件]({{ docs_opencc_url }}) 與 [專案 README]({{ repo_url }}).",
-  "p_instruction_backend": "本版本內建官方 OpenCC {{ opencc_version }} 及固定於同一發行版的配套詞典. 所有處理繼續完全離線, 原生安裝套件支援使用 16 KB 記憶體頁面的 Android 裝置."
+  "p_instruction_backend": "同一個 APK 也可在不安裝 AutoJs6 時從桌面直接啟動, 作為離線文字轉換 App 使用. 獨立編輯器與本外掛入口均使用官方 OpenCC {{ opencc_version }} 及固定於同一發行版的詞典, 原生安裝套件支援 16 KB 記憶體頁面的 Android 裝置."
 }

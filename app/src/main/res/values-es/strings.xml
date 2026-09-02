@@ -26,7 +26,7 @@
     <string name="standalone_terminology_mainland">Terminología de China continental</string>
     <string name="standalone_conversion_direction">%1$s -&gt; %2$s (%3$s)</string>
     <string name="standalone_conversion_direction_with_terminology">%1$s -&gt; %2$s, %3$s (%4$s)</string>
-    <string name="plugin_description">Complemento OpenCC para la conversión de texto chino</string>
+    <string name="plugin_description">Conversor chino OpenCC sin conexión, independiente y compatible con AutoJs6</string>
     <string name="error_unsupported_conversion_type">Tipo de conversión OpenCC no compatible: %1$s</string>
     <string name="standalone_subtitle">Convierte texto chino localmente con los diccionarios OpenCC integrados. No se usa ninguna conexión de red.</string>
     <string name="standalone_source_label">Texto de origen</string>
