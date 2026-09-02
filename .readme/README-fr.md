@@ -316,6 +316,17 @@ Les plans du plugin et leur avancement sont tenus à jour sous forme de liste co
 
 ******
 
+#### v1.3.0
+
+_2026/09/03_
+
+- `Note` Le même APK fonctionne désormais à la fois comme application autonome entièrement hors ligne sur Android 7.0+ et comme plugin AutoJs6 existant; seul le mode plugin nécessite AutoJs6
+- `Fonctionnalité` Ajout d'un lanceur et d'un éditeur entièrement hors ligne pour les 14 types de conversion OpenCC, avec conversion, annulation, effacement, collage, permutation, copie et partage, traitement des textes longs en arrière-plan et restauration après rotation ou recréation du processus
+- `Fonctionnalité` Ajout d'une interface autonome en 10 langues avec thèmes clair/sombre, RTL, grandes polices, sémantique TalkBack et ordre de navigation, raccourcis clavier, zones indépendamment défilables et sélectionnables, et dispositions adaptatives pour téléphone, tablette et écran partagé
+- `Amélioration` Partage d'un unique moteur officiel OpenCC à l'échelle du processus entre les entrées autonome et Binder, tout en conservant l'applicationId, l'identité de signature, la limite de permission du plugin, les numéros de transaction AIDL et les valeurs par défaut hors ligne/sans historique
+- `Amélioration` Extension de la validation à minSdk 24, ARM 32 bits, arm64, x86, x86_64 et aux vraies pages de 16 Ko; audit des propriétés locale, manifest, R8, ELF et ZIP des APK finaux, avec captures d'interface brutes et reproductibles
+- `Amélioration` Vérification que la mise à niveau sur place depuis v1.2.0 conserve l'UID du paquet et le service du plugin tout en ajoutant exactement un lanceur, puis exécution de conversions UI et Binder brut historique sur la release signée et minifiée
+
 #### v1.2.0
 
 _2026/09/01_
@@ -337,17 +348,6 @@ _2026/09/01_
 - `Amélioration` Transmission des instructions localisées via `PluginInfo.instruction` et publication de la version du contrat et des types de conversion pris en charge dans les capabilities
 - `Amélioration` Conservation des méthodes AIDL et numéros de transaction d'origine, avec des tests unitaires et Binder réels couvrant les appels étendus, le repli hérité, les limites de taille et les erreurs
 - `Amélioration` Uniformiser la mise en page du README et la gestion des versions de la plateforme Gradle
-
-#### v1.0.2
-
-_2026/08/31_
-
-- `Note` Cette version améliore uniquement la documentation et le processus de compilation; le comportement de conversion OpenCC et les 14 types de conversion principaux restent inchangés
-- `Amélioration` Refonte du README dans les 10 langues avec les étapes d'installation, un guide de sélection des paquets, une vérification rapide, la liste complète des 33 méthodes de script, une FAQ et des précisions sur les permissions et la sécurité
-- `Amélioration` Génération des instructions du centre de plugins depuis la même source JSON localisée que le README et le CHANGELOG, afin de synchroniser tous les documents Android depuis une source unique
-- `Amélioration` Renforcement de la validation de la documentation et exécution dans GitHub Actions, avec détection automatique des structures incohérentes entre langues, des fichiers générés désynchronisés, des artefacts orphelins, des versions non alignées et des marqueurs résiduels
-- `Amélioration` Ajout de ROADMAP.md avec des listes de jalons vérifiables pour la documentation, l'ingénierie, les capacités de conversion et l'évolution de l'environnement d'exécution
-- `Amélioration` Migration de la configuration Gradle vers `org.autojs.build.platform-versions` 1.4.1 et utilisation de foojay pour la résolution automatique du JDK, afin de simplifier et d'uniformiser l'environnement de compilation
 
 ##### Pour plus d'historique des versions
 

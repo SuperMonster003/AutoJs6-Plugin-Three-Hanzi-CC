@@ -4,6 +4,17 @@
 
 ******
 
+# v1.3.0
+
+###### 2026/09/03
+
+* `Hint` The same APK now works both as a standalone offline App on Android 7.0+ and as the existing AutoJs6 plugin; AutoJs6 is required only for the plugin path
+* `Feature` Add a desktop Launcher and fully offline editor for all 14 OpenCC conversion types, with convert, cancel, clear, paste, swap, copy, and share actions, background long-text processing, and rotation/process-state restoration
+* `Feature` Add a 10-language standalone UI with light/dark themes, RTL, large fonts, TalkBack semantics and focus order, hardware-keyboard shortcuts, independently scrollable/selectable editors, and responsive phone, tablet, and split-screen layouts
+* `Improvement` Keep standalone and Binder entry points on one process-wide official OpenCC backend while preserving the application ID, signing identity, plugin permission boundary, AIDL transaction numbers, and offline/no-history defaults
+* `Improvement` Expand verification to minSdk 24, 32-bit ARM, arm64, x86, x86_64, and real 16 KB pages; audit final APK locale, manifest, R8, ELF, and ZIP properties and pin reproducible unedited UI screenshots
+* `Improvement` Verify in-place upgrades from v1.2.0 retain the package UID and plugin service while adding exactly one Launcher, then run UI and raw legacy Binder conversions against the signed minified release
+
 # v1.2.0
 
 ###### 2026/09/01

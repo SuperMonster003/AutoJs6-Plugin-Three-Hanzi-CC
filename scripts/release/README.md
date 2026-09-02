@@ -31,3 +31,29 @@ py -m unittest discover -s scripts/release/tests -p "test_*.py"
 ```
 
 The fixture suite covers the complete five-package path, missing-package rejection, duplicate/mixed-package rejection, native ABI mismatch rejection, CRC mismatch rejection, version isolation, checksums, and release-note generation.
+
+## Signed in-place upgrade and minified runtime probe
+
+`OpenccReleaseRuntimeTest` is deliberately written in Java and does not reference the Kotlin test
+runtime. This lets the separately signed debug instrumentation APK drive an installed minified release
+target without requiring R8 to retain classes used only by Kotlin tests.
+
+After preparing a signed candidate, run the following on each selected device (set `ANDROID_SERIAL`
+when more than one device is connected):
+
+```text
+EXPECTED_VERSION_NAME=1.3.0 \
+EXPECTED_VERSION_CODE=20 \
+EXPECTED_PAGE_SIZE=4096 \
+sh scripts/release/verify_release_upgrade.sh \
+  path/to/v1.2.0-abi.apk \
+  build/release/v1.3.0/autojs6-plugin-opencc-v1.3.0-abi-xxxxxxxx.apk \
+  app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+  abi
+```
+
+The script starts from an uninstalled state, installs v1.2.0, requires that it has no Launcher, and
+performs an actual `adb install -r` upgrade. It then requires the same package UID and
+`firstInstallTime`, the expected version name/code, and exactly one `OpenccActivity` Launcher. Finally,
+the Java probe converts Unicode text through both the visible editor and legacy raw Binder transaction
+2 against the signed minified target. Its exit trap removes the target and instrumentation packages.

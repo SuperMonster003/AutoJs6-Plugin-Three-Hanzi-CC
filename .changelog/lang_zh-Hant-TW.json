@@ -5,6 +5,21 @@
   "changelog_label_improvement": "優化",
   "changelog_label_dependency": "相依性",
   "$data": {
+    "v1.3.0": {
+      "released_date": "2026/09/03",
+      "hint": [
+        "同一個 APK 現在既可在 Android 7.0+ 上作為完全離線的獨立應用程式使用, 也繼續作為原有 AutoJs6 外掛使用; 只有外掛路徑需要 AutoJs6"
+      ],
+      "feature": [
+        "新增桌面啟動入口和涵蓋全部 14 種 OpenCC 轉換類型的完全離線編輯器, 提供轉換, 取消, 清除, 貼上, 交換, 複製與分享操作, 支援背景處理長文字以及旋轉/程序狀態還原",
+        "新增 10 語言獨立介面, 支援日/夜主題, RTL, 大字體, TalkBack 語意與焦點順序, 硬體鍵盤快速鍵, 可獨立捲動/選取的編輯區域及手機, 平板和分割畫面回應式版面"
+      ],
+      "improvement": [
+        "獨立入口和 Binder 入口共用唯一的程序級官方 OpenCC 後端, 同時維持 applicationId, 簽章身分, 外掛權限邊界, AIDL 交易編號及離線/無歷史記錄預設值不變",
+        "將驗收矩陣擴展至 minSdk 24, 32 位元 ARM, arm64, x86, x86_64 和真實 16 KB 分頁環境; 稽核最終 APK 的 locale, manifest, R8, ELF 與 ZIP 屬性, 並固定可重現的未編輯 UI 螢幕截圖",
+        "驗證從 v1.2.0 原地升級後保留套件 UID 和外掛服務並只新增一個 Launcher, 再針對已簽章 minified release 實際執行 UI 與舊版原始 Binder 轉換"
+      ]
+    },
     "v1.2.0": {
       "released_date": "2026/09/01",
       "hint": [

@@ -316,6 +316,17 @@ The plugin's plans and progress are maintained as a checkable list in ROADMAP.md
 
 ******
 
+#### v1.3.0
+
+_2026/09/03_
+
+- `Hint` The same APK now works both as a standalone offline App on Android 7.0+ and as the existing AutoJs6 plugin; AutoJs6 is required only for the plugin path
+- `Feature` Add a desktop Launcher and fully offline editor for all 14 OpenCC conversion types, with convert, cancel, clear, paste, swap, copy, and share actions, background long-text processing, and rotation/process-state restoration
+- `Feature` Add a 10-language standalone UI with light/dark themes, RTL, large fonts, TalkBack semantics and focus order, hardware-keyboard shortcuts, independently scrollable/selectable editors, and responsive phone, tablet, and split-screen layouts
+- `Improvement` Keep standalone and Binder entry points on one process-wide official OpenCC backend while preserving the application ID, signing identity, plugin permission boundary, AIDL transaction numbers, and offline/no-history defaults
+- `Improvement` Expand verification to minSdk 24, 32-bit ARM, arm64, x86, x86_64, and real 16 KB pages; audit final APK locale, manifest, R8, ELF, and ZIP properties and pin reproducible unedited UI screenshots
+- `Improvement` Verify in-place upgrades from v1.2.0 retain the package UID and plugin service while adding exactly one Launcher, then run UI and raw legacy Binder conversions against the signed minified release
+
 #### v1.2.0
 
 _2026/09/01_
@@ -337,17 +348,6 @@ _2026/09/01_
 - `Improvement` Deliver localized plugin instructions through `PluginInfo.instruction` and report the contract version and supported conversion types through capabilities
 - `Improvement` Preserve the original AIDL methods and transaction numbers, with unit and real Binder tests covering extended calls, legacy fallback, size limits, and error paths
 - `Improvement` Standardize the README layout and Gradle platform version management
-
-#### v1.0.2
-
-_2026/08/31_
-
-- `Hint` This release improves documentation and the build workflow only; OpenCC conversion behavior and all 14 core conversion types remain unchanged
-- `Improvement` Restructure the README in all 10 languages with installation steps, package selection guidance, a quick self-check, the full list of 33 script methods, FAQ, and permission and security details
-- `Improvement` Generate plugin-center instructions from the same localized JSON source as the README and CHANGELOG, keeping all Android documentation artifacts synchronized from one source
-- `Improvement` Strengthen documentation validation and run it in GitHub Actions, automatically detecting cross-language shape mismatches, generated-file drift, orphan artifacts, version misalignment, and leftover placeholders
-- `Improvement` Add ROADMAP.md with verifiable milestone checklists for documentation, engineering, conversion capabilities, and runtime evolution
-- `Improvement` Migrate Gradle configuration to `org.autojs.build.platform-versions` 1.4.1 and use foojay for automatic JDK resolution, simplifying and standardizing the build environment
 
 ##### For more release history
 

@@ -4,6 +4,17 @@
 
 ******
 
+# v1.3.0
+
+###### 2026/09/03
+
+* `Aviso` El mismo APK funciona ahora tanto como aplicación autónoma totalmente sin conexión en Android 7.0+ como en su función existente de complemento para AutoJs6; AutoJs6 solo es necesario para la ruta del complemento
+* `Función` Añade un lanzador de escritorio y un editor totalmente sin conexión para los 14 tipos de conversión OpenCC, con acciones para convertir, cancelar, borrar, pegar, intercambiar, copiar y compartir, procesamiento de textos largos en segundo plano y restauración tras rotación o recreación del proceso
+* `Función` Añade una interfaz autónoma en 10 idiomas con temas claro/oscuro, RTL, fuentes grandes, semántica y orden de foco para TalkBack, atajos de teclado, áreas desplazables y seleccionables por separado, y diseños adaptables para teléfono, tableta y pantalla dividida
+* `Mejora` Comparte un único motor oficial OpenCC para todo el proceso entre las entradas autónoma y Binder, conservando el applicationId, la identidad de firma, el límite de permisos del complemento, los números de transacción AIDL y los valores predeterminados sin conexión/sin historial
+* `Mejora` Amplía la verificación a minSdk 24, ARM de 32 bits, arm64, x86, x86_64 y páginas reales de 16 KB; audita las propiedades locale, manifest, R8, ELF y ZIP de los APK finales y fija capturas de interfaz reproducibles sin editar
+* `Mejora` Verifica que la actualización directa desde v1.2.0 conserve el UID del paquete y el servicio del complemento mientras añade exactamente un lanzador, y ejecuta conversiones de UI y Binder heredado sin procesar sobre la release firmada y minificada
+
 # v1.2.0
 
 ###### 2026/09/01
