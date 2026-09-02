@@ -1,7 +1,7 @@
-# M5-A/B 独立 App 双入口与离线 UI 架构决策
+# M5-A/B/C 独立 App 双入口、离线 UI 与安全架构决策
 
 记录日期: 2026-09-03
-状态: Accepted（M5-A/B 原型；不是新的正式版本承诺）
+状态: Accepted（M5-A/B/C 原型；不是新的正式版本承诺）
 
 ## 结论
 
@@ -49,19 +49,20 @@ Android 官方说明两套 UI 工具都可使用；官方的迁移度量示例�
 
 ## APK 实测
 
-基线是 GitHub 已公开的 v1.2.0 签名资产；原型是 2026-09-02 在相同版本号下仅用于本地验收的
+基线是 GitHub 已公开的 v1.2.0 签名资产；原型是 2026-09-02 至 2026-09-03 在相同版本号下仅用于本地验收的
 minified release 构建，未发布且不会覆盖 v1.2.0：
 
-| APK | v1.2.0 | M5-A 原型 | M5-B 原型 | M5 总增量 |
-|---|---:|---:|---:|---:|
-| arm64-v8a | 1,499,452 B | 1,528,088 B | 1,542,276 B | +42,824 B |
-| armeabi-v7a | 1,160,706 B | 1,189,342 B | 1,203,530 B | +42,824 B |
-| x86_64 | 1,508,249 B | 1,536,885 B | 1,551,073 B | +42,824 B |
-| x86 | 1,461,662 B | 1,490,298 B | 1,504,486 B | +42,824 B |
-| universal | 3,835,001 B | 3,863,637 B | 3,877,825 B | +42,824 B |
+| APK | v1.2.0 | M5-A 原型 | M5-B 原型 | M5-C 原型 | M5 总增量 |
+|---|---:|---:|---:|---:|---:|
+| arm64-v8a | 1,499,452 B | 1,528,088 B | 1,542,276 B | 1,542,312 B | +42,860 B |
+| armeabi-v7a | 1,160,706 B | 1,189,342 B | 1,203,530 B | 1,203,566 B | +42,860 B |
+| x86_64 | 1,508,249 B | 1,536,885 B | 1,551,073 B | 1,551,109 B | +42,860 B |
+| x86 | 1,461,662 B | 1,490,298 B | 1,504,486 B | 1,504,522 B | +42,860 B |
+| universal | 3,835,001 B | 3,863,637 B | 3,877,825 B | 3,877,861 B | +42,860 B |
 
 M5-A 的五种产物固定增加 `28,636 B`；M5-B 再固定增加 `14,188 B`，来自 Activity 操作/状态逻辑、
-扩展 XML 和 10 语言类型/操作文案，ABI 原生载荷不变。构建期间项目的平台版本插件正在由维护者
+扩展 XML 和 10 语言类型/操作文案；M5-C 仅因显式禁止明文流量的最终 Manifest 属性再增加 `36 B`，
+测试与静态门禁代码均不进入正式 APK，ABI 原生载荷不变。构建期间项目的平台版本插件正在由维护者
 独立升级，因此这些数字用于记录当前原型资产，而不作为跨工具链的字节级长期阈值。真正的 M5
 发布仍会在固定提交和工具链上重新建立基线。
 
@@ -77,18 +78,20 @@ M5-A 的五种产物固定增加 `28,636 B`；M5-B 再固定增加 `14,188 B`，
   回收，避免一个入口销毁另一个入口仍在使用的 Converter。
 - Binder 的单次、批量和链式请求与 UI 请求通过同一个锁串行进入同一 engine；既有 AIDL 事务号、
   限额和错误类型保持不变。
-- `onSaveInstanceState` 只保存来源文本、结果文本和稳定类型下标；旋转、分屏重建及系统带状态重建
-  可以恢复必要编辑状态，不恢复或自动重放进行中的转换，也不写入 SharedPreferences、数据库或文件。
+- `onSaveInstanceState` 通过最小 `OpenccEditorState` 只保存来源文本、结果文本和稳定类型下标；旋转、
+  分屏重建及系统带状态重建可以恢复必要编辑状态，不恢复或自动重放进行中的转换，也不写入
+  SharedPreferences、数据库或文件。设备测试将真实 Activity 产生的最小 Bundle 序列化后在不同 PID
+  解码，配合同一 Activity 的 `recreate()` 往返覆盖保存端、跨进程载荷和恢复端。
 
 ## Manifest、隐私与权限边界
 
 | 组件/能力 | exported | 权限 | 行为 |
 |---|---:|---|---|
-| `OpenccActivity` | `true` | 无 | 只接受桌面启动；代码不读取外部路径或转换参数 |
+| `OpenccActivity` | `true` | 无 | 只声明 `MAIN`/`LAUNCHER`；代码忽略外部 URI、ClipData、文本和转换参数 |
 | `OpenccPluginService` | `true` | `org.autojs.permission.PLUGIN` | 继续提供既有 OpenCC Binder 契约 |
 | `WakeActivity` | `true` | `org.autojs.permission.PLUGIN` | 继续提供既有无界面唤醒协议 |
 
-Manifest 仍没有 `INTERNET`。页面只在用户点击“粘贴”后读取剪贴板第一项的显式文本，不调用可能
+Manifest 仍没有 `INTERNET`，并显式设置 `usesCleartextTraffic=false`。页面只在用户点击“粘贴”后读取剪贴板第一项的显式文本，不调用可能
 解析 URI 的 coercion；只在点击“复制”后写入结果，只在点击“分享”后发出 `ACTION_SEND` 的
 `text/plain` 系统 chooser。启动、恢复、后台阶段和按钮可用性计算都不读取剪贴板，Manifest 也不
 接收外部分享。页面不写输入/输出日志，不建立历史记录；`allowBackup=false` 并为 Android 11 及
@@ -131,8 +134,43 @@ OpenCC 资源继续位于 `noBackupFilesDir`，Android 本身也会排除该目�
 - debug/release 各五 APK 已通过资源、旧后端排除、R8/JNI、ELF 16 KB/RELRO、ZIP 16 KB 对齐和
   签名门禁；JVM 测试及 10 语言/36 份 Markdown 漂移检查通过。
 
+## M5-C 验收证据
+
+- `OpenccDualEntryLifecycleTest` 在一个 Activity 存活期间启动长文本 UI 转换，同时以 10 个工作线程
+  发送 64 个 Binder 请求，并穿插 16 个独立 `OpenccNativeEngine` 的转换/`close()`；`close()` 会清空
+  JNI 全局 Converter 缓存，因此该竞争实际覆盖共享协调器锁与 JNI mutex 的交界。全部请求按各自显式
+  类型返回正确值，缓存清理后的 UI/Binder 后续调用也会透明重建 Converter。
+- 同一测试把编辑器任务移到后台，在此期间继续完成 Binder 转换，再由 shell 模拟用户从系统任务切回；
+  原 Activity、来源、结果和类型保持不变且没有创建第二个页面。最后一个 Binder 客户端解绑后，测试以
+  ActivityManager 等待 bound-only Service 的 `ServiceRecord` 消失，再验证仍存活的 UI 和随后新开的 UI
+  都可转换，并重新绑定服务交替执行 S2T/T2S。
+- 恶意显式启动测试携带 `content://` URI、`EXTRA_TEXT` 与 `ClipData`，编辑器仍为空。PackageManager
+  运行时审计精确要求两个 Activity、一个 Service、零 receiver/provider、唯一插件权限、单一普通任务
+  Launcher、受 `org.autojs.permission.PLUGIN` 保护的 Wake/Service，并证明本包不会响应隐式
+  `ACTION_SEND text/plain` 或外部 `ACTION_VIEW` URI。
+- `verify_apk_variants.py` 新增无第三方依赖的 Android Binary XML 解析器，对 debug/release 各五个最终
+  APK 验证相同组件全集、exported/permission 归属、每个 intent-filter、无 `<data>`、无自定义进程/任务
+  属性、`allowBackup=false`、`usesCleartextTraffic=false` 与唯一 requested permission。负向 Python
+  测试固定拒绝 `INTERNET`、额外 receiver 和分享接收 filter。
+- `PluginApiCompatibilityTest` 固定 `IOpenccPlugin` 五个方法签名、v1/v2/current 契约常量、插件
+  ID/engine/`default` 变体及事务 1–5；APK 门禁另固定当前 `opencc-api.aar` SHA-256。真实 Binder 测试
+  一方面直接向事务 1/2 写 Parcel，证明旧宿主 `getInfo()`/`convert()` 编号和负载仍兼容；另一方面
+  强制生成的 AIDL client 走 Proxy/Parcel 而不是同进程 local interface，使 v2 类型枚举、批量、链式、
+  能力元数据和并发请求都覆盖真实序列化路径。独立 UI 不修改任何宿主代码或 33 个脚本方法计划，
+  也不保存会影响 Binder 默认值的偏好。
+- `OpenccEntryResourceTest` 由脚本分两次 instrumentation/两个新进程运行。独立阶段先删除版本资源，
+  证明仅打开页面不会安装，再制造与官方 ZIP 同长度的损坏副本并由首个 UI 转换恢复；Binder 阶段再次
+  从缺失状态开始，证明绑定、`getInfo()` 和类型枚举均保持惰性，首个转换才从 APK asset 安装。两阶段
+  均校验最终 SHA-256、asset 长度和目录中只存在一个正式 ZIP、没有临时文件。
+- `OpenccResourceRestartTest` 除原有 PID/资源长度/摘要/mtime 证据外，现将真实 Activity 保存出的最小
+  editor Bundle 跨 instrumentation 进程序列化并复核；验证阶段 PID 不同，资源不重写，编辑状态的
+  Unicode/emoji/U+20000/RTL 与类型下标也完整一致。
+- 八阶段设备脚本已在 Android 15/API 35 arm64 真机、Android 9/API 28 的 32-bit armv7 真机和
+  Android 16/API 36 x86_64/`PAGE_SIZE=16384` 模拟器通过；每轮均执行两个资源首启阶段、服务全契约、
+  双入口/manifest、并发生命周期、完整 UI 和两阶段真实进程重建，并在结束时卸载目标/测试包。
+
 ## 后续边界
 
-M5-C 继续扩充 UI/Binder 并发和生命周期故障矩阵；M5-D 完成十语言单一来源、可访问性和设备
-截图；M5-E 才确定并公开第一个双形态版本号。M5-A/B 原型不会修改 v1.2.0 标签、Release 或
+M5-D 继续完成十语言单一来源、可访问性和设备截图；M5-E 才确定并公开第一个双形态版本号。
+M5-A/B/C 原型不会修改 v1.2.0 标签、Release 或
 在线插件索引。

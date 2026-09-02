@@ -90,9 +90,17 @@ run_instrumentation() {
 }
 
 run_instrumentation \
+  io.github.supermonster003.autojs6.plugin.opencc.OpenccEntryResourceTest \
+  -e opencc_entry_resource_phase standalone
+run_instrumentation \
+  io.github.supermonster003.autojs6.plugin.opencc.OpenccEntryResourceTest \
+  -e opencc_entry_resource_phase binder
+run_instrumentation \
   io.github.supermonster003.autojs6.plugin.opencc.OpenccPluginServiceTest
 run_instrumentation \
   io.github.supermonster003.autojs6.plugin.opencc.OpenccDualEntryTest
+run_instrumentation \
+  io.github.supermonster003.autojs6.plugin.opencc.OpenccDualEntryLifecycleTest
 run_instrumentation \
   io.github.supermonster003.autojs6.plugin.opencc.OpenccStandaloneUiTest
 run_instrumentation \

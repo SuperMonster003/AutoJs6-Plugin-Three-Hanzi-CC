@@ -1,6 +1,14 @@
 package io.github.supermonster003.autojs6.plugin.opencc
 
+import android.content.ComponentName
+import android.content.Intent
+import android.os.Bundle
+import android.os.Parcel
 import android.os.Process
+import android.util.Base64
+import android.widget.EditText
+import android.widget.Spinner
+import android.widget.TextView
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import io.github.supermonster003.autojs6.plugin.opencc.nativebridge.OpenccConversionType
@@ -18,7 +26,8 @@ import java.security.MessageDigest
 @RunWith(AndroidJUnit4::class)
 class OpenccResourceRestartTest {
 
-    private val context = InstrumentationRegistry.getInstrumentation().targetContext
+    private val instrumentation = InstrumentationRegistry.getInstrumentation()
+    private val context = instrumentation.targetContext
 
     @Test
     fun verifiedArchiveIsReusedAcrossARealProcessRestart() {
@@ -35,6 +44,9 @@ class OpenccResourceRestartTest {
         }
         val archive = resourceArchive()
         assertEquals(OpenccUpstream.resourceSha256(), sha256(archive))
+        val editorState = captureEditorState()
+        assertEquals(EXPECTED_EDITOR_STATE, editorState)
+        val portableState = Bundle().also(editorState::writeTo)
         assertTrue(
             "Unable to persist OpenCC restart evidence",
             preferences().edit()
@@ -42,6 +54,7 @@ class OpenccResourceRestartTest {
                 .putLong(KEY_LAST_MODIFIED, archive.lastModified())
                 .putLong(KEY_LENGTH, archive.length())
                 .putString(KEY_SHA256, sha256(archive))
+                .putString(KEY_EDITOR_STATE, encodeBundle(portableState))
                 .commit(),
         )
     }
@@ -52,8 +65,19 @@ class OpenccResourceRestartTest {
         val previousModified = preferences.getLong(KEY_LAST_MODIFIED, -1L)
         val previousLength = preferences.getLong(KEY_LENGTH, -1L)
         val previousDigest = preferences.getString(KEY_SHA256, null)
+        val encodedEditorState = preferences.getString(KEY_EDITOR_STATE, null)
         assertTrue("Restart preparation evidence is missing", previousProcess > 0L && previousModified > 0L)
         assertNotEquals("Instrumentation did not restart the app process", previousProcess, Process.myPid().toLong())
+        val restoredEditorState = OpenccEditorState.fromBundle(
+            decodeBundle(requireNotNull(encodedEditorState) { "Restart editor-state evidence is missing" }),
+            OpenccConversionType.values().indices,
+            OpenccConversionType.S2T.ordinal,
+        )
+        assertEquals(
+            "The Activity editor state did not survive Bundle serialization across a real process restart",
+            EXPECTED_EDITOR_STATE,
+            restoredEditorState,
+        )
 
         val archive = resourceArchive()
         assertTrue("Pinned OpenCC archive is missing after restart", archive.isFile)
@@ -67,6 +91,53 @@ class OpenccResourceRestartTest {
         assertEquals("Verified archive was unexpectedly rewritten", previousModified, archive.lastModified())
         assertEquals(OpenccUpstream.resourceSha256(), sha256(archive))
         assertTrue("Unable to clear OpenCC restart evidence", preferences.edit().clear().commit())
+    }
+
+    private fun captureEditorState(): OpenccEditorState {
+        val intent = Intent(Intent.ACTION_MAIN)
+            .addCategory(Intent.CATEGORY_LAUNCHER)
+            .setComponent(ComponentName(context, OpenccActivity::class.java))
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        val activity = instrumentation.startActivitySync(intent) as OpenccActivity
+        val state = Bundle()
+        instrumentation.runOnMainSync {
+            activity.findViewById<EditText>(R.id.source_text).setText(EXPECTED_EDITOR_STATE.source)
+            activity.findViewById<TextView>(R.id.result_text).text = EXPECTED_EDITOR_STATE.result
+            activity.findViewById<Spinner>(R.id.conversion_type)
+                .setSelection(EXPECTED_EDITOR_STATE.typeIndex)
+            instrumentation.callActivityOnSaveInstanceState(activity, state)
+            activity.finish()
+        }
+        instrumentation.waitForIdleSync()
+        return requireNotNull(
+            OpenccEditorState.fromBundle(
+                state,
+                OpenccConversionType.values().indices,
+                OpenccConversionType.S2T.ordinal,
+            ),
+        )
+    }
+
+    private fun encodeBundle(bundle: Bundle): String {
+        val parcel = Parcel.obtain()
+        return try {
+            parcel.writeBundle(bundle)
+            Base64.encodeToString(parcel.marshall(), Base64.NO_WRAP)
+        } finally {
+            parcel.recycle()
+        }
+    }
+
+    private fun decodeBundle(encoded: String): Bundle {
+        val parcel = Parcel.obtain()
+        return try {
+            val bytes = Base64.decode(encoded, Base64.DEFAULT)
+            parcel.unmarshall(bytes, 0, bytes.size)
+            parcel.setDataPosition(0)
+            requireNotNull(parcel.readBundle(OpenccEditorState::class.java.classLoader))
+        } finally {
+            parcel.recycle()
+        }
     }
 
     private fun resourceArchive(): File = File(
@@ -101,5 +172,11 @@ class OpenccResourceRestartTest {
         const val KEY_LAST_MODIFIED = "last_modified"
         const val KEY_LENGTH = "length"
         const val KEY_SHA256 = "sha256"
+        const val KEY_EDITOR_STATE = "editor_state"
+        val EXPECTED_EDITOR_STATE = OpenccEditorState(
+            source = "进程重建来源 😀 𠀀 مرحبا",
+            result = "進程重建結果 😀 𠀀 مرحبا",
+            typeIndex = OpenccConversionType.TW2SP.ordinal,
+        )
     }
 }

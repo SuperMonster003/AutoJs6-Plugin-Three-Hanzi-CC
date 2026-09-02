@@ -83,13 +83,15 @@ class OpenccActivity : Activity() {
             identity.resourceSha256.take(12),
         )
 
-        if (savedInstanceState != null) {
-            sourceText.setText(savedInstanceState.getString(STATE_SOURCE).orEmpty())
-            resultText.text = savedInstanceState.getString(STATE_RESULT).orEmpty()
-            conversionType.setSelection(
-                savedInstanceState.getInt(STATE_TYPE_INDEX, DEFAULT_TYPE_INDEX)
-                    .coerceIn(conversionTypes.indices),
-            )
+        val restoredState = OpenccEditorState.fromBundle(
+            savedInstanceState,
+            conversionTypes.indices,
+            DEFAULT_TYPE_INDEX,
+        )
+        if (restoredState != null) {
+            sourceText.setText(restoredState.source)
+            resultText.text = restoredState.result
+            conversionType.setSelection(restoredState.typeIndex)
         } else {
             conversionType.setSelection(DEFAULT_TYPE_INDEX)
         }
@@ -138,9 +140,11 @@ class OpenccActivity : Activity() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putString(STATE_SOURCE, sourceText.text.toString())
-        outState.putString(STATE_RESULT, resultText.text.toString())
-        outState.putInt(STATE_TYPE_INDEX, conversionType.selectedItemPosition)
+        OpenccEditorState(
+            source = sourceText.text.toString(),
+            result = resultText.text.toString(),
+            typeIndex = conversionType.selectedItemPosition,
+        ).writeTo(outState)
         super.onSaveInstanceState(outState)
     }
 
@@ -362,10 +366,35 @@ class OpenccActivity : Activity() {
     }
 
     private companion object {
-        const val STATE_SOURCE = "opencc.source"
-        const val STATE_RESULT = "opencc.result"
-        const val STATE_TYPE_INDEX = "opencc.type.index"
         const val MIME_TYPE_PLAIN_TEXT = "text/plain"
         val DEFAULT_TYPE_INDEX = OpenccConversionType.values().indexOf(OpenccConversionType.S2T)
+    }
+}
+
+/** Minimal editor state that Android may serialize when recreating the Activity in a new process. */
+internal data class OpenccEditorState(
+    val source: String,
+    val result: String,
+    val typeIndex: Int,
+) {
+    fun writeTo(bundle: Bundle) {
+        bundle.putString(STATE_SOURCE, source)
+        bundle.putString(STATE_RESULT, result)
+        bundle.putInt(STATE_TYPE_INDEX, typeIndex)
+    }
+
+    companion object {
+        private const val STATE_SOURCE = "opencc.source"
+        private const val STATE_RESULT = "opencc.result"
+        private const val STATE_TYPE_INDEX = "opencc.type.index"
+
+        fun fromBundle(bundle: Bundle?, validTypeIndices: IntRange, defaultTypeIndex: Int): OpenccEditorState? {
+            if (bundle == null) return null
+            return OpenccEditorState(
+                source = bundle.getString(STATE_SOURCE).orEmpty(),
+                result = bundle.getString(STATE_RESULT).orEmpty(),
+                typeIndex = bundle.getInt(STATE_TYPE_INDEX, defaultTypeIndex).coerceIn(validTypeIndices),
+            )
+        }
     }
 }

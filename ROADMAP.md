@@ -1,6 +1,6 @@
 # AutoJs6 OpenCC 插件 Roadmap
 
-更新日期: 2026-08-31
+更新日期: 2026-09-03
 
 本文档是 OpenCC 插件从"单一转换服务"逐步演进为"文档完善, 工程可靠, 能力可扩展"的中文转换方案的执行清单. 每个条目只有在代码/文档与可验证的验收条件同时满足后才可勾选.
 
@@ -19,6 +19,7 @@
 | M2 工程化与持续集成 | 已完成 | 构建/测试流水线与发布物料脚本化 | 测试/发布 |
 | M3 转换能力增强 | 开发完成, 待宿主发布 | 类型枚举, 批量与链式转换, 本地化说明, 自定义词典评估 | API/插件/宿主 |
 | M4 运行时与生态演进 | 已启动 | 官方 OpenCC 原生后端, 上游自动跟进, 16 KB 适配与词典生态 | 依赖/插件/测试/宿主/发布 |
+| M5 插件与独立 App 双形态 | M5-A 至 M5-C 已完成 | 共用官方后端的桌面文本转换 UI 与原插件入口 | App/插件/测试/发布 |
 
 依赖顺序:
 
@@ -111,9 +112,10 @@ M4-A 官方后端原型 ──> M4-B 兼容/性能/16 KB ──> M4-C 正式替�
 合并前二次判定和离线故障矩阵已实现；远端 `OPENCC_AUTOMATION_MODE=pr-only`，因此当前只产生
 判定摘要而不会写入。`master` 按维护策略保持不受保护；待首个真实或受控更新 PR 完成在线 dry-run
 后，才将策略提升为 `merge`。M4-D-4 不阻塞 M4-E 或 M5。M5-A 已完成同 APK Launcher、共享
-转换协调器与平台 Views 选型；M5-B 已完成 14 类型离线 UI、显式剪贴板/分享、取消与状态恢复，
-并在 16 KB x86_64 模拟器及 32-bit armv7 真机通过五阶段测试。M5-C 至 M5-E 继续作为后续
-产品主线，当前不改变 v1.2.0 Release 或在线索引。
+转换协调器与平台 Views 选型；M5-B 已完成 14 类型离线 UI、显式剪贴板/分享、取消与状态恢复。
+M5-C 已完成双入口并发/生命周期/资源首启/API 与最终 APK manifest 安全门禁，并在 16 KB x86_64
+模拟器、arm64 与 32-bit armv7 真机通过八阶段测试。M5-D/M5-E 继续作为后续产品主线，当前不改变
+v1.2.0 Release 或在线索引。
 
 ### M4-A: 官方 OpenCC 原生后端原型 (2026-08-31, 已完成)
 
@@ -236,12 +238,12 @@ M5-B 验收条件: 用户无需 AutoJs6 即可完成 14 种转换及复制/分�
 
 ### M5-C: 双形态并发、生命周期与安全
 
-- [ ] (测试) 覆盖 UI 转换与 Binder 64 路调用并发、Activity 旋转/后台/进程重建、服务销毁后 UI 重开、资源损坏恢复和两入口交替使用；缓存清理不能让另一入口崩溃或返回错误类型。
-- [ ] (安全) 审计最终 manifest 的全部 exported 组件、intent-filter、权限和任务栈行为；Launcher 只暴露启动 Activity，不增加任意文件路径、隐式文本接收或无权限转换服务，除非后续另有明确威胁模型和契约。
-- [ ] (插件/API) 保持 AutoJs6 v1/v2 API、33 个宿主脚本方法、插件中心元数据和旧宿主回退不变；独立 App 的 UI 状态与偏好不得改变 Binder 的默认转换行为。
-- [ ] (离线) debug/release APK 和运行时权限审计继续证明不存在 `INTERNET` 及动态词典下载；首次独立启动与首次插件调用都只安装并校验内置同版本资源。
+- [x] (测试) `OpenccDualEntryLifecycleTest` 在 Activity 长文本转换期间并发 64 路 Binder 请求和 16 轮独立 engine 转换/缓存清理，随后验证后台/回前台、最后一次解绑后服务真实销毁、UI 重开及两入口交替使用；现有旋转重建和增强后的不同 PID Bundle/资源重建测试共同覆盖 Activity 与进程生命周期，未出现崩溃、串型或迟到结果污染。
+- [x] (安全) `verify_apk_variants.py` 直接解析每个 debug/release APK 的二进制 `AndroidManifest.xml`，拒绝额外 Activity/alias/Service/receiver/provider、额外权限、组件权限漂移、data/share filter 和自定义任务属性；设备端 PackageManager 再核对组件全集、普通任务栈、单一 Launcher、受插件权限保护的 Wake/Service 及恶意 URI/文本 payload 不进入编辑器。Launcher 仍只声明 `MAIN`/`LAUNCHER`。
+- [x] (插件/API) `opencc-api.aar` 固定 SHA-256 `5f3001e28fb4c4967b0a4faeb4547a41a679b35cbd209d272a6a79f7ba00ab45`；JVM 快照锁定五个 AIDL 签名和 1–5 事务号，设备测试直接以原始事务 1/2 重放 v1 `getInfo`/`convert`，再覆盖 v2 枚举/批量/链式调用。插件 ID/engine/`default` 变体、最低宿主、能力元数据、宿主 33 方法及旧宿主回退均未改动；UI 选择 T2S 后 Binder 显式 S2T 仍返回 S2T 结果。
+- [x] (离线) 最终二进制 manifest 和 PackageManager 双重审计证明唯一请求权限仍为 `org.autojs.permission.PLUGIN`、不存在 `INTERNET`，并新增 `usesCleartextTraffic=false`；两个独立新进程分别证明打开 UI、绑定服务和读取能力均不触碰资源，首个 UI 转换可从 APK 内同版本资源修复同长度损坏副本，首个 Binder 转换可从缺失状态安装且最终只留下 SHA-256 一致的单一 ZIP，无设备端下载路径。
 
-M5-C 验收条件: UI 与 Binder 可在同一进程生命周期内安全并发；攻击面仅增加一个无敏感参数的 Launcher Activity，插件权限边界、离线属性和资源完整性不下降。
+M5-C 验收条件: UI 与 Binder 可在同一进程生命周期内安全并发；攻击面仅增加一个无敏感参数的 Launcher Activity，插件权限边界、离线属性和资源完整性不下降。 (已满足；API 35 arm64、API 28/32-bit armv7 与 Android 16/API 36/x86_64/`PAGE_SIZE=16384` 均通过八阶段设备矩阵，debug/release 五 APK 安全门禁和详细证据见 `docs/engineering/standalone-app-architecture.md`)
 
 ### M5-D: 多语言、可访问性与设备体验
 

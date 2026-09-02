@@ -311,7 +311,7 @@ class OpenccPluginServiceTest {
             assertTrue("Timed out binding the OpenCC service", latch.await(15, TimeUnit.SECONDS))
             val rawBinder = binder.get()
             assertNotNull("OpenCC service returned a null Binder", rawBinder)
-            block(IOpenccPlugin.Stub.asInterface(rawBinder))
+            block(remoteOpenccPlugin(rawBinder!!))
         } finally {
             context.unbindService(connection)
         }
