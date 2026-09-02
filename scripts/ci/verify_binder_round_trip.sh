@@ -59,12 +59,34 @@ adb install -r -t "${test_apk}"
 run_instrumentation() {
   class_name="$1"
   shift
-  output="$(adb shell am instrument -w -r \
-    -e class "${class_name}" \
-    "$@" \
-    "${test_package}/androidx.test.runner.AndroidJUnitRunner")"
+
+  adb logcat -c || true
+  if output="$(adb shell am instrument -w -r \
+      -e class "${class_name}" \
+      "$@" \
+      "${test_package}/androidx.test.runner.AndroidJUnitRunner" 2>&1)"; then
+    instrumentation_status=0
+  else
+    instrumentation_status=$?
+  fi
   printf '%s\n' "${output}"
-  printf '%s\n' "${output}" | grep -F "OK (1 test)"
+  if [ "${instrumentation_status}" -eq 0 ] && printf '%s\n' "${output}" | grep -Fq "OK (1 test)"; then
+    printf 'INSTRUMENTATION_OK class=%s\n' "${class_name}"
+    return 0
+  fi
+
+  printf 'INSTRUMENTATION_FAILED class=%s exit_status=%s\n' \
+    "${class_name}" "${instrumentation_status}" >&2
+  printf '%s\n' '--- Android crash buffer ---' >&2
+  adb logcat -b crash -d -v threadtime >&2 || true
+  printf '%s\n' '--- Relevant recent Android logs ---' >&2
+  adb logcat -d -v threadtime -t 600 2>/dev/null \
+    | grep -E "${target_package}|AndroidRuntime|DEBUG|FATAL|Fatal|libc|linker|tombstoned|crash_dump" \
+    >&2 || true
+  printf '%s\n' '--- Package process state ---' >&2
+  adb shell pidof "${target_package}" >&2 || true
+  adb shell pidof "${test_package}" >&2 || true
+  return 1
 }
 
 run_instrumentation \
