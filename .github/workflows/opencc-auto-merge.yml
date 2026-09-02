@@ -1,0 +1,113 @@
+name: OpenCC trusted auto-merge
+
+on:
+  workflow_run:
+    workflows:
+      - Build integrity
+      - Markdown integrity
+    types:
+      - completed
+  workflow_dispatch:
+    inputs:
+      head_branch:
+        description: Exact automation/opencc-<semver> branch to evaluate
+        required: true
+        type: string
+      head_sha:
+        description: Exact 40-character pull-request head SHA to evaluate
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: opencc-auto-merge-${{ github.event.workflow_run.head_branch || inputs.head_branch }}-${{ github.event.workflow_run.head_sha || inputs.head_sha }}
+  cancel-in-progress: false
+
+jobs:
+  evaluate:
+    name: Evaluate exact OpenCC upgrade gates
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      startsWith(github.event.workflow_run.head_branch, 'automation/opencc-')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: read
+    outputs:
+      eligible: ${{ steps.evaluate.outputs.eligible }}
+      mode: ${{ steps.evaluate.outputs.mode }}
+      pr_number: ${{ steps.evaluate.outputs.pr_number }}
+      head_branch: ${{ steps.evaluate.outputs.head_branch }}
+      head_sha: ${{ steps.evaluate.outputs.head_sha }}
+      version: ${{ steps.evaluate.outputs.version }}
+      base_sha: ${{ steps.evaluate.outputs.base_sha }}
+
+    steps:
+      - name: Check out trusted controller from the default branch
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 1
+          persist-credentials: false
+          submodules: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Evaluate pull request, dependency, and exact-SHA workflow evidence
+        id: evaluate
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch || inputs.head_branch }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha || inputs.head_sha }}
+          OPENCC_AUTOMATION_MODE: ${{ vars.OPENCC_AUTOMATION_MODE || 'pr-only' }}
+        run: >-
+          python scripts/opencc/merge_upstream.py
+          --repository "${GITHUB_REPOSITORY}"
+          --head-branch "${HEAD_BRANCH}"
+          --head-sha "${HEAD_SHA}"
+          --mode "${OPENCC_AUTOMATION_MODE}"
+
+  merge:
+    name: Re-evaluate and merge eligible OpenCC upgrade
+    needs: evaluate
+    if: needs.evaluate.outputs.eligible == 'true' && needs.evaluate.outputs.mode == 'merge'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Check out trusted controller from the default branch
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 1
+          persist-credentials: false
+          submodules: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Repeat every gate and squash-merge with the expected head SHA
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          HEAD_BRANCH: ${{ needs.evaluate.outputs.head_branch }}
+          HEAD_SHA: ${{ needs.evaluate.outputs.head_sha }}
+        run: >-
+          python scripts/opencc/merge_upstream.py
+          --repository "${GITHUB_REPOSITORY}"
+          --head-branch "${HEAD_BRANCH}"
+          --head-sha "${HEAD_SHA}"
+          --mode merge
+          --execute

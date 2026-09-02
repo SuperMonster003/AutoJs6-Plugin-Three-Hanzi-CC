@@ -10,6 +10,9 @@ The repository separates upstream discovery from mutation:
   It updates exactly the OpenCC submodule pointer, the lock file, and the versioned resource ZIP. It
   verifies the generated state and exact changed-file inventory, and rolls local changes back if any
   generated verification fails.
+- `merge_upstream.py` is the trusted, fail-closed M4-D-3 controller. It reads pull-request and workflow
+  evidence through the GitHub API without executing the proposed tree. In `merge` mode its separate
+  write-side job repeats every gate and binds the squash merge to the expected head SHA.
 - `verify_upstream.py` is the offline build gate. Normal Gradle builds do not contact GitHub.
 
 Run the current-release replay locally:
@@ -54,23 +57,37 @@ and approval as one repository switch, but the current preparation workflow cont
 tag, or Release command. If the setting is disabled later, preparation and mandatory CI dispatch still
 occur, but PR creation fails with an actionable error instead of silently weakening the process.
 
-The current deployment policy is `pr-only`. No failing fixture may be updated in bulk merely to make an
-upgrade green. Dictionary output changes, license changes, APK size changes, and localized release
-documentation remain explicit gates while the project converts each one from repeated human inspection
-to deterministic checks.
+The repository variable `OPENCC_AUTOMATION_MODE` is currently set to `pr-only`. No failing fixture may be
+updated in bulk merely to make an upgrade green. Dictionary output changes, license changes, APK size
+changes, and localized release documentation remain explicit gates while the project converts each one
+from repeated human inspection to deterministic checks.
 
 ## Staged merge and release policy
 
 `master` is intentionally not protected, so GitHub's native auto-merge is not used as a substitute for
-required checks. A future merge controller will run only trusted code from the default branch and must
-not check out PR-controlled content with a write token. It will accept only the expected Actions-authored
-same-repository PR, exact `automation/opencc-<version>` branch and head SHA, exact source/lock/resource
-file inventory, and successful explicitly dispatched Build and Markdown runs for that same SHA. A stale
-success, a mergeable button, or an approval from the PR's own bot identity is not evidence.
+required checks. `.github/workflows/opencc-auto-merge.yml` runs its evaluator from an explicit checkout of
+the default branch with read-only permissions; it never checks out or executes pull-request-controlled
+content. The evaluator accepts only one same-repository PR authored by `github-actions[bot]`, base
+`master`, an exact `automation/opencc-<version>` branch and head SHA, one direct bot commit, and exactly
+the lock, submodule pointer, removed old resource, and added new resource paths. It independently
+revalidates the latest official release, proposed ZIP bytes, selected third-party license evidence, and
+the resource growth limits (at most 512 KiB and 25%).
 
-The policy progresses independently through `paused`, `pr-only`, `merge`, and `release`. Any mismatch or
-service failure leaves the PR open and returns to `pr-only`. Automated release is a separate controller:
-it must pin the merged commit, obtain signing material only from encrypted secrets, verify the existing
-certificate digest and five signed APKs, create the tag and Release idempotently, read every uploaded
-asset back, and update the plugin index only after the Release is consistent. See `ROADMAP.md` M4-D-3
-and M4-D-4 for the complete promotion and rollback gates.
+For that exact head SHA, the latest explicitly dispatched `build.yml` and `markdown.yml` runs must expose
+the exact audited job inventory and every job must be `completed/success`. Older runs, a same-named branch,
+the PR page's mergeable button, or an approval from the PR's own bot identity are not evidence. A stale
+base/parent, conflict, changed-file drift, changed license evidence, excessive resource growth, latest
+`CHANGES_REQUESTED` review, or `do-not-merge` / `automation-pause[d]` label rejects the candidate.
+
+The policy progresses independently through `paused`, `pr-only`, `merge`, and `release`. In the current
+`pr-only` deployment, an eligible candidate produces an auditable dry-run summary but no write job. Under
+`merge`, a separate least-privilege job downloads trusted controller code from `master`, repeats every
+API/upstream gate, rechecks the base SHA immediately before a SHA-bound squash merge, and deletes only an
+unchanged automation branch. Any mismatch leaves the PR open; service failures make the controller run
+fail visibly. `release` is recognized but intentionally fails closed until the isolated M4-D-4 signing
+and publication controller exists.
+
+Automated release must pin the merged commit, obtain signing material only from encrypted secrets, verify
+the existing certificate digest and five signed APKs, create the tag and Release idempotently, read every
+uploaded asset back, and update the plugin index only after the Release is consistent. See `ROADMAP.md`
+M4-D-3 and M4-D-4 for the complete promotion and rollback gates.

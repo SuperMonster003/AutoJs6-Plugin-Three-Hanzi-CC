@@ -107,9 +107,11 @@ M4-A 官方后端原型 ──> M4-B 兼容/性能/16 KB ──> M4-C 正式替�
 当前检查点 (2026-09-02): M4-A、M4-B 与 M4-C 已完成；`v1.2.0` 标签、GitHub Release 和
 插件中心在线索引已公开且相互校验一致。M4-D-2 的原子更新器、升级 PR 正文、最小权限双阶段工作流、
 显式 Build/Markdown 调度和远端 Actions 建 PR 权限均已落地，真实 GitHub 当前版本重放返回无更新、
-无漂移；`master` 按维护策略保持不受保护，当前运行策略仍为 `pr-only`，待首个真实或受控更新 PR
-完成端到端验收后再实现 M4-D-3 的可信自动合并控制器。M4-D-3/M4-D-4 不阻塞 M4-E 或 M5，
-M5 已按同 APK 双形态 App/UI 目标进入后续产品主线。
+无漂移。M4-D-3 的默认分支可信判定器、读/写 job 隔离、精确 SHA 工作流证据、资源/许可证门禁、
+合并前二次判定和离线故障矩阵已实现；远端 `OPENCC_AUTOMATION_MODE=pr-only`，因此当前只产生
+判定摘要而不会写入。`master` 按维护策略保持不受保护；待首个真实或受控更新 PR 完成在线 dry-run
+后，才将策略提升为 `merge`。M4-D-4 不阻塞 M4-E 或 M5，M5 已按同 APK 双形态 App/UI 目标进入
+后续产品主线。
 
 ### M4-A: 官方 OpenCC 原生后端原型 (2026-08-31, 已完成)
 
@@ -167,15 +169,16 @@ M4-D-1 验收条件: 当前版本重放稳定、普通构建无网络依赖、�
 
 M4-D-2 验收条件: 清洁 CI 不依赖 Maven Local、开发机缓存或 `T:\\...`；新版本只产生精确白名单变更和可追溯 PR，失败不合并、不覆盖人工/机器人修订。当前代码、权限和无更新路径已满足，尚待一次更新 PR 实跑。
 
-#### M4-D-3: 无人值守自动合并
+#### M4-D-3: 无人值守自动合并 (`pr-only` 部署阶段)
 
-- [ ] (CI/治理) 增加独立于 PR 生成器的可信合并控制器，支持 `paused` / `pr-only` / `merge` / `release` 策略与默认 `pr-only`；任何异常自动降级为保留 PR 和告警，不自动修测试、改词典预期或绕过失败。
-- [ ] (CI/安全) 控制器只运行默认分支中已审计的代码，不以写权限 checkout PR 内容；只接受同仓库、base=`master`、作者为预期 GitHub Actions App、head=`automation/opencc-<semver>` 且 head SHA 精确匹配的开放 PR，并重新核对提交数和锁文件/子模块/旧新资源四项变更清单。
-- [ ] (CI/测试) 对同一 head SHA 查询显式 dispatch 的 Build integrity 与 Markdown integrity：全部 jobs 必须 completed/success，4 KB/16 KB Binder、debug/release APK、许可证清单、词典固定语料和体积阈值均通过；不能用较旧成功 run、分支同名 run 或 PR 页面上的可合并状态代替。
-- [ ] (CI/并发) 合并前确认 base SHA 未变化、PR 无冲突/请求更改/`do-not-merge` 熔断标记；base 前进时重新生成或重跑全部门禁。控制器使用按 PR/head 的 concurrency 与幂等合并，成功后删除自动化分支并记录机器判定摘要。
-- [ ] (CI/治理) 不要求同一机器人批准自己创建的 PR；若未来引入独立 Reviewer App，其 approval 只作为额外审计信号，不能替代上述可复核门禁。连续受控 dry-run 与真实升级验证通过后，才把策略从 `pr-only` 提升为 `merge`。
+- [x] (CI/治理) 增加独立于 PR 生成器的 `opencc-auto-merge.yml` / `merge_upstream.py` 可信控制器；仓库变量支持 `paused` / `pr-only` / `merge`，默认并已远端固定为 `pr-only`，预留的 `release` 值在 M4-D-4 落地前明确失败关闭。任何异常保留 PR 并告警，不自动修测试、改词典预期或绕过失败。
+- [x] (CI/安全) `workflow_run` 控制器只显式 checkout 默认分支中已审计的代码且 evaluator 仅有读权限，不以写权限 checkout/执行 PR 内容；只接受同仓库、base=`master`、作者为预期 GitHub Actions Bot、head=`automation/opencc-<semver>` 且 SHA 精确匹配的开放 PR，并核对单一直接 bot commit 及锁文件/子模块/旧新资源四项 path/status 清单。
+- [x] (CI/测试) 对同一 head SHA 查询显式 dispatch 的 Build integrity 与 Markdown integrity，选择最新精确 run 并要求精确 job 清单全部 `completed/success`；同时重新下载并验证最新官方 Release/ZIP，固定许可证证据不得变化，资源增长不得超过 512 KiB 或 25%。较旧成功 run、分支同名 run 或 PR 页面可合并状态均不能替代证据。
+- [x] (CI/并发) 读侧和写侧都确认当前 base SHA、单一 commit parent、无冲突/请求更改/`do-not-merge` 或 `automation-pause[d]` 熔断；写 job 获得权限后重复全部门禁，合并调用绑定预期 head SHA，仅删除未变化分支。workflow 按 branch/head concurrency 串行，判定与 merge API 均为幂等设计并记录摘要。
+- [x] (CI/治理) 不要求同一机器人批准自己创建的 PR；若未来引入独立 Reviewer App，其 approval 只作为额外审计信号，不能替代上述可复核门禁。11 个离线样本已覆盖成功、paused/release 失败关闭、陈旧 base、冲突、额外路径、错误/失败 run、请求更改、熔断、许可证/体积漂移、GitHub 服务故障和 SHA 绑定 merge。
+- [ ] (CI/在线验收) 以 M4-D-2 的首个真实或受控更新 PR 在远端 `pr-only` 连续重放成功与失败样本，确认 workflow summary、无写副作用和 GitHub API 实际字段；随后才由维护者把变量提升为 `merge`，并以一次真实升级验证自动 squash merge/分支清理及一键退回 `pr-only`。
 
-M4-D-3 验收条件: 在不保护 `master` 的治理选择下，受控成功样本可在所有精确门禁完成后自动合并；失败、陈旧 SHA、额外文件、冲突、熔断或服务异常样本全部保持未合并，且能一键退回 `pr-only`。
+M4-D-3 验收条件: 在不保护 `master` 的治理选择下，受控成功样本可在所有精确门禁完成后自动合并；失败、陈旧 SHA、额外文件、冲突、熔断或服务异常样本全部保持未合并，且能一键退回 `pr-only`。当前代码、离线故障注入和远端只读策略已满足，尚待更新 PR 的在线 dry-run 与一次 `merge` 实跑。
 
 #### M4-D-4: 自动签名与发布
 

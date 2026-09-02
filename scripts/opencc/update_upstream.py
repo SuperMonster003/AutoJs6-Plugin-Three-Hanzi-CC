@@ -292,8 +292,8 @@ the submodule pointer, lock file, or bundled resource.
       16 KB ELF/ZIP alignment, and a real 16 KB emulator must all pass.
 - [ ] Require the dispatched Markdown integrity run and review the reported APK byte sizes.
 - [ ] Update migration notes, localized changelog/docs, and release metadata before any later public release.
-- [ ] Under the current `pr-only` policy, merge after review. A future trusted controller may merge only after
-      recording equivalent machine gates for this exact head SHA.
+- [ ] Under the current `pr-only` policy, inspect the trusted controller's dry-run summary. Promotion to
+      `merge` may happen only after its separate write-side job can repeat every machine gate for this exact SHA.
 
 This preparation workflow does not approve, merge, tag, or release. Merge and release policy is isolated
 in separate fail-closed stages described by `ROADMAP.md` M4-D-3 and M4-D-4.
