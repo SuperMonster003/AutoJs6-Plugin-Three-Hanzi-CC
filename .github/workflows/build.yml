@@ -145,10 +145,7 @@ jobs:
           profile: Nexus 5
           script: |
             EXPECTED_PAGE_SIZE=4096 sh scripts/ci/verify_binder_round_trip.sh x86
-            EXPECTED_VERSION_NAME="$(sed -n 's/^VERSION_NAME=//p' version.properties)" \
-            EXPECTED_VERSION_CODE="$(sed -n 's/^VERSION_BUILD=//p' version.properties)" \
-            EXPECTED_PAGE_SIZE=4096 \
-            sh scripts/ci/verify_minified_release_runtime.sh x86
+            EXPECTED_VERSION_NAME="$(sed -n 's/^VERSION_NAME=//p' version.properties)" EXPECTED_VERSION_CODE="$(sed -n 's/^VERSION_BUILD=//p' version.properties)" EXPECTED_PAGE_SIZE=4096 sh scripts/ci/verify_minified_release_runtime.sh x86
 
   verify-16kb:
     name: Binder round trip (x86_64, 16 KB pages)
