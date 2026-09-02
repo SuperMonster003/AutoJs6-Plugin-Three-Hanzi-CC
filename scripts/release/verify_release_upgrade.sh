@@ -52,6 +52,19 @@ package_version_code() {
   package_value versionCode | sed 's/[[:space:]].*$//'
 }
 
+package_uid() {
+  package_dump | sed -n \
+    -e 's/^[[:space:]]*userId=//p' \
+    -e 's/^[[:space:]]*appId=//p' | head -n 1
+}
+
+resolved_activity() {
+  adb shell pm resolve-activity --brief \
+    -a android.intent.action.MAIN \
+    -c android.intent.category.LAUNCHER \
+    "$target_package" 2>&1 | tr -d '\r' | sed '/^[[:space:]]*$/d' | tail -n 1
+}
+
 page_size="$(
   adb shell "if command -v getconf >/dev/null 2>&1; then \
     getconf PAGE_SIZE; \
@@ -92,17 +105,14 @@ if [ "$actual_baseline_version" != "$expected_baseline_version" ]; then
     "$expected_baseline_version" "$actual_baseline_version" >&2
   exit 1
 fi
-baseline_uid="$(package_value userId)"
+baseline_uid="$(package_uid)"
 baseline_first_install="$(package_value firstInstallTime)"
 if [ -z "$baseline_uid" ] || [ -z "$baseline_first_install" ]; then
   printf 'Could not read baseline UID or firstInstallTime\n' >&2
   exit 1
 fi
 baseline_launcher="$(
-  adb shell pm resolve-activity --brief \
-    -a android.intent.action.MAIN \
-    -c android.intent.category.LAUNCHER \
-    "$target_package" 2>&1 | tr -d '\r' || true
+  resolved_activity || true
 )"
 case "$baseline_launcher" in
   ""|*"No activity found"*) ;;
@@ -117,7 +127,7 @@ adb install -r "$candidate_apk"
 
 actual_version_name="$(package_value versionName)"
 actual_version_code="$(package_version_code)"
-candidate_uid="$(package_value userId)"
+candidate_uid="$(package_uid)"
 candidate_first_install="$(package_value firstInstallTime)"
 if [ "$actual_version_name" != "$expected_version_name" ]; then
   printf 'Expected candidate version %s, found %s\n' "$expected_version_name" "$actual_version_name" >&2
@@ -139,10 +149,7 @@ if [ "$candidate_first_install" != "$baseline_first_install" ]; then
 fi
 
 candidate_launcher="$(
-  adb shell pm resolve-activity --brief \
-    -a android.intent.action.MAIN \
-    -c android.intent.category.LAUNCHER \
-    "$target_package" 2>&1 | tr -d '\r'
+  resolved_activity
 )"
 case "$candidate_launcher" in
   "${target_package}/${target_package}.OpenccActivity"|"${target_package}/.OpenccActivity") ;;
