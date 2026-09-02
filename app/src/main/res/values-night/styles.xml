@@ -2,7 +2,6 @@
 <resources>
     <style name="Theme.Opencc" parent="@android:style/Theme.Material.NoActionBar">
         <item name="android:colorAccent">@color/opencc_accent</item>
-        <item name="android:fontFamily">sans</item>
         <item name="android:navigationBarColor">@color/opencc_system_bar</item>
         <item name="android:statusBarColor">@color/opencc_system_bar</item>
         <item name="android:windowBackground">@color/opencc_window_background</item>

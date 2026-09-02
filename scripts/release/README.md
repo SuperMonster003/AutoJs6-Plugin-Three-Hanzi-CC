@@ -65,3 +65,8 @@ performs an actual `adb install -r` upgrade. It then requires the same package U
 the platform-only Java probe converts Unicode text through both the visible editor and legacy raw
 Binder transaction 2 against the signed minified target. Its exit trap removes the target and
 instrumentation packages.
+
+Public CI also builds this platform-only probe, re-signs it and the otherwise unsigned minified
+release APK with one ephemeral non-production key, and runs both UI and Binder conversions on the
+API 24 minimum-SDK emulator. This release-target gate exists in addition to the full debug suite so
+resource or code optimizations that only fail on older Android releases cannot pass unnoticed.

@@ -48,6 +48,14 @@ jobs:
           chmod +x gradlew
           ./gradlew :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest :app:assembleRelease --stacktrace
 
+      - name: Assemble platform-only release probe APK
+        run: |
+          ./gradlew :app:assembleDebugAndroidTest -PopenccReleaseProbe=true --stacktrace
+          mkdir -p app/build/outputs/apk/releaseProbe
+          cp app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+            app/build/outputs/apk/releaseProbe/app-release-probe-androidTest.apk
+          ./gradlew :app:assembleDebugAndroidTest -PopenccReleaseProbe=false --stacktrace
+
       - name: Verify all ABI variants
         run: |
           python scripts/ci/verify_apk_variants.py \
@@ -56,7 +64,9 @@ jobs:
           python scripts/ci/verify_apk_variants.py \
             app/build/outputs/apk/release \
             --build-type release \
-            --unsigned
+            --unsigned \
+            --instrumentation-apk \
+              app/build/outputs/apk/releaseProbe/app-release-probe-androidTest.apk
 
       - name: Upload debug, release, and test APKs
         uses: actions/upload-artifact@v7
@@ -105,7 +115,7 @@ jobs:
           script: EXPECTED_PAGE_SIZE=4096 sh scripts/ci/verify_binder_round_trip.sh "${{ matrix.abi }}"
 
   verify-min-sdk:
-    name: Standalone and Binder round trip (x86, API 24 minSdk)
+    name: Debug/release runtime (x86, API 24 minSdk)
     needs: verify-build
     runs-on: ubuntu-latest
     timeout-minutes: 45
@@ -133,7 +143,12 @@ jobs:
           target: google_apis
           arch: x86
           profile: Nexus 5
-          script: EXPECTED_PAGE_SIZE=4096 sh scripts/ci/verify_binder_round_trip.sh x86
+          script: |
+            EXPECTED_PAGE_SIZE=4096 sh scripts/ci/verify_binder_round_trip.sh x86
+            EXPECTED_VERSION_NAME="$(sed -n 's/^VERSION_NAME=//p' version.properties)" \
+            EXPECTED_VERSION_CODE="$(sed -n 's/^VERSION_BUILD=//p' version.properties)" \
+            EXPECTED_PAGE_SIZE=4096 \
+            sh scripts/ci/verify_minified_release_runtime.sh x86
 
   verify-16kb:
     name: Binder round trip (x86_64, 16 KB pages)
