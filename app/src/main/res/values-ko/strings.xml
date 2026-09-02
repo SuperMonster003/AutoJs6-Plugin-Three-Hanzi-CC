@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="standalone_paste_action">붙여넣기</string>
+    <string name="standalone_clear_action">지우기</string>
+    <string name="standalone_cancel_action">취소</string>
+    <string name="standalone_copy_action">복사</string>
+    <string name="standalone_swap_action">바꾸기</string>
+    <string name="standalone_share_action">공유</string>
+    <string name="standalone_status_no_source">변환할 원본 텍스트가 없습니다</string>
+    <string name="standalone_status_canceled">변환이 취소되었습니다</string>
+    <string name="standalone_status_clipboard_has_no_text">클립보드에 일반 텍스트가 없습니다</string>
+    <string name="standalone_status_pasted">텍스트를 붙여넣었습니다</string>
+    <string name="standalone_status_cleared">텍스트를 지웠습니다</string>
+    <string name="standalone_status_copied">결과를 복사했습니다</string>
+    <string name="standalone_status_swapped">원본과 결과를 바꿨습니다</string>
+    <string name="standalone_status_share_opened">공유 화면을 열었습니다</string>
+    <string name="standalone_status_share_unavailable">결과를 공유할 수 있는 앱이 없습니다</string>
+    <string name="standalone_share_chooser_title">변환 결과 공유</string>
+    <string name="standalone_script_simplified_chinese">중국어 간체</string>
+    <string name="standalone_script_traditional_chinese">중국어 번체</string>
+    <string name="standalone_script_hong_kong_traditional">홍콩 번체</string>
+    <string name="standalone_script_taiwan_traditional">대만 번체</string>
+    <string name="standalone_script_traditional_old_forms">중국어 번체 구자체</string>
+    <string name="standalone_script_japanese_shinjitai">일본어 신자체</string>
+    <string name="standalone_terminology_taiwan">대만 용어</string>
+    <string name="standalone_terminology_mainland">중국 본토 용어</string>
+    <string name="standalone_conversion_direction">%1$s -&gt; %2$s (%3$s)</string>
+    <string name="standalone_conversion_direction_with_terminology">%1$s -&gt; %2$s, %3$s (%4$s)</string>
     <string name="plugin_description">중국어 텍스트 변환용 OpenCC 플러그인</string>
     <string name="error_unsupported_conversion_type">지원되지 않는 OpenCC 변환 유형: %1$s</string>
     <string name="standalone_subtitle">내장 OpenCC 사전을 사용해 기기에서 중국어 텍스트를 변환합니다. 네트워크 연결을 사용하지 않습니다.</string>

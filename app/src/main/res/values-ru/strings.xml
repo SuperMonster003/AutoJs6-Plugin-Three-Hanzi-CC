@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="standalone_paste_action">Вставить</string>
+    <string name="standalone_clear_action">Очистить</string>
+    <string name="standalone_cancel_action">Отмена</string>
+    <string name="standalone_copy_action">Копировать</string>
+    <string name="standalone_swap_action">Поменять</string>
+    <string name="standalone_share_action">Поделиться</string>
+    <string name="standalone_status_no_source">Нет исходного текста для преобразования</string>
+    <string name="standalone_status_canceled">Преобразование отменено</string>
+    <string name="standalone_status_clipboard_has_no_text">Буфер обмена не содержит обычного текста</string>
+    <string name="standalone_status_pasted">Текст вставлен</string>
+    <string name="standalone_status_cleared">Текст очищен</string>
+    <string name="standalone_status_copied">Результат скопирован</string>
+    <string name="standalone_status_swapped">Исходный текст и результат поменяны местами</string>
+    <string name="standalone_status_share_opened">Меню отправки открыто</string>
+    <string name="standalone_status_share_unavailable">Нет приложения для отправки результата</string>
+    <string name="standalone_share_chooser_title">Поделиться преобразованным текстом</string>
+    <string name="standalone_script_simplified_chinese">Упрощенный китайский</string>
+    <string name="standalone_script_traditional_chinese">Традиционный китайский</string>
+    <string name="standalone_script_hong_kong_traditional">Гонконгский традиционный китайский</string>
+    <string name="standalone_script_taiwan_traditional">Тайваньский традиционный китайский</string>
+    <string name="standalone_script_traditional_old_forms">Традиционный китайский со старыми формами</string>
+    <string name="standalone_script_japanese_shinjitai">Японский синдзитай</string>
+    <string name="standalone_terminology_taiwan">Тайваньская терминология</string>
+    <string name="standalone_terminology_mainland">Терминология материкового Китая</string>
+    <string name="standalone_conversion_direction">%1$s -&gt; %2$s (%3$s)</string>
+    <string name="standalone_conversion_direction_with_terminology">%1$s -&gt; %2$s, %3$s (%4$s)</string>
     <string name="plugin_description">Плагин OpenCC для преобразования китайского текста</string>
     <string name="error_unsupported_conversion_type">Неподдерживаемый тип преобразования OpenCC: %1$s</string>
     <string name="standalone_subtitle">Преобразуйте китайский текст локально с помощью встроенных словарей OpenCC. Подключение к сети не используется.</string>

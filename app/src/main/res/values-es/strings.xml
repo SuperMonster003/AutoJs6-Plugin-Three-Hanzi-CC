@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="standalone_paste_action">Pegar</string>
+    <string name="standalone_clear_action">Borrar</string>
+    <string name="standalone_cancel_action">Cancelar</string>
+    <string name="standalone_copy_action">Copiar</string>
+    <string name="standalone_swap_action">Intercambiar</string>
+    <string name="standalone_share_action">Compartir</string>
+    <string name="standalone_status_no_source">No hay texto de origen para convertir</string>
+    <string name="standalone_status_canceled">Conversión cancelada</string>
+    <string name="standalone_status_clipboard_has_no_text">El portapapeles no contiene texto sin formato</string>
+    <string name="standalone_status_pasted">Texto pegado</string>
+    <string name="standalone_status_cleared">Texto borrado</string>
+    <string name="standalone_status_copied">Resultado copiado</string>
+    <string name="standalone_status_swapped">Textos de origen y resultado intercambiados</string>
+    <string name="standalone_status_share_opened">Selector de uso compartido abierto</string>
+    <string name="standalone_status_share_unavailable">No hay una aplicación disponible para compartir el resultado</string>
+    <string name="standalone_share_chooser_title">Compartir texto convertido</string>
+    <string name="standalone_script_simplified_chinese">Chino simplificado</string>
+    <string name="standalone_script_traditional_chinese">Chino tradicional</string>
+    <string name="standalone_script_hong_kong_traditional">Chino tradicional de Hong Kong</string>
+    <string name="standalone_script_taiwan_traditional">Chino tradicional de Taiwán</string>
+    <string name="standalone_script_traditional_old_forms">Chino tradicional con formas antiguas</string>
+    <string name="standalone_script_japanese_shinjitai">Shinjitai japonés</string>
+    <string name="standalone_terminology_taiwan">Terminología de Taiwán</string>
+    <string name="standalone_terminology_mainland">Terminología de China continental</string>
+    <string name="standalone_conversion_direction">%1$s -&gt; %2$s (%3$s)</string>
+    <string name="standalone_conversion_direction_with_terminology">%1$s -&gt; %2$s, %3$s (%4$s)</string>
     <string name="plugin_description">Complemento OpenCC para la conversión de texto chino</string>
     <string name="error_unsupported_conversion_type">Tipo de conversión OpenCC no compatible: %1$s</string>
     <string name="standalone_subtitle">Convierte texto chino localmente con los diccionarios OpenCC integrados. No se usa ninguna conexión de red.</string>

@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="standalone_paste_action">Paste</string>
+    <string name="standalone_clear_action">Clear</string>
+    <string name="standalone_cancel_action">Cancel</string>
+    <string name="standalone_copy_action">Copy</string>
+    <string name="standalone_swap_action">Swap</string>
+    <string name="standalone_share_action">Share</string>
+    <string name="standalone_status_no_source">No source text to convert</string>
+    <string name="standalone_status_canceled">Conversion canceled</string>
+    <string name="standalone_status_clipboard_has_no_text">Clipboard does not contain plain text</string>
+    <string name="standalone_status_pasted">Text pasted</string>
+    <string name="standalone_status_cleared">Text cleared</string>
+    <string name="standalone_status_copied">Result copied</string>
+    <string name="standalone_status_swapped">Source and result swapped</string>
+    <string name="standalone_status_share_opened">Share sheet opened</string>
+    <string name="standalone_status_share_unavailable">No app is available to share the result</string>
+    <string name="standalone_share_chooser_title">Share converted text</string>
+    <string name="standalone_script_simplified_chinese">Simplified Chinese</string>
+    <string name="standalone_script_traditional_chinese">Traditional Chinese</string>
+    <string name="standalone_script_hong_kong_traditional">Hong Kong Traditional</string>
+    <string name="standalone_script_taiwan_traditional">Taiwan Traditional</string>
+    <string name="standalone_script_traditional_old_forms">Traditional Chinese old forms</string>
+    <string name="standalone_script_japanese_shinjitai">Japanese Shinjitai</string>
+    <string name="standalone_terminology_taiwan">Taiwan terminology</string>
+    <string name="standalone_terminology_mainland">Mainland terminology</string>
+    <string name="standalone_conversion_direction">%1$s -&gt; %2$s (%3$s)</string>
+    <string name="standalone_conversion_direction_with_terminology">%1$s -&gt; %2$s, %3$s (%4$s)</string>
     <string name="plugin_description">OpenCC plugin for Chinese text conversion</string>
     <string name="error_unsupported_conversion_type">Unsupported OpenCC conversion type: %1$s</string>
     <string name="standalone_subtitle">Convert Chinese text locally with the embedded OpenCC dictionaries. No network connection is used.</string>

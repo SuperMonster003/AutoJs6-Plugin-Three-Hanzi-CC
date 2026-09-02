@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="standalone_paste_action">貼り付け</string>
+    <string name="standalone_clear_action">クリア</string>
+    <string name="standalone_cancel_action">キャンセル</string>
+    <string name="standalone_copy_action">コピー</string>
+    <string name="standalone_swap_action">入れ替え</string>
+    <string name="standalone_share_action">共有</string>
+    <string name="standalone_status_no_source">変換する元テキストがありません</string>
+    <string name="standalone_status_canceled">変換をキャンセルしました</string>
+    <string name="standalone_status_clipboard_has_no_text">クリップボードにプレーンテキストがありません</string>
+    <string name="standalone_status_pasted">テキストを貼り付けました</string>
+    <string name="standalone_status_cleared">テキストをクリアしました</string>
+    <string name="standalone_status_copied">結果をコピーしました</string>
+    <string name="standalone_status_swapped">変換元と結果を入れ替えました</string>
+    <string name="standalone_status_share_opened">共有画面を開きました</string>
+    <string name="standalone_status_share_unavailable">結果を共有できるアプリがありません</string>
+    <string name="standalone_share_chooser_title">変換結果を共有</string>
+    <string name="standalone_script_simplified_chinese">簡体字中国語</string>
+    <string name="standalone_script_traditional_chinese">繁体字中国語</string>
+    <string name="standalone_script_hong_kong_traditional">香港繁体字</string>
+    <string name="standalone_script_taiwan_traditional">台湾繁体字</string>
+    <string name="standalone_script_traditional_old_forms">繁体字中国語の旧字体</string>
+    <string name="standalone_script_japanese_shinjitai">日本語新字体</string>
+    <string name="standalone_terminology_taiwan">台湾用語</string>
+    <string name="standalone_terminology_mainland">中国大陸用語</string>
+    <string name="standalone_conversion_direction">%1$s -&gt; %2$s (%3$s)</string>
+    <string name="standalone_conversion_direction_with_terminology">%1$s -&gt; %2$s, %3$s (%4$s)</string>
     <string name="plugin_description">中国語テキスト変換用 OpenCC プラグイン</string>
     <string name="error_unsupported_conversion_type">サポートされていない OpenCC 変換タイプ: %1$s</string>
     <string name="standalone_subtitle">内蔵の OpenCC 辞書を使って, 中国語テキストを端末内で変換します. ネットワーク接続は使用しません.</string>

@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="standalone_paste_action">粘贴</string>
+    <string name="standalone_clear_action">清空</string>
+    <string name="standalone_cancel_action">取消</string>
+    <string name="standalone_copy_action">复制</string>
+    <string name="standalone_swap_action">交换</string>
+    <string name="standalone_share_action">分享</string>
+    <string name="standalone_status_no_source">没有可转换的来源文本</string>
+    <string name="standalone_status_canceled">已取消转换</string>
+    <string name="standalone_status_clipboard_has_no_text">剪贴板中没有纯文本</string>
+    <string name="standalone_status_pasted">已粘贴文本</string>
+    <string name="standalone_status_cleared">已清空文本</string>
+    <string name="standalone_status_copied">已复制结果</string>
+    <string name="standalone_status_swapped">已交换来源和结果</string>
+    <string name="standalone_status_share_opened">已打开系统分享</string>
+    <string name="standalone_status_share_unavailable">没有可用于分享结果的应用</string>
+    <string name="standalone_share_chooser_title">分享转换结果</string>
+    <string name="standalone_script_simplified_chinese">简体中文</string>
+    <string name="standalone_script_traditional_chinese">繁体中文</string>
+    <string name="standalone_script_hong_kong_traditional">香港繁体</string>
+    <string name="standalone_script_taiwan_traditional">台湾繁体</string>
+    <string name="standalone_script_traditional_old_forms">繁体旧字形</string>
+    <string name="standalone_script_japanese_shinjitai">日文新字体</string>
+    <string name="standalone_terminology_taiwan">台湾用语</string>
+    <string name="standalone_terminology_mainland">中国大陆用语</string>
+    <string name="standalone_conversion_direction">%1$s -&gt; %2$s (%3$s)</string>
+    <string name="standalone_conversion_direction_with_terminology">%1$s -&gt; %2$s, %3$s (%4$s)</string>
     <string name="plugin_description">用于中文文本转换的 OpenCC 插件</string>
     <string name="error_unsupported_conversion_type">不支持的 OpenCC 转换类型: %1$s</string>
     <string name="standalone_subtitle">使用内置 OpenCC 词典在设备本地转换中文文本, 不使用网络连接.</string>

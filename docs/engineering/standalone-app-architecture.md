@@ -1,7 +1,7 @@
-# M5-A 独立 App 双入口架构决策
+# M5-A/B 独立 App 双入口与离线 UI 架构决策
 
-记录日期: 2026-09-02
-状态: Accepted（M5-A 原型；不是新的正式版本承诺）
+记录日期: 2026-09-03
+状态: Accepted（M5-A/B 原型；不是新的正式版本承诺）
 
 ## 结论
 
@@ -52,28 +52,33 @@ Android 官方说明两套 UI 工具都可使用；官方的迁移度量示例�
 基线是 GitHub 已公开的 v1.2.0 签名资产；原型是 2026-09-02 在相同版本号下仅用于本地验收的
 minified release 构建，未发布且不会覆盖 v1.2.0：
 
-| APK | v1.2.0 | M5-A 原型 | 增量 |
-|---|---:|---:|---:|
-| arm64-v8a | 1,499,452 B | 1,528,088 B | +28,636 B |
-| armeabi-v7a | 1,160,706 B | 1,189,342 B | +28,636 B |
-| x86_64 | 1,508,249 B | 1,536,885 B | +28,636 B |
-| x86 | 1,461,662 B | 1,490,298 B | +28,636 B |
-| universal | 3,835,001 B | 3,863,637 B | +28,636 B |
+| APK | v1.2.0 | M5-A 原型 | M5-B 原型 | M5 总增量 |
+|---|---:|---:|---:|---:|
+| arm64-v8a | 1,499,452 B | 1,528,088 B | 1,542,276 B | +42,824 B |
+| armeabi-v7a | 1,160,706 B | 1,189,342 B | 1,203,530 B | +42,824 B |
+| x86_64 | 1,508,249 B | 1,536,885 B | 1,551,073 B | +42,824 B |
+| x86 | 1,461,662 B | 1,490,298 B | 1,504,486 B | +42,824 B |
+| universal | 3,835,001 B | 3,863,637 B | 3,877,825 B | +42,824 B |
 
-五种产物的固定增量来自 Activity 代码、XML、主题、备份排除规则和 10 语言基础文案；ABI 原生
-载荷不变。构建期间项目的平台版本插件正在由维护者独立升级，因此这些数字用于记录当前原型
-资产，而不作为跨工具链的字节级长期阈值。真正的 M5 发布仍会在固定提交和工具链上重新建立基线。
+M5-A 的五种产物固定增加 `28,636 B`；M5-B 再固定增加 `14,188 B`，来自 Activity 操作/状态逻辑、
+扩展 XML 和 10 语言类型/操作文案，ABI 原生载荷不变。构建期间项目的平台版本插件正在由维护者
+独立升级，因此这些数字用于记录当前原型资产，而不作为跨工具链的字节级长期阈值。真正的 M5
+发布仍会在固定提交和工具链上重新建立基线。
 
 ## 生命周期与线程
 
 - `OpenccConversionCoordinator` 保存 `applicationContext`，实例与 `OpenccNativeEngine` 均按进程
   惰性创建；打开页面本身不会解压/校验资源或建立 Converter。
-- 第一次 UI 转换在单线程后台 executor 执行，结果只在主线程写回 View。Activity 销毁时增加
-  generation、取消待处理任务并停止 executor，迟到结果不能写回旧页面。
+- 第一次 UI 转换在单线程后台 executor 执行，结果只在主线程写回 View；活动请求存在时转换按钮
+  被禁用，业务入口也拒绝重复请求。用户按取消、编辑来源、切换类型或销毁 Activity 时会中断 Future、
+  增加 generation 并停止进度状态；已经进入 OpenCC 的原生调用可能完成，但迟到结果因 generation
+  不匹配而绝不能写回页面，下一次请求仍按共享锁顺序执行。
 - 服务解绑或 `onDestroy` 不再关闭共享 native engine。缓存由应用进程统一拥有并在进程结束时
   回收，避免一个入口销毁另一个入口仍在使用的 Converter。
 - Binder 的单次、批量和链式请求与 UI 请求通过同一个锁串行进入同一 engine；既有 AIDL 事务号、
   限额和错误类型保持不变。
+- `onSaveInstanceState` 只保存来源文本、结果文本和稳定类型下标；旋转、分屏重建及系统带状态重建
+  可以恢复必要编辑状态，不恢复或自动重放进行中的转换，也不写入 SharedPreferences、数据库或文件。
 
 ## Manifest、隐私与权限边界
 
@@ -83,10 +88,13 @@ minified release 构建，未发布且不会覆盖 v1.2.0：
 | `OpenccPluginService` | `true` | `org.autojs.permission.PLUGIN` | 继续提供既有 OpenCC Binder 契约 |
 | `WakeActivity` | `true` | `org.autojs.permission.PLUGIN` | 继续提供既有无界面唤醒协议 |
 
-Manifest 仍没有 `INTERNET`。页面不读取剪贴板、不分享、不写日志，也不建立历史记录；
-`allowBackup=false` 并为 Android 11 及 Android 12+ 分别配置全域排除规则，避免未来加入编辑状态
-存储时意外进入云备份或设备迁移。官方 OpenCC 资源继续位于 `noBackupFilesDir`，Android 本身也会
-排除该目录。备份语义参考 [Android Auto Backup 文档](https://developer.android.com/identity/data/autobackup)。
+Manifest 仍没有 `INTERNET`。页面只在用户点击“粘贴”后读取剪贴板第一项的显式文本，不调用可能
+解析 URI 的 coercion；只在点击“复制”后写入结果，只在点击“分享”后发出 `ACTION_SEND` 的
+`text/plain` 系统 chooser。启动、恢复、后台阶段和按钮可用性计算都不读取剪贴板，Manifest 也不
+接收外部分享。页面不写输入/输出日志，不建立历史记录；`allowBackup=false` 并为 Android 11 及
+Android 12+ 分别配置全域排除规则，避免未来加入编辑状态存储时意外进入云备份或设备迁移。官方
+OpenCC 资源继续位于 `noBackupFilesDir`，Android 本身也会排除该目录。备份语义参考
+[Android Auto Backup 文档](https://developer.android.com/identity/data/autobackup)。
 
 ## M5-A 验收证据
 
@@ -101,12 +109,30 @@ Manifest 仍没有 `INTERNET`。页面不读取剪贴板、不分享、不写日
 - debug/release 各五 APK 内容门禁强制保留 `OpenccActivity` 和 JNI bridge；release 五 APK 均通过
   R8、签名、唯一 native 库、官方资源 SHA-256、ELF `LOAD >= 0x4000`、RELRO 与
   `zipalign -P 16`。
-- 10 个现有 locale 已具备 M5-A 基础页面文案；面向用户的 14 类型名称、RTL/大字体/TalkBack/截图
-  全矩阵仍属于 M5-B/M5-D，不因本原型提前标记完成。
+- 10 个现有 locale 已具备 M5-A 基础页面文案；RTL/大字体/TalkBack/截图全矩阵仍属于 M5-D，
+  不因本原型提前标记完成。
+
+## M5-B 验收证据
+
+- 类型选择器用本地化的简体、通用繁体、香港繁体、台湾繁体、繁体旧字形、日文新字体及地区术语
+  名称描述全部 14 个转换，同时保留 `HK2S` 至 `TW2SP` 稳定代码；`S2TW`/`S2TWP`、
+  `TW2S`/`TW2SP` 与 JP 字形路径均为不同且唯一的标签。
+- `OpenccStandaloneUiTest` 从真实 Launcher 页面逐项执行 14 种转换，并覆盖空输入、约 30K 字符的
+  长文本、emoji、U+20000 非 BMP 和阿拉伯文 RTL 混排；转换始终在后台 executor 执行。
+- 同一测试验证活动请求期间转换按钮禁用、显式取消、取消后的迟到结果隔离；验证设置剪贴板不会
+  自动改变来源，只有粘贴按钮读取，复制按钮写入转换结果，交换不改变类型。
+- 分享测试用阻断式 `ActivityMonitor` 捕获用户点击，确认只发出 `ACTION_CHOOSER` 包装的
+  `ACTION_SEND`、MIME 为 `text/plain` 且负载精确等于结果，测试期间不会真的打开外部应用。
+- Activity `recreate()` 后来源、结果、emoji/U+20000/RTL 混排与 `TW2SP` 类型均恢复；临时状态、
+  进行中任务和剪贴板不会自动恢复或读取。测试会在结束前恢复设备原剪贴板。
+- Android 16 / API 36 / x86_64 / `PAGE_SIZE=16384` 模拟器与 Android 9 / API 28 / 32-bit
+  armeabi-v7a 真机均通过 Service、双入口、完整 UI 和两阶段进程重启共五次 instrumentation；
+  目标包与测试包在每轮结束后自动清理。
+- debug/release 各五 APK 已通过资源、旧后端排除、R8/JNI、ELF 16 KB/RELRO、ZIP 16 KB 对齐和
+  签名门禁；JVM 测试及 10 语言/36 份 Markdown 漂移检查通过。
 
 ## 后续边界
 
-M5-B 将在当前 Activity 上增加友好类型名称、清空、复制、显式粘贴、交换、分享、可取消的重复
-转换和更完整的状态恢复。M5-C 继续扩充 UI/Binder 并发和生命周期故障矩阵；M5-D 完成十语言
-类型名称、可访问性和设备截图；M5-E 才确定并公开第一个双形态版本号。M5-A 原型不会修改
-v1.2.0 标签、Release 或在线插件索引。
+M5-C 继续扩充 UI/Binder 并发和生命周期故障矩阵；M5-D 完成十语言单一来源、可访问性和设备
+截图；M5-E 才确定并公开第一个双形态版本号。M5-A/B 原型不会修改 v1.2.0 标签、Release 或
+在线插件索引。

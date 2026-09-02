@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="standalone_paste_action">貼上</string>
+    <string name="standalone_clear_action">清空</string>
+    <string name="standalone_cancel_action">取消</string>
+    <string name="standalone_copy_action">複製</string>
+    <string name="standalone_swap_action">交換</string>
+    <string name="standalone_share_action">分享</string>
+    <string name="standalone_status_no_source">沒有可轉換的來源文本</string>
+    <string name="standalone_status_canceled">已取消轉換</string>
+    <string name="standalone_status_clipboard_has_no_text">剪貼簿中沒有純文字</string>
+    <string name="standalone_status_pasted">已貼上文本</string>
+    <string name="standalone_status_cleared">已清空文本</string>
+    <string name="standalone_status_copied">已複製結果</string>
+    <string name="standalone_status_swapped">已交換來源和結果</string>
+    <string name="standalone_status_share_opened">已開啟系統分享</string>
+    <string name="standalone_status_share_unavailable">沒有可用於分享結果的應用程式</string>
+    <string name="standalone_share_chooser_title">分享轉換結果</string>
+    <string name="standalone_script_simplified_chinese">簡體中文</string>
+    <string name="standalone_script_traditional_chinese">繁體中文</string>
+    <string name="standalone_script_hong_kong_traditional">香港繁體</string>
+    <string name="standalone_script_taiwan_traditional">台灣繁體</string>
+    <string name="standalone_script_traditional_old_forms">繁體舊字形</string>
+    <string name="standalone_script_japanese_shinjitai">日文新字體</string>
+    <string name="standalone_terminology_taiwan">台灣用語</string>
+    <string name="standalone_terminology_mainland">中國大陸用語</string>
+    <string name="standalone_conversion_direction">%1$s -&gt; %2$s (%3$s)</string>
+    <string name="standalone_conversion_direction_with_terminology">%1$s -&gt; %2$s, %3$s (%4$s)</string>
     <string name="plugin_description">用於中文文本轉換的 OpenCC 插件</string>
     <string name="error_unsupported_conversion_type">不支援的 OpenCC 轉換類型: %1$s</string>
     <string name="standalone_subtitle">使用內置 OpenCC 詞典在裝置本機轉換中文文本, 不使用網絡連線.</string>

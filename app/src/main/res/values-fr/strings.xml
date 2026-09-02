@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="standalone_paste_action">Coller</string>
+    <string name="standalone_clear_action">Effacer</string>
+    <string name="standalone_cancel_action">Annuler</string>
+    <string name="standalone_copy_action">Copier</string>
+    <string name="standalone_swap_action">Permuter</string>
+    <string name="standalone_share_action">Partager</string>
+    <string name="standalone_status_no_source">Aucun texte source à convertir</string>
+    <string name="standalone_status_canceled">Conversion annulée</string>
+    <string name="standalone_status_clipboard_has_no_text">Le presse-papiers ne contient pas de texte brut</string>
+    <string name="standalone_status_pasted">Texte collé</string>
+    <string name="standalone_status_cleared">Texte effacé</string>
+    <string name="standalone_status_copied">Résultat copié</string>
+    <string name="standalone_status_swapped">Textes source et résultat permutés</string>
+    <string name="standalone_status_share_opened">Volet de partage ouvert</string>
+    <string name="standalone_status_share_unavailable">Aucune application ne peut partager le résultat</string>
+    <string name="standalone_share_chooser_title">Partager le texte converti</string>
+    <string name="standalone_script_simplified_chinese">Chinois simplifié</string>
+    <string name="standalone_script_traditional_chinese">Chinois traditionnel</string>
+    <string name="standalone_script_hong_kong_traditional">Chinois traditionnel de Hong Kong</string>
+    <string name="standalone_script_taiwan_traditional">Chinois traditionnel de Taïwan</string>
+    <string name="standalone_script_traditional_old_forms">Chinois traditionnel aux formes anciennes</string>
+    <string name="standalone_script_japanese_shinjitai">Shinjitai japonais</string>
+    <string name="standalone_terminology_taiwan">Terminologie de Taïwan</string>
+    <string name="standalone_terminology_mainland">Terminologie de Chine continentale</string>
+    <string name="standalone_conversion_direction">%1$s -&gt; %2$s (%3$s)</string>
+    <string name="standalone_conversion_direction_with_terminology">%1$s -&gt; %2$s, %3$s (%4$s)</string>
     <string name="plugin_description">Plugin OpenCC pour la conversion de texte chinois</string>
     <string name="error_unsupported_conversion_type">Type de conversion OpenCC non pris en charge : %1$s</string>
     <string name="standalone_subtitle">Convertissez le texte chinois localement avec les dictionnaires OpenCC intégrés. Aucune connexion réseau n’est utilisée.</string>

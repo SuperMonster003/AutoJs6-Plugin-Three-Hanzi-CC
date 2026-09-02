@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="standalone_paste_action">إلصاق</string>
+    <string name="standalone_clear_action">مسح</string>
+    <string name="standalone_cancel_action">إلغاء</string>
+    <string name="standalone_copy_action">نسخ</string>
+    <string name="standalone_swap_action">تبديل</string>
+    <string name="standalone_share_action">مشاركة</string>
+    <string name="standalone_status_no_source">لا يوجد نص مصدر لتحويله</string>
+    <string name="standalone_status_canceled">تم إلغاء التحويل</string>
+    <string name="standalone_status_clipboard_has_no_text">لا تحتوي الحافظة على نص عادي</string>
+    <string name="standalone_status_pasted">تم لصق النص</string>
+    <string name="standalone_status_cleared">تم مسح النص</string>
+    <string name="standalone_status_copied">تم نسخ النتيجة</string>
+    <string name="standalone_status_swapped">تم تبديل المصدر والنتيجة</string>
+    <string name="standalone_status_share_opened">تم فتح قائمة المشاركة</string>
+    <string name="standalone_status_share_unavailable">لا يتوفر تطبيق لمشاركة النتيجة</string>
+    <string name="standalone_share_chooser_title">مشاركة النص المحول</string>
+    <string name="standalone_script_simplified_chinese">الصينية المبسطة</string>
+    <string name="standalone_script_traditional_chinese">الصينية التقليدية</string>
+    <string name="standalone_script_hong_kong_traditional">الصينية التقليدية في هونغ كونغ</string>
+    <string name="standalone_script_taiwan_traditional">الصينية التقليدية في تايوان</string>
+    <string name="standalone_script_traditional_old_forms">الصينية التقليدية بالأشكال القديمة</string>
+    <string name="standalone_script_japanese_shinjitai">الشينجيتاي الياباني</string>
+    <string name="standalone_terminology_taiwan">مصطلحات تايوان</string>
+    <string name="standalone_terminology_mainland">مصطلحات البر الرئيسي للصين</string>
+    <string name="standalone_conversion_direction">%1$s -&gt; %2$s (%3$s)</string>
+    <string name="standalone_conversion_direction_with_terminology">%1$s -&gt; %2$s, %3$s (%4$s)</string>
     <string name="plugin_description">مكون OpenCC الإضافي لتحويل النص الصيني</string>
     <string name="error_unsupported_conversion_type">نوع تحويل OpenCC غير مدعوم: %1$s</string>
     <string name="standalone_subtitle">حوّل النص الصيني محليًا باستخدام قواميس OpenCC المضمّنة. لا يُستخدم اتصال بالشبكة.</string>
