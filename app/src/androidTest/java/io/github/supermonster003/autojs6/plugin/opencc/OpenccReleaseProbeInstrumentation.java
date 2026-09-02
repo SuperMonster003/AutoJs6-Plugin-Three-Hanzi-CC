@@ -144,20 +144,35 @@ public final class OpenccReleaseProbeInstrumentation extends Instrumentation {
         EditText source = activity.findViewById(resourceId("source_text"));
         Spinner types = activity.findViewById(resourceId("conversion_type"));
         TextView converted = activity.findViewById(resourceId("result_text"));
+        TextView status = activity.findViewById(resourceId("conversion_status"));
         View convert = activity.findViewById(resourceId("convert_button"));
         require(source != null, "Missing source editor");
         require(types != null, "Missing conversion type selector");
         require(converted != null, "Missing result view");
+        require(status != null, "Missing conversion status view");
         require(convert != null, "Missing conversion action");
 
+        int s2tPosition = onMain(() -> {
+            for (int index = 0; index < types.getCount(); index += 1) {
+                if (String.valueOf(types.getItemAtPosition(index)).contains("(S2T)")) {
+                    return index;
+                }
+            }
+            return -1;
+        });
+        require(s2tPosition >= 0, "Release conversion selector has no S2T entry");
         onMain(() -> {
             source.setText(SOURCE);
-            types.setSelection(0);
+            types.setSelection(s2tPosition);
+            return null;
+        });
+        waitForIdleSync();
+        onMain(() -> {
             require(convert.isEnabled(), "Release conversion action must be enabled");
             require(convert.performClick(), "Release conversion action did not accept the click");
             return null;
         });
-        awaitText(converted, RESULT);
+        awaitText(converted, status, convert, RESULT);
         requireEquals(SOURCE, onMain(() -> source.getText().toString()), "Source text was mutated");
     }
 
@@ -232,7 +247,7 @@ public final class OpenccReleaseProbeInstrumentation extends Instrumentation {
         }
     }
 
-    private void awaitText(TextView view, String expected) throws Exception {
+    private void awaitText(TextView view, TextView status, View convert, String expected) throws Exception {
         long deadline = SystemClock.elapsedRealtime() + TIMEOUT_MILLIS;
         String actual = "";
         while (SystemClock.elapsedRealtime() < deadline) {
@@ -243,7 +258,14 @@ public final class OpenccReleaseProbeInstrumentation extends Instrumentation {
             }
             SystemClock.sleep(50L);
         }
-        requireEquals(expected, actual, "Timed out waiting for release Launcher conversion");
+        String finalStatus = onMain(() -> status.getText().toString());
+        boolean convertEnabled = onMain(convert::isEnabled);
+        requireEquals(
+            expected,
+            actual,
+            "Timed out waiting for release Launcher conversion; status=" + finalStatus
+                + ", convertEnabled=" + convertEnabled
+        );
     }
 
     private int resourceId(String name) {
