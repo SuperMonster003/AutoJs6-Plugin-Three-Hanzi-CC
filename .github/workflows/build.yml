@@ -133,4 +133,7 @@ jobs:
           target: google_apis_ps16k
           arch: x86_64
           profile: pixel_7
+          # The 16 KB Google APIs image breached its guest LMK watermark twice at the
+          # profile default of 2560 MB while a 156-183 MB foreground test process ran.
+          ram-size: 4096M
           script: EXPECTED_PAGE_SIZE=16384 sh scripts/ci/verify_binder_round_trip.sh x86_64
