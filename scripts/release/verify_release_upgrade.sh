@@ -59,10 +59,10 @@ package_uid() {
 }
 
 resolved_activity() {
-  adb shell pm resolve-activity --brief \
+  adb shell cmd package resolve-activity --brief \
     -a android.intent.action.MAIN \
     -c android.intent.category.LAUNCHER \
-    "$target_package" 2>&1 | tr -d '\r' | sed '/^[[:space:]]*$/d' | tail -n 1
+    -p "$target_package" 2>&1 | tr -d '\r' | sed '/^[[:space:]]*$/d' | tail -n 1
 }
 
 page_size="$(
