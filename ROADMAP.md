@@ -79,7 +79,7 @@ M4 的主线是让插件摆脱停止跟进上游的 `com.github.brooklet:android
 
 - 只跟踪 OpenCC 的正式 `ver.*` Release 标签, 不以移动中的 `master` 作为发布输入.
 - OpenCC 源码提交, 官方资源 ZIP, 资源清单提交及 SHA-256 必须属于同一个 Release; 任一项不一致即拒绝构建或升级.
-- 上游新版本的目标流程是由自动化工作流生成升级 PR, 但不自动合并或自动发布; 当前已启用只读监视, 自动改写与建 PR 仍属 M4-D-2, 词典输出差异始终必须经过测试与人工审阅.
+- 上游新版本采用逐级放权：M4-D-2 自动生成升级 PR，M4-D-3 在可信控制器核对完整机器门禁后自动合并，M4-D-4 再独立完成签名、Release 与插件索引发布；任一层均保留可立即切回 `pr-only` / `paused` 的熔断能力，不把机器人自批当作安全门禁.
 - 第一阶段保持现有 14 种转换类型, AIDL 事务编号, 契约版本 2 和 `default` 变体兼容; 新配置和自定义词典另行升级 API/宿主契约.
 - 原生库按四种 ABI 从源码重建并静态链接 C++ 运行时, 最终 APK 不携带外部 `libopencc.so` 或 `libc++_shared.so` 依赖.
 - 旧引擎只在迁移期作为差分测试基线保留; 正式提升官方后端为 `default` 后删除旧 AAR, 不长期发布两套重复引擎.
@@ -89,10 +89,10 @@ M4 的主线是让插件摆脱停止跟进上游的 `com.github.brooklet:android
 ```text
 M4-A 官方后端原型 ──> M4-B 兼容/性能/16 KB ──> M4-C 正式替换与 v1.2.0
           │                                      │
-          └─> M4-D-1 只读上游监视               └─> M4-D-2 自动升级 PR
-                                                         ├─> M4-E 可选能力
-                                                         │
-                                                         └─> M5 双形态 App/UI
+          └─> M4-D-1 只读监视 ──> M4-D-2 自动 PR ──> M4-D-3 自动合并 ──> M4-D-4 自动发版
+                                      ├─> M4-E 可选能力
+                                      │
+                                      └─> M5 双形态 App/UI
 ```
 
 | 顺序 | 阶段 | 进入条件 | 必须产出 | 升阶条件 |
@@ -100,15 +100,16 @@ M4-A 官方后端原型 ──> M4-B 兼容/性能/16 KB ──> M4-C 正式替�
 | 1 | M4-A | M2 构建/测试基线稳定 | 固定官方源码与资源, 自有 JNI/JVM 门面, Binder 无缝切换 | 四 ABI 可构建, 14 类型通过, 正式 APK 不含旧后端 |
 | 2 | M4-B | M4-A 可在设备运行 | 新旧差分审阅, 异常/并发测试, 性能与体积报告, 16 KB 三层验收 | 行为差异可解释, 现有矩阵无回归, ELF/ZIP/真实 16 KB 设备全绿 |
 | 3 | M4-C | M4-B 全部验收 | 删除迁移基线, 许可证与 10 语言文档, v1.2.0 产物/Release/索引 | 源码标签, 5 APK, 摘要, 签名, Release 与索引一致 |
-| 4 | M4-D | 锁定格式在 M4-A 稳定; 自动改写在 M4-C 后启用 | 每周只读监视先行, 再生成经完整门禁验证的升级 PR | 无更新重放稳定; 有更新只建 PR, 不自动合并或发版 |
+| 4 | M4-D | 锁定格式在 M4-A 稳定; 自动改写在 M4-C 后启用 | 只读监视、原子升级 PR、可信自动合并控制器、独立签名与发布控制器 | 每一级先完成无副作用/失败关闭验收再放权；可按 `paused` / `pr-only` / `merge` / `release` 降级 |
 | 5 | M4-E | 官方后端和上游同步流程稳定 | 新配置/自定义词典/宿主路由的独立契约升级 | 每项先有 API 与旧实现回退测试, 不阻塞主线发布 |
-| 6 | M5 | M4-D 上游流程稳定; 不要求 M4-E 全部完成 | 同一 APK 同时保留 AutoJs6 插件服务与独立应用入口, 提供完全离线的文本转换 UI | 独立/插件两种入口共用同一后端且可并发运行, 权限/API/签名/五 ABI/16 KB/可访问性/隐私门禁全部通过 |
+| 6 | M5 | M4-D-2 自动 PR 流程稳定; 不要求 M4-D-3/M4-D-4 或 M4-E 完成 | 同一 APK 同时保留 AutoJs6 插件服务与独立应用入口, 提供完全离线的文本转换 UI | 独立/插件两种入口共用同一后端且可并发运行, 权限/API/签名/五 ABI/16 KB/可访问性/隐私门禁全部通过 |
 
-当前检查点 (2026-09-01): M4-A、M4-B 与 M4-C 已完成; `v1.2.0` 标签、GitHub Release 和
-插件中心在线索引已公开且相互校验一致。M4-D-2 的原子更新器、升级 PR 正文生成、最小权限双阶段
-工作流和显式 Build/Markdown 调度已在代码中落地，真实 GitHub 当前版本重放返回无更新、无漂移；
-远端仓库仍需启用 Actions 建 PR 权限并配置 `master` 必需检查，之后用首个真实或受控模拟更新完成
-端到端 PR 验收。M5 已按双形态 App/UI 目标排入 M4-D 稳定后的主线，不依赖 M4-E 全部完成。
+当前检查点 (2026-09-02): M4-A、M4-B 与 M4-C 已完成；`v1.2.0` 标签、GitHub Release 和
+插件中心在线索引已公开且相互校验一致。M4-D-2 的原子更新器、升级 PR 正文、最小权限双阶段工作流、
+显式 Build/Markdown 调度和远端 Actions 建 PR 权限均已落地，真实 GitHub 当前版本重放返回无更新、
+无漂移；`master` 按维护策略保持不受保护，当前运行策略仍为 `pr-only`，待首个真实或受控更新 PR
+完成端到端验收后再实现 M4-D-3 的可信自动合并控制器。M4-D-3/M4-D-4 不阻塞 M4-E 或 M5，
+M5 已按同 APK 双形态 App/UI 目标进入后续产品主线。
 
 ### M4-A: 官方 OpenCC 原生后端原型 (2026-08-31, 已完成)
 
@@ -145,15 +146,48 @@ M4-C 验收条件: 正式产物仅包含官方后端；v1.2.0 的源码标签、
 
 ### M4-D: 上游同步自动化
 
-- [x] (CI/依赖) `.github/workflows/opencc-upstream.yml` 每周定时及手动查询最新正式 Release; `check_upstream.py` 验证标签 commit, GitHub asset digest 和资源 manifest 后与锁定文件比较, 普通 Gradle 构建保持离线.
-- [x] (CI/依赖) `update_upstream.py` 对新版本二次校验正式标签提交、GitHub 资源大小/digest、ZIP manifest 提交/来源、stored entry、逐文件 SHA-256 与 16 配置；仅在干净检出中原子更新子模块指针、锁文件和版本化资源，生成后验证或文件清单异常时回滚并失败关闭。14 个离线测试覆盖当前/更新、schema、路径逃逸、精确变更清单、回滚、工作流输出和人工审阅正文。
-- [x] (CI/依赖) 工作流先以 `contents: read` 只读发现，再仅对已验证的新版本启动具有最小写权限的独立 job；它二次下载并拒绝 TOCTOU 漂移，保护已有开放 PR 中的人工修订，使用 lease 更新 `automation/opencc-<version>` 分支，并显式 dispatch Build/Markdown。使用 `GITHUB_TOKEN` 的普通 push 不被误认为会自动触发 CI。
-- [x] (CI/测试) Build integrity 已扩展为同时生成并审计 debug/release 各 5 APK；自动升级分支会显式执行四 ABI、固定转换语料、Binder 4 KB/16 KB、RELRO/ZIP 对齐、R8/资源/旧后端排除和 APK 字节报告，PR 正文另把许可证、词典差异、体积与多语言文档列为不得批量跳过的人工检查。
-- [ ] (CI/治理) 远端仓库当前仍为 `can_approve_pull_request_reviews=false` 且 `master` 未启用 branch protection；需由维护者明确启用 Actions 创建 PR 的仓库设置，并将 Build integrity 与 Markdown integrity 的关键 jobs 配为必需检查。工作流不含 approve 命令，但 GitHub 将“允许 Actions 创建/批准 PR”合并为一个仓库开关，不能在代码中缩小该设置本身的授权范围。
-- [ ] (CI/测试) 在上述治理设置完成后，以首个真实新 Release 或受控模拟 Release 端到端生成一次 PR，核对自动分支、PR 正文、两条显式 dispatch、失败检查不可合并和开放 PR 不被后续定时任务覆盖；当前 1.4.2 在线重放已稳定得到明确无更新结果。
-- [x] (发布) 自动化只创建审阅分支/PR，不包含 approve、auto-merge、标签、Release 或插件索引发布步骤；合并与发版始终由维护者人工执行，紧急修复也只能手动触发同一验证流程，不得绕过版本锁定与输出差异审阅。
+M4-D 使用分阶段信任模型。仓库默认 `GITHUB_TOKEN` 权限保持 `contents: read`，只有具体 job 按需提升；
+`master` 按项目治理选择保持不受保护，因此后续合并控制器必须主动核验每一项条件，不能把 GitHub 的
+“Merge”按钮可用、同一机器人自批或分支名称本身当作通过证据。
 
-M4-D 验收条件: 使用一个模拟的新上游版本或当前版本重放完整检查，能稳定地产生无漂移更新或明确的无更新结果；清洁 CI 环境不依赖 Maven Local、开发机缓存或 `T:\\...` 路径；自动 PR 的关键检查由远端治理阻止失败合并，且代码和仓库设置均不存在自动批准、合并或发版路径。当前脚本/工作流实现与无更新重放已满足，远端治理和一次更新 PR 验收仍待完成。
+#### M4-D-1: 只读发现 (已完成)
+
+- [x] (CI/依赖) `.github/workflows/opencc-upstream.yml` 每周定时及手动查询最新正式 Release；`check_upstream.py` 验证标签 commit、GitHub asset digest 和资源 manifest 后与锁定文件比较，普通 Gradle 构建保持离线。
+- [x] (CI/测试) 当前 OpenCC 1.4.2 已在本地和 GitHub runner 多次重放为明确无更新、无漂移；网络/API/摘要/manifest 任一异常均失败而不是假定“无更新”。
+
+M4-D-1 验收条件: 当前版本重放稳定、普通构建无网络依赖、发现异常失败关闭。(已满足)
+
+#### M4-D-2: 原子升级 PR (当前阶段)
+
+- [x] (CI/依赖) `update_upstream.py` 对新版本二次校验正式标签提交、GitHub 资源大小/digest、ZIP manifest 提交/来源、stored entry、逐文件 SHA-256 与 16 配置；仅在干净检出中原子更新子模块指针、锁文件和版本化资源，生成后验证或文件清单异常时回滚并失败关闭。14 个离线测试覆盖当前/更新、schema、路径逃逸、精确变更清单、回滚、工作流输出和审阅正文。
+- [x] (CI/依赖) 工作流先以 `contents: read` 只读发现，再仅对已验证的新版本启动具有 `actions: write`、`contents: write` 与 `pull-requests: write` 的独立 job；它二次下载并拒绝 TOCTOU 漂移，保护已有开放 PR 中的修订，使用 lease 更新 `automation/opencc-<version>` 分支，并显式 dispatch Build/Markdown。
+- [x] (CI/测试) Build integrity 同时生成并审计 debug/release 各 5 APK；升级分支执行四 ABI、固定转换语料、Binder 4 KB/16 KB、RELRO/ZIP 对齐、R8/资源/旧后端排除和 APK 字节报告。
+- [x] (CI/治理) 2026-09-02 已启用仓库 “Allow GitHub Actions to create and approve pull requests”，同时保留默认 workflow permission 为只读；`master` 按维护者选择不启用 branch protection。当前生成工作流不调用 approve、merge、tag 或 release API。
+- [ ] (CI/测试) 以首个真实新 Release 或受控模拟 Release 端到端生成一次 PR，核对自动分支、PR 正文、两条显式 dispatch、失败时保留开放 PR、同版本开放 PR 不被后续定时任务覆盖；当前 1.4.2 在线重放已满足无更新路径。
+
+M4-D-2 验收条件: 清洁 CI 不依赖 Maven Local、开发机缓存或 `T:\\...`；新版本只产生精确白名单变更和可追溯 PR，失败不合并、不覆盖人工/机器人修订。当前代码、权限和无更新路径已满足，尚待一次更新 PR 实跑。
+
+#### M4-D-3: 无人值守自动合并
+
+- [ ] (CI/治理) 增加独立于 PR 生成器的可信合并控制器，支持 `paused` / `pr-only` / `merge` / `release` 策略与默认 `pr-only`；任何异常自动降级为保留 PR 和告警，不自动修测试、改词典预期或绕过失败。
+- [ ] (CI/安全) 控制器只运行默认分支中已审计的代码，不以写权限 checkout PR 内容；只接受同仓库、base=`master`、作者为预期 GitHub Actions App、head=`automation/opencc-<semver>` 且 head SHA 精确匹配的开放 PR，并重新核对提交数和锁文件/子模块/旧新资源四项变更清单。
+- [ ] (CI/测试) 对同一 head SHA 查询显式 dispatch 的 Build integrity 与 Markdown integrity：全部 jobs 必须 completed/success，4 KB/16 KB Binder、debug/release APK、许可证清单、词典固定语料和体积阈值均通过；不能用较旧成功 run、分支同名 run 或 PR 页面上的可合并状态代替。
+- [ ] (CI/并发) 合并前确认 base SHA 未变化、PR 无冲突/请求更改/`do-not-merge` 熔断标记；base 前进时重新生成或重跑全部门禁。控制器使用按 PR/head 的 concurrency 与幂等合并，成功后删除自动化分支并记录机器判定摘要。
+- [ ] (CI/治理) 不要求同一机器人批准自己创建的 PR；若未来引入独立 Reviewer App，其 approval 只作为额外审计信号，不能替代上述可复核门禁。连续受控 dry-run 与真实升级验证通过后，才把策略从 `pr-only` 提升为 `merge`。
+
+M4-D-3 验收条件: 在不保护 `master` 的治理选择下，受控成功样本可在所有精确门禁完成后自动合并；失败、陈旧 SHA、额外文件、冲突、熔断或服务异常样本全部保持未合并，且能一键退回 `pr-only`。
+
+#### M4-D-4: 自动签名与发布
+
+- [ ] (发布/安全) 建立与合并控制器隔离的发布工作流和 GitHub Environment；签名材料仅来自加密 secrets，固定并校验现有证书 SHA-256，日志、缓存和 artifact 均不得包含 keystore/口令。没有完整签名配置时只生成可审计候选，不降级为未签名发布。
+- [ ] (发布) 为纯 OpenCC 依赖升级定义确定性的版本/build 递增、十语言 changelog/迁移记录生成和兼容性分类；API、权限、applicationId、签名或许可证发生非白名单变化时自动停止并退回 `pr-only`。
+- [ ] (发布/测试) 从刚合并且精确固定的 `master` commit 重建 5 个签名 APK，复跑签名连续性、四 ABI、R8、ELF/ZIP 16 KB、Binder 4 KB/16 KB、资源摘要与 APK 体积门禁；原子创建 tag、GitHub Release、`SHA256SUMS.txt` 和 release notes，并从 GitHub 回读全部资产名称/大小/SHA-256。
+- [ ] (发布/索引) Release 回读一致后才显式 dispatch 插件索引更新并回读线上条目；tag/Release/索引任一步已有冲突、版本倒退或内容不一致时停止，不覆盖既有正式版本。合并由 `GITHUB_TOKEN` 产生时显式 dispatch 发布工作流，不依赖不会触发的递归 push 事件。
+- [ ] (发布/治理) 先在 `release` 策略下完成受控候选/草稿与回滚演练，再启用正式 latest 发布；保留仓库变量级暂停、Release 撤回/非 latest 和索引回退手册。自动发布不阻塞 M4-E/M5 开发。
+
+M4-D-4 验收条件: 一个允许自动发布的真实升级可从正式上游 Release 到签名 APK、GitHub Release 和插件索引全程无人值守且相互回读一致；所有故障注入均停在最后一个已验证状态，不泄露签名材料、不产生半发布。
+
+M4-D 总体验收条件: D1/D2 建立可复现发现与升级 PR，D3 以精确机器门禁替代重复人工合并，D4 再将同样的失败关闭原则扩展到签名和公开发布。各阶段独立放权、可降级、可审计；D3/D4 是自动化增强，不阻塞 M4-E 或 M5。
 
 ### M4-E: 可选配置, 自定义词典与宿主扩展
 

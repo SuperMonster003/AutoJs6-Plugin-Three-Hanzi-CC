@@ -42,7 +42,7 @@ jobs:
         run: python scripts/opencc/check_upstream.py --root .
 
   prepare-upgrade-pr:
-    name: Prepare review-only upgrade PR
+    name: Prepare upgrade PR
     needs: check-release
     if: needs.check-release.outputs.update_available == 'true'
     runs-on: ubuntu-latest
@@ -158,7 +158,7 @@ jobs:
           printf 'Dispatched Build integrity and Markdown integrity for `%s`.\n' \
             "${BRANCH_NAME}" >> "${GITHUB_STEP_SUMMARY}"
 
-      - name: Create the review-only pull request
+      - name: Create the upstream upgrade pull request
         if: steps.existing.outputs.exists != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -173,5 +173,7 @@ jobs:
             echo "::error::Unable to create the upgrade PR. In Settings > Actions > General, enable 'Allow GitHub Actions to create and approve pull requests', then rerun this workflow. The workflow never submits an approval."
             exit 1
           fi
-          printf 'Created review-only upgrade PR: %s\n' "${pr_url}" >> "${GITHUB_STEP_SUMMARY}"
-          printf 'Auto-merge and release creation are intentionally absent.\n' >> "${GITHUB_STEP_SUMMARY}"
+          printf 'Created upstream upgrade PR in the current pr-only phase: %s\n' \
+            "${pr_url}" >> "${GITHUB_STEP_SUMMARY}"
+          printf 'This preparation workflow does not approve, merge, tag, or release; later stages use separate fail-closed controllers.\n' \
+            >> "${GITHUB_STEP_SUMMARY}"

@@ -107,7 +107,8 @@ class UpstreamUpdateTest(unittest.TestCase):
         self.assertIn("ver.1.4.2", result.pull_request_body)
         self.assertIn("ver.1.5.0", result.pull_request_body)
         self.assertIn("Never blanket-accept", result.pull_request_body)
-        self.assertIn("never enables auto-merge", result.pull_request_body)
+        self.assertIn("current `pr-only` policy", result.pull_request_body)
+        self.assertIn("does not approve, merge, tag, or release", result.pull_request_body)
         self.assertIn("@<!-- -->maintainer", result.pull_request_body)
         apply_release.assert_called_once_with(root, LOCKED, release)
 
