@@ -25,4 +25,8 @@ public final class OpenccUpstream {
     public static String resourceSha256() {
         return BuildConfig.OPENCC_RESOURCE_SHA256;
     }
+
+    public static boolean isControlledAcceptance() {
+        return BuildConfig.OPENCC_CONTROLLED_ACCEPTANCE;
+    }
 }

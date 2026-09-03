@@ -16,6 +16,18 @@ class ControlledWorkflowContractTest(unittest.TestCase):
         cls.merge = (ROOT / ".github/workflows/opencc-auto-merge.yml").read_text(encoding="utf-8")
         cls.controller = (ROOT / "scripts/opencc/merge_upstream.py").read_text(encoding="utf-8")
         cls.native_build = (ROOT / "opencc-native/build.gradle.kts").read_text(encoding="utf-8")
+        cls.upstream_bridge = (
+            ROOT
+            / "opencc-native/src/main/java/io/github/supermonster003/autojs6/plugin/opencc/nativebridge/OpenccUpstream.java"
+        ).read_text(encoding="utf-8")
+        cls.runtime_test = (
+            ROOT
+            / "app/src/test/java/io/github/supermonster003/autojs6/plugin/opencc/PluginRuntimeInfoTest.kt"
+        ).read_text(encoding="utf-8")
+        cls.device_test = (
+            ROOT
+            / "app/src/androidTest/java/io/github/supermonster003/autojs6/plugin/opencc/OpenccPluginServiceTest.kt"
+        ).read_text(encoding="utf-8")
 
     def test_build_fixture_is_explicit_manual_input(self) -> None:
         self.assertIn("controlled_opencc_acceptance:", self.build)
@@ -35,6 +47,16 @@ class ControlledWorkflowContractTest(unittest.TestCase):
         self.assertIn('gradleProperty("openccControlledAcceptance")', self.native_build)
         self.assertIn('"scripts/opencc/controlled_acceptance.py"', self.native_build)
         self.assertIn('else -> error("openccControlledAcceptance must be either true or false")', self.native_build)
+        self.assertIn('"OPENCC_CONTROLLED_ACCEPTANCE"', self.native_build)
+        self.assertIn("isControlledAcceptance()", self.upstream_bridge)
+        for value in (
+            "999.4.2",
+            "controlled-ver.999.4.2",
+            "b8bf091a83e7b318945352a8298127ecd0158643",
+            "dbcd3cf917e960db3562e663f4baf3fcadc21d2b38102937fa266b4b2cdc809e",
+        ):
+            self.assertIn(value, self.runtime_test)
+            self.assertIn(value, self.device_test)
 
     def test_upstream_fixture_is_draft_only_and_policy_locked(self) -> None:
         self.assertIn("controlled_acceptance:", self.upstream)

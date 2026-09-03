@@ -261,13 +261,27 @@ class OpenccPluginServiceTest {
             OpenccConversionTypes.ALL,
             capabilities.getStringArrayList(OpenccPluginCapabilityKeys.SUPPORTED_CONVERSION_TYPES),
         )
-        assertEquals("1.4.2", capabilities.getString(OpenccEngineCapabilityKeys.VERSION))
+        val controlledAcceptance = OpenccUpstream.isControlledAcceptance()
+        val expectedVersion = if (controlledAcceptance) "999.4.2" else "1.4.2"
+        val expectedTag = if (controlledAcceptance) "controlled-ver.999.4.2" else "ver.1.4.2"
+        val expectedCommit = if (controlledAcceptance) {
+            "b8bf091a83e7b318945352a8298127ecd0158643"
+        } else {
+            "025f371dc76b598d77384fbdab90c937471844d8"
+        }
+        val expectedResourceSha256 = if (controlledAcceptance) {
+            "dbcd3cf917e960db3562e663f4baf3fcadc21d2b38102937fa266b4b2cdc809e"
+        } else {
+            "9ea0d303219b34d014d5c116677b5d325043beafb2c8a62ee889ca67f4d054a5"
+        }
+        assertEquals(expectedVersion, capabilities.getString(OpenccEngineCapabilityKeys.VERSION))
+        assertEquals(expectedTag, OpenccUpstream.tag())
         assertEquals(
-            "025f371dc76b598d77384fbdab90c937471844d8",
+            expectedCommit,
             capabilities.getString(OpenccEngineCapabilityKeys.COMMIT),
         )
         assertEquals(
-            "9ea0d303219b34d014d5c116677b5d325043beafb2c8a62ee889ca67f4d054a5",
+            expectedResourceSha256,
             capabilities.getString(OpenccEngineCapabilityKeys.RESOURCE_SHA256),
         )
     }

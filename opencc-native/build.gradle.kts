@@ -67,6 +67,11 @@ android {
             "OPENCC_RESOURCE_SIZE",
             "${upstreamProperty("OPENCC_RESOURCE_SIZE")}L",
         )
+        buildConfigField(
+            "boolean",
+            "OPENCC_CONTROLLED_ACCEPTANCE",
+            controlledAcceptance.toString(),
+        )
 
         externalNativeBuild {
             cmake {
