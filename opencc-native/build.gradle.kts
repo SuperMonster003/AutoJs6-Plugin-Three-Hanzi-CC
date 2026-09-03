@@ -16,6 +16,13 @@ fun upstreamProperty(name: String): String = requireNotNull(upstream.getProperty
 
 fun quotedBuildConfigValue(value: String): String = "\"${value.replace("\\", "\\\\").replace("\"", "\\\"")}\""
 
+val controlledAcceptanceProperty = providers.gradleProperty("openccControlledAcceptance").orNull
+val controlledAcceptance = when (controlledAcceptanceProperty) {
+    null, "false" -> false
+    "true" -> true
+    else -> error("openccControlledAcceptance must be either true or false")
+}
+
 android {
     namespace = "io.github.supermonster003.autojs6.plugin.opencc.nativebridge"
     compileSdk = versions.sdkVersionCompile
@@ -87,14 +94,25 @@ android {
 
 val verifyOpenccUpstream by tasks.registering(Exec::class) {
     group = "verification"
-    description = "Verifies the pinned OpenCC source and official resource bundle"
+    description = if (controlledAcceptance) {
+        "Verifies the pinned non-release OpenCC automation acceptance fixture"
+    } else {
+        "Verifies the pinned OpenCC source and official resource bundle"
+    }
     workingDir = rootProject.projectDir
-    commandLine(
+    val verifierCommand = mutableListOf(
         "python",
-        "scripts/opencc/verify_upstream.py",
-        "--root",
-        rootProject.projectDir.absolutePath,
+        if (controlledAcceptance) {
+            "scripts/opencc/controlled_acceptance.py"
+        } else {
+            "scripts/opencc/verify_upstream.py"
+        },
     )
+    if (controlledAcceptance) {
+        verifierCommand += "verify"
+    }
+    verifierCommand += listOf("--root", rootProject.projectDir.absolutePath)
+    commandLine(verifierCommand)
 }
 
 tasks.named("preBuild").configure {

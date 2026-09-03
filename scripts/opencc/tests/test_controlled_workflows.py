@@ -15,6 +15,7 @@ class ControlledWorkflowContractTest(unittest.TestCase):
         cls.upstream = (ROOT / ".github/workflows/opencc-upstream.yml").read_text(encoding="utf-8")
         cls.merge = (ROOT / ".github/workflows/opencc-auto-merge.yml").read_text(encoding="utf-8")
         cls.controller = (ROOT / "scripts/opencc/merge_upstream.py").read_text(encoding="utf-8")
+        cls.native_build = (ROOT / "opencc-native/build.gradle.kts").read_text(encoding="utf-8")
 
     def test_build_fixture_is_explicit_manual_input(self) -> None:
         self.assertIn("controlled_opencc_acceptance:", self.build)
@@ -30,6 +31,10 @@ class ControlledWorkflowContractTest(unittest.TestCase):
             "if: github.event_name != 'workflow_dispatch' || inputs.controlled_opencc_acceptance != true",
             self.build,
         )
+        self.assertIn("ORG_GRADLE_PROJECT_openccControlledAcceptance:", self.build)
+        self.assertIn('gradleProperty("openccControlledAcceptance")', self.native_build)
+        self.assertIn('"scripts/opencc/controlled_acceptance.py"', self.native_build)
+        self.assertIn('else -> error("openccControlledAcceptance must be either true or false")', self.native_build)
 
     def test_upstream_fixture_is_draft_only_and_policy_locked(self) -> None:
         self.assertIn("controlled_acceptance:", self.upstream)

@@ -19,6 +19,8 @@ jobs:
     name: Unit tests and debug/release APKs
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      ORG_GRADLE_PROJECT_openccControlledAcceptance: ${{ github.event_name == 'workflow_dispatch' && inputs.controlled_opencc_acceptance == true && 'true' || 'false' }}
 
     steps:
       - name: Check out repository
