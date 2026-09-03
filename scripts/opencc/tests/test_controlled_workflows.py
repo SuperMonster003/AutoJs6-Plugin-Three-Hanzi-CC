@@ -66,6 +66,16 @@ class ControlledWorkflowContractTest(unittest.TestCase):
         self.assertIn("controlled_acceptance.py verify", self.upstream)
         self.assertIn("-f controlled_opencc_acceptance=true", self.upstream)
         self.assertIn("pr_args+=(--draft)", self.upstream)
+        for output_name in (
+            "update_available",
+            "latest_version",
+            "latest_tag",
+            "latest_commit",
+            "latest_resource_sha256",
+            "branch_name",
+            "commit_title",
+        ):
+            self.assertIn(f"printf '{output_name}=%s", self.upstream)
         self.assertNotIn("gh pr merge", self.upstream)
         self.assertNotIn("gh release", self.upstream)
         self.assertNotIn("git tag", self.upstream)

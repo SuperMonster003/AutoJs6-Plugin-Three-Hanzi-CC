@@ -149,19 +149,38 @@ jobs:
           CANDIDATE_KIND: ${{ needs.check-release.outputs.candidate_kind }}
         run: |
           if [ "${CANDIDATE_KIND}" = controlled ]; then
-            prefix=CONTROLLED
+            selected_update="${CONTROLLED_UPDATE}"
+            selected_version="${CONTROLLED_VERSION}"
+            selected_tag="${CONTROLLED_TAG}"
+            selected_commit="${CONTROLLED_COMMIT}"
+            selected_digest="${CONTROLLED_DIGEST}"
+            selected_branch="${CONTROLLED_BRANCH}"
+            selected_title="${CONTROLLED_TITLE}"
           else
-            prefix=OFFICIAL
+            selected_update="${OFFICIAL_UPDATE}"
+            selected_version="${OFFICIAL_VERSION}"
+            selected_tag="${OFFICIAL_TAG}"
+            selected_commit="${OFFICIAL_COMMIT}"
+            selected_digest="${OFFICIAL_DIGEST}"
+            selected_branch="${OFFICIAL_BRANCH}"
+            selected_title="${OFFICIAL_TITLE}"
           fi
-          for name in UPDATE VERSION TAG COMMIT DIGEST BRANCH TITLE; do
-            value="$(printenv "${prefix}_${name}")"
-            test -n "${value}"
-            output_name="$(printf '%s' "${name}" | tr '[:upper:]' '[:lower:]')"
-            if [ "${output_name}" = update ]; then
-              output_name=update_available
-            fi
-            printf '%s=%s\n' "${output_name}" "${value}" >> "${GITHUB_OUTPUT}"
-          done
+          test -n "${selected_update}"
+          test -n "${selected_version}"
+          test -n "${selected_tag}"
+          test -n "${selected_commit}"
+          test -n "${selected_digest}"
+          test -n "${selected_branch}"
+          test -n "${selected_title}"
+          {
+            printf 'update_available=%s\n' "${selected_update}"
+            printf 'latest_version=%s\n' "${selected_version}"
+            printf 'latest_tag=%s\n' "${selected_tag}"
+            printf 'latest_commit=%s\n' "${selected_commit}"
+            printf 'latest_resource_sha256=%s\n' "${selected_digest}"
+            printf 'branch_name=%s\n' "${selected_branch}"
+            printf 'commit_title=%s\n' "${selected_title}"
+          } >> "${GITHUB_OUTPUT}"
 
       - name: Reject time-of-check/time-of-use release drift
         if: steps.existing.outputs.exists != 'true'
