@@ -70,3 +70,36 @@ Public CI also builds this platform-only probe, re-signs it and the otherwise un
 release APK with one ephemeral non-production key, and runs both UI and Binder conversions on the
 API 24 minimum-SDK emulator. This release-target gate exists in addition to the full debug suite so
 resource or code optimizations that only fail on older Android releases cannot pass unnoticed.
+
+## Isolated release-environment preflight
+
+`.github/workflows/opencc-release.yml` is the fail-closed entry point for M4-D-4. Its initial
+`workflow_dispatch` path has no publication side effects: it may run only from `master` through the
+`opencc-release` Environment, reconstructs the Android keystore in an ephemeral runner directory,
+checks the pinned keystore and signer-certificate SHA-256 values, and signs a disposable JAR to prove
+that the alias and both passwords are usable. The temporary keystore, certificate, and probe JAR are
+deleted before the job exits and are never cached or uploaded as artifacts.
+
+The same preflight pins `actions/create-github-app-token` v3.2.0 by commit and uses its recommended
+Client ID input. It requests only `Actions: write`, scopes the installation token to
+`SuperMonster003/AutoJs6-Official-Plugins-Index`, confirms that `plugin-index.yml` is active, performs
+no dispatch, and lets the action revoke the short-lived token in its post-step.
+
+The `opencc-release` Environment contains these encrypted secrets:
+
+- `OPENCC_RELEASE_KEYSTORE_BASE64`
+- `OPENCC_RELEASE_STORE_PASSWORD`
+- `OPENCC_RELEASE_KEY_ALIAS`
+- `OPENCC_RELEASE_KEY_PASSWORD`
+- `OPENCC_INDEX_APP_PRIVATE_KEY`
+
+It also contains these non-secret variables:
+
+- `OPENCC_RELEASE_EXPECTED_KEYSTORE_SHA256`
+- `OPENCC_RELEASE_EXPECTED_CERT_SHA256`
+- `OPENCC_INDEX_APP_CLIENT_ID`
+
+This preflight deliberately cannot create a tag, GitHub Release, pull request, index dispatch, or
+commit. Candidate construction and publication are enabled only after the M4-D-2/M4-D-3 online
+upgrade-PR exercises have passed and the repository automation policy is explicitly promoted beyond
+`pr-only`.

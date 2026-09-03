@@ -1,0 +1,132 @@
+name: OpenCC trusted release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: opencc-trusted-release
+  cancel-in-progress: false
+
+jobs:
+  verify-release-environment:
+    name: Verify isolated signing and index credentials
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: opencc-release
+      url: https://github.com/SuperMonster003/AutoJs6-Official-Plugins-Index/actions/workflows/plugin-index.yml
+
+    steps:
+      - name: Require the trusted master deployment context
+        env:
+          EXPECTED_REPOSITORY: SuperMonster003/AutoJs6-Plugin-OpenCC
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REPOSITORY}" = "${EXPECTED_REPOSITORY}"
+          test "${GITHUB_EVENT_NAME}" = workflow_dispatch
+          test "${GITHUB_REF}" = refs/heads/master
+          test "${{ github.event.repository.default_branch }}" = master
+
+      - name: Set up Java for isolated signer verification
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Verify the encrypted Android signing configuration
+        shell: bash
+        env:
+          KEYSTORE_BASE64: ${{ secrets.OPENCC_RELEASE_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.OPENCC_RELEASE_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.OPENCC_RELEASE_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.OPENCC_RELEASE_KEY_PASSWORD }}
+          EXPECTED_KEYSTORE_SHA256: ${{ vars.OPENCC_RELEASE_EXPECTED_KEYSTORE_SHA256 }}
+          EXPECTED_CERT_SHA256: ${{ vars.OPENCC_RELEASE_EXPECTED_CERT_SHA256 }}
+        run: |
+          set -euo pipefail
+          set +x
+          : "${KEYSTORE_BASE64:?Missing release keystore secret}"
+          : "${STORE_PASSWORD:?Missing release store-password secret}"
+          : "${KEY_ALIAS:?Missing release key-alias secret}"
+          : "${KEY_PASSWORD:?Missing release key-password secret}"
+          : "${EXPECTED_KEYSTORE_SHA256:?Missing expected keystore digest variable}"
+          : "${EXPECTED_CERT_SHA256:?Missing expected certificate digest variable}"
+
+          work_directory="$(mktemp -d "${RUNNER_TEMP}/opencc-release-preflight.XXXXXX")"
+          trap 'rm -rf -- "${work_directory}"' EXIT
+          umask 077
+
+          keystore="${work_directory}/release.jks"
+          certificate="${work_directory}/release-certificate.der"
+          unsigned_jar="${work_directory}/unsigned.jar"
+          signed_jar="${work_directory}/signed.jar"
+
+          printf '%s' "${KEYSTORE_BASE64}" | base64 --decode > "${keystore}"
+          actual_keystore_sha256="$(sha256sum "${keystore}" | awk '{print toupper($1)}')"
+          test "${actual_keystore_sha256}" = "${EXPECTED_KEYSTORE_SHA256}"
+
+          keytool -exportcert \
+            -keystore "${keystore}" \
+            -alias "${KEY_ALIAS}" \
+            -storepass:env STORE_PASSWORD \
+            > "${certificate}"
+          actual_certificate_sha256="$(sha256sum "${certificate}" | awk '{print toupper($1)}')"
+          test "${actual_certificate_sha256}" = "${EXPECTED_CERT_SHA256}"
+
+          mkdir "${work_directory}/payload"
+          printf 'OpenCC release signing preflight\n' > "${work_directory}/payload/probe.txt"
+          jar --create --file "${unsigned_jar}" -C "${work_directory}/payload" probe.txt
+          jarsigner \
+            -keystore "${keystore}" \
+            -storepass:env STORE_PASSWORD \
+            -keypass:env KEY_PASSWORD \
+            -signedjar "${signed_jar}" \
+            "${unsigned_jar}" \
+            "${KEY_ALIAS}" \
+            > /dev/null
+          jarsigner -verify -strict "${signed_jar}" > /dev/null
+
+          {
+            echo '## OpenCC release environment preflight'
+            echo
+            echo '- Android keystore: decoded only in an ephemeral directory and deleted on exit'
+            echo "- Keystore SHA-256: \`${actual_keystore_sha256}\`"
+            echo "- Signer certificate SHA-256: \`${actual_certificate_sha256}\`"
+            echo '- Alias, store password, and key password: verified by signing a disposable JAR'
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+      - name: Create a least-privilege plugin-index token
+        id: index-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.OPENCC_INDEX_APP_CLIENT_ID }}
+          private-key: ${{ secrets.OPENCC_INDEX_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: AutoJs6-Official-Plugins-Index
+          permission-actions: write
+
+      - name: Verify the token scope and target index workflow
+        shell: bash
+        env:
+          GH_TOKEN: ${{ steps.index-token.outputs.token }}
+          INDEX_REPOSITORY: SuperMonster003/AutoJs6-Official-Plugins-Index
+          INDEX_WORKFLOW: plugin-index.yml
+        run: |
+          set -euo pipefail
+          repositories="$(gh api --paginate /installation/repositories --jq '.repositories[].full_name')"
+          test "${repositories}" = "${INDEX_REPOSITORY}"
+
+          workflow="$(gh api "repos/${INDEX_REPOSITORY}/actions/workflows/${INDEX_WORKFLOW}")"
+          test "$(jq -r '.name' <<< "${workflow}")" = 'Plugin Index'
+          test "$(jq -r '.path' <<< "${workflow}")" = '.github/workflows/plugin-index.yml'
+          test "$(jq -r '.state' <<< "${workflow}")" = active
+
+          {
+            echo '- GitHub App token: generated with requested `Actions: write` permission'
+            echo "- Token repository scope: \`${INDEX_REPOSITORY}\` only"
+            echo '- Target workflow: `Plugin Index` (`plugin-index.yml`, active)'
+            echo '- Side effects: none; the short-lived token is revoked by the action post-step'
+          } >> "${GITHUB_STEP_SUMMARY}"
