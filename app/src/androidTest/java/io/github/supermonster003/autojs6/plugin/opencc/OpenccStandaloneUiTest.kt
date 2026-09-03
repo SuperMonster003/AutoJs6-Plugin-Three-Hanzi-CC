@@ -8,6 +8,7 @@ import android.content.ClipboardManager
 import android.content.ComponentName
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
@@ -156,10 +157,8 @@ class OpenccStandaloneUiTest {
             readText(views.source),
         )
 
-        restoreForegroundClipboardAccess(activity)
-        onMain { check(views.paste.performClick()) { "Paste click was not accepted" } }
         val pastedStatus = context.getString(R.string.standalone_status_pasted)
-        await("explicit Paste action") {
+        performClipboardAction(activity, views.paste, "explicit Paste action") {
             readText(views.source) == CLIPBOARD_SOURCE && readText(views.status) == pastedStatus
         }
 
@@ -313,6 +312,44 @@ class OpenccStandaloneUiTest {
 
     private fun isEnabled(view: View): Boolean = onMain { view.isEnabled }
 
+    private fun performClipboardAction(
+        activity: Activity,
+        view: View,
+        description: String,
+        outcome: () -> Boolean,
+    ) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            onMain { check(view.performClick()) { "$description click was not accepted" } }
+            await(description, outcome)
+            return
+        }
+
+        repeat(CLIPBOARD_ACTION_ATTEMPTS) {
+            restoreForegroundClipboardAccess(activity)
+            tapAsUser(view)
+            val attemptDeadline = SystemClock.elapsedRealtime() + CLIPBOARD_ACTION_SETTLE_MILLIS
+            while (SystemClock.elapsedRealtime() < attemptDeadline) {
+                if (outcome()) return
+                SystemClock.sleep(POLL_INTERVAL_MILLIS)
+            }
+        }
+        fail("Timed out waiting for $description after $CLIPBOARD_ACTION_ATTEMPTS foreground user taps")
+    }
+
+    private fun tapAsUser(view: View) {
+        val visibleBounds = Rect()
+        val center = onMain {
+            check(view.isEnabled) { "The clipboard action is disabled" }
+            check(view.getGlobalVisibleRect(visibleBounds) && !visibleBounds.isEmpty) {
+                "The clipboard action is not visible"
+            }
+            Pair(visibleBounds.centerX(), visibleBounds.centerY())
+        }
+        val tapOutput = runShellCommand("input tap ${center.first} ${center.second}")
+        assertShellSucceeded("inject the foreground clipboard action", tapOutput)
+        instrumentation.waitForIdleSync()
+    }
+
     private fun restoreForegroundClipboardAccess(activity: Activity) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return
 
@@ -330,9 +367,8 @@ class OpenccStandaloneUiTest {
         )
         assertShellSucceeded("return the standalone Activity to foreground", startOutput)
         instrumentation.waitForIdleSync()
-        // Activity.hasWindowFocus() is not a reliable proxy on headless emulators: the task can
-        // be reported as focused while this value remains false. The following real clipboard
-        // read and its visible UI result are the authoritative access gate.
+        // Activity.hasWindowFocus() is not a reliable readiness proxy on headless emulators. A
+        // real input event plus the observable clipboard/UI outcome below is the authoritative gate.
         assertFalse("Standalone Activity was destroyed", onMain { activity.isDestroyed })
         assertFalse("Standalone Activity is finishing", onMain { activity.isFinishing })
     }
@@ -404,6 +440,8 @@ class OpenccStandaloneUiTest {
         val RESTORED_TYPE = OpenccConversionType.TW2SP
         const val CONVERSION_TIMEOUT_MILLIS = 60_000L
         const val POLL_INTERVAL_MILLIS = 50L
+        const val CLIPBOARD_ACTION_ATTEMPTS = 4
+        const val CLIPBOARD_ACTION_SETTLE_MILLIS = 2_000L
 
         val SMOKE_OUTPUTS = mapOf(
             OpenccConversionType.HK2S to "汉字汉字软件软体里面里面",
