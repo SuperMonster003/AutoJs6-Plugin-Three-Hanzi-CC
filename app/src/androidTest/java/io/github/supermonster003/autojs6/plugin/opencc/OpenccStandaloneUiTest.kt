@@ -330,7 +330,11 @@ class OpenccStandaloneUiTest {
         )
         assertShellSucceeded("return the standalone Activity to foreground", startOutput)
         instrumentation.waitForIdleSync()
-        await("standalone Activity window focus") { onMain { activity.hasWindowFocus() } }
+        // Activity.hasWindowFocus() is not a reliable proxy on headless emulators: the task can
+        // be reported as focused while this value remains false. The following real clipboard
+        // read and its visible UI result are the authoritative access gate.
+        assertFalse("Standalone Activity was destroyed", onMain { activity.isDestroyed })
+        assertFalse("Standalone Activity is finishing", onMain { activity.isFinishing })
     }
 
     private fun assertShellSucceeded(action: String, output: String) {
