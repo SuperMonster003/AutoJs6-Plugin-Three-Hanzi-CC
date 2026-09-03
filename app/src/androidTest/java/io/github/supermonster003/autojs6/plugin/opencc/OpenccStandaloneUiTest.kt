@@ -8,7 +8,6 @@ import android.content.ClipboardManager
 import android.content.ComponentName
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
@@ -157,7 +156,8 @@ class OpenccStandaloneUiTest {
             readText(views.source),
         )
 
-        tapAsUser(activity, views.paste)
+        restoreForegroundClipboardAccess(activity)
+        onMain { check(views.paste.performClick()) { "Paste click was not accepted" } }
         val pastedStatus = context.getString(R.string.standalone_status_pasted)
         await("explicit Paste action") {
             readText(views.source) == CLIPBOARD_SOURCE && readText(views.status) == pastedStatus
@@ -169,9 +169,10 @@ class OpenccStandaloneUiTest {
         assertEquals(context.getString(R.string.standalone_status_cleared), readText(views.status))
 
         convert(activity, views, "软件", OpenccConversionType.S2T, "軟件")
-        tapAsUser(activity, views.copy)
+        onMain { check(views.copy.performClick()) { "Copy click was not accepted" } }
         val copiedStatus = context.getString(R.string.standalone_status_copied)
         await("explicit Copy action") { readText(views.status) == copiedStatus }
+        restoreForegroundClipboardAccess(activity)
         assertEquals("軟件", clipboard.primaryClip?.getItemAt(0)?.text?.toString())
         assertEquals(copiedStatus, readText(views.status))
     }
@@ -312,34 +313,28 @@ class OpenccStandaloneUiTest {
 
     private fun isEnabled(view: View): Boolean = onMain { view.isEnabled }
 
-    private fun tapAsUser(activity: Activity, view: View) {
-        // Clipboard access is focus-gated on modern Android. Inject a real tap after restoring the
-        // Launcher task instead of relying on performClick(), which bypasses WindowManager focus.
-        if (!onMain { activity.hasWindowFocus() }) {
-            val component = activity.componentName.flattenToShortString()
-            val output = runShellCommand(
-                "am start --activity-reorder-to-front --activity-single-top " +
-                    "-a ${Intent.ACTION_MAIN} -c ${Intent.CATEGORY_LAUNCHER} -n $component",
-            )
-            assertFalse("Shell failed to return the standalone Activity to foreground: $output", "Error:" in output)
-            instrumentation.waitForIdleSync()
-        }
+    private fun restoreForegroundClipboardAccess(activity: Activity) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return
 
-        onMain {
-            check(view.isShown) { "The target action is not attached to a visible window" }
-            check(view.isEnabled) { "The target action is disabled" }
-            view.requestRectangleOnScreen(Rect(0, 0, view.width, view.height), true)
-        }
+        // Android 10+ permits clipboard reads only for the focused app. Headless emulators can
+        // leave the system clipboard overlay focused indefinitely, so dismiss system UI before
+        // returning the existing Launcher task to the foreground. No privileged permission is used.
+        assertShellSucceeded("move the test to Home", runShellCommand("input keyevent KEYCODE_HOME"))
+        SystemClock.sleep(250)
+        assertShellSucceeded("dismiss the clipboard overlay", runShellCommand("input keyevent KEYCODE_BACK"))
+        SystemClock.sleep(250)
+        val component = activity.componentName.flattenToShortString()
+        val startOutput = runShellCommand(
+            "am start -W --activity-reorder-to-front --activity-single-top " +
+                "-a ${Intent.ACTION_MAIN} -c ${Intent.CATEGORY_LAUNCHER} -n $component",
+        )
+        assertShellSucceeded("return the standalone Activity to foreground", startOutput)
         instrumentation.waitForIdleSync()
-        val location = IntArray(2)
-        val center = onMain {
-            view.getLocationOnScreen(location)
-            check(view.width > 0 && view.height > 0) { "The target action has no screen area" }
-            Pair(location[0] + view.width / 2, location[1] + view.height / 2)
-        }
-        val tapOutput = runShellCommand("input tap ${center.first} ${center.second}")
-        assertFalse("Shell failed to inject the user action: $tapOutput", "Error:" in tapOutput)
-        instrumentation.waitForIdleSync()
+        await("standalone Activity window focus") { onMain { activity.hasWindowFocus() } }
+    }
+
+    private fun assertShellSucceeded(action: String, output: String) {
+        assertFalse("Shell failed to $action: $output", "Error:" in output)
     }
 
     private fun runShellCommand(command: String): String {
