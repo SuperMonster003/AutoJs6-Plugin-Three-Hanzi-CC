@@ -22,6 +22,7 @@ class ReleaseEnvironmentWorkflowTest(unittest.TestCase):
 
     def test_signing_secrets_are_scoped_to_the_release_environment(self) -> None:
         self.assertIn("name: opencc-release", self.text)
+        self.assertNotIn("      url:", self.text)
         for name in (
             "OPENCC_RELEASE_KEYSTORE_BASE64",
             "OPENCC_RELEASE_STORE_PASSWORD",

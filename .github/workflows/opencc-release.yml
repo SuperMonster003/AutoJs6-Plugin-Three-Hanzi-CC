@@ -17,7 +17,6 @@ jobs:
     timeout-minutes: 10
     environment:
       name: opencc-release
-      url: https://github.com/SuperMonster003/AutoJs6-Official-Plugins-Index/actions/workflows/plugin-index.yml
 
     steps:
       - name: Require the trusted master deployment context
