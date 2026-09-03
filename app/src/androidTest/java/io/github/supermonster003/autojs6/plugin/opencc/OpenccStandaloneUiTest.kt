@@ -149,6 +149,7 @@ class OpenccStandaloneUiTest {
         onMain { views.source.setText(unchangedSource) }
         clipboard.setPrimaryClip(ClipData.newPlainText("OpenCC UI test", CLIPBOARD_SOURCE))
         instrumentation.waitForIdleSync()
+        awaitWindowFocus(activity)
         assertEquals(
             "Setting the clipboard must not change the source until Paste is clicked",
             unchangedSource,
@@ -166,6 +167,7 @@ class OpenccStandaloneUiTest {
 
         convert(activity, views, "软件", OpenccConversionType.S2T, "軟件")
         onMain { views.copy.performClick() }
+        awaitWindowFocus(activity)
         assertEquals("軟件", clipboard.primaryClip?.getItemAt(0)?.text?.toString())
         assertEquals(context.getString(R.string.standalone_status_copied), readText(views.status))
     }
@@ -305,6 +307,12 @@ class OpenccStandaloneUiTest {
     private fun visibility(view: View): Int = onMain { view.visibility }
 
     private fun isEnabled(view: View): Boolean = onMain { view.isEnabled }
+
+    private fun awaitWindowFocus(activity: Activity) {
+        // Programmatic performClick() does not itself require a focused window, while Android's
+        // clipboard service does. Wait out transient system overlays so the test models a real tap.
+        await("standalone Activity window focus") { onMain { activity.hasWindowFocus() } }
+    }
 
     private fun await(description: String, predicate: () -> Boolean) {
         val deadline = SystemClock.elapsedRealtime() + CONVERSION_TIMEOUT_MILLIS
