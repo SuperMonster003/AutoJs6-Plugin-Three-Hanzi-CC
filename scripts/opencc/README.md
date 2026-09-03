@@ -13,6 +13,9 @@ The repository separates upstream discovery from mutation:
 - `merge_upstream.py` is the trusted, fail-closed M4-D-3 controller. It reads pull-request and workflow
   evidence through the GitHub API without executing the proposed tree. In `merge` mode its separate
   write-side job repeats every gate and binds the squash merge to the expected head SHA.
+- `wait_upstream_gates.py` records pre-dispatch run watermarks and waits for newly dispatched Build and
+  Markdown runs bound to the exact automation branch/SHA. It then lets the trusted upstream workflow
+  dispatch the merge controller explicitly; it never decides eligibility or performs a merge itself.
 - `controlled_acceptance.py` supplies one pinned, non-release fixture for remote D2/D3 acceptance while
   no newer formal OpenCC release exists. It is deliberately isolated from the official update path.
 - `verify_upstream.py` is the offline build gate. Normal Gradle builds do not contact GitHub.
@@ -51,7 +54,11 @@ the workflow leaves it and any follow-up fixes untouched. Otherwise it pushes th
 branch with a lease, explicitly dispatches `build.yml` and `markdown.yml`, and creates a PR containing
 the upstream release summary, exact lock differences, source comparison link, and merge-gate checklist.
 Explicit dispatch is required because ordinary pushes made with `GITHUB_TOKEN` do not start new workflow
-runs.
+runs. The same token's dispatched Build/Markdown completions also cannot be relied on to recursively
+start a `workflow_run` controller. After both newly dispatched exact-SHA runs reach a terminal state, the
+trusted preparation job explicitly dispatches `opencc-auto-merge.yml` from `master`. The controller—not
+the waiter—then validates success, the complete job inventories, and every PR/dependency gate. Workflow
+metadata drift, a moved branch, missing exact runs, timeout, or an API failure stops before that callback.
 
 The repository enabled **Settings > Actions > General > Allow GitHub Actions to create and approve pull
 requests** on 2026-09-02 while retaining read-only default workflow permissions. GitHub exposes creation
@@ -111,9 +118,10 @@ line, so this is a deterministic semantic no-op; it also prevents GitHub's binar
 from collapsing the old-resource deletion and new-resource addition into a rename. The production
 controller's exact four-path add/delete contract therefore remains unchanged.
 
-For the read-only D3 replay, manually dispatch `opencc-auto-merge.yml` with the exact draft branch/SHA and
-`controlled_acceptance=true`. That path revalidates the formal base release, fixture commit parent,
-resource bytes, licenses, PR shape, and exact workflow runs. It can report eligible only in `pr-only`;
+For the read-only D3 replay, the trusted upstream workflow now dispatches `opencc-auto-merge.yml` with the
+exact draft branch/SHA and `controlled_acceptance=true` after its two gates finish. A manual dispatch can
+still be used for negative or stale-SHA replays. That path revalidates the formal base release, fixture
+commit parent, resource bytes, licenses, PR shape, and exact workflow runs. It can report eligible only in `pr-only`;
 the controller rejects the fixture in `merge` or `release`, rejects `--execute`, and the write job also
 requires `candidate_kind == 'official'`. The ordinary `workflow_run` trigger can never select controlled
 evaluation. After recording successful, failing, and existing-PR replays, close the draft and delete the

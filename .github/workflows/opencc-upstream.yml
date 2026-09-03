@@ -67,7 +67,7 @@ jobs:
     needs: check-release
     if: needs.check-release.outputs.update_available == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 60
     permissions:
       actions: write
       contents: write
@@ -216,6 +216,7 @@ jobs:
 
       - name: Commit and push the automation-owned branch
         if: steps.existing.outputs.exists != 'true'
+        id: commit
         env:
           BRANCH_NAME: ${{ steps.prepare.outputs.branch_name }}
           COMMIT_TITLE: ${{ steps.prepare.outputs.commit_title }}
@@ -243,6 +244,22 @@ jobs:
           else
             git push origin "HEAD:refs/heads/${BRANCH_NAME}"
           fi
+          head_sha="$(git rev-parse HEAD)"
+          if [[ ! "${head_sha}" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "::error::Generated automation commit SHA is malformed."
+            exit 1
+          fi
+          echo "head_sha=${head_sha}" >> "${GITHUB_OUTPUT}"
+
+      - name: Snapshot mandatory gate run watermarks
+        if: steps.existing.outputs.exists != 'true'
+        id: gate_watermarks
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: >-
+          python scripts/opencc/wait_upstream_gates.py
+          --repository "${GITHUB_REPOSITORY}"
+          snapshot
 
       - name: Dispatch mandatory build and documentation gates
         if: steps.existing.outputs.exists != 'true'
@@ -285,3 +302,36 @@ jobs:
             "${CANDIDATE_KIND}" "${pr_url}" >> "${GITHUB_STEP_SUMMARY}"
           printf 'This preparation workflow does not approve, merge, tag, or release; later stages use separate fail-closed controllers.\n' \
             >> "${GITHUB_STEP_SUMMARY}"
+
+      - name: Wait for exact dispatched gates
+        if: steps.existing.outputs.exists != 'true'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: >-
+          python scripts/opencc/wait_upstream_gates.py
+          --repository "${GITHUB_REPOSITORY}"
+          wait
+          --head-branch "${{ steps.prepare.outputs.branch_name }}"
+          --head-sha "${{ steps.commit.outputs.head_sha }}"
+          --build-watermark "${{ steps.gate_watermarks.outputs.build_watermark }}"
+          --markdown-watermark "${{ steps.gate_watermarks.outputs.markdown_watermark }}"
+
+      - name: Dispatch trusted exact-SHA merge evaluation
+        if: steps.existing.outputs.exists != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_BRANCH: ${{ steps.prepare.outputs.branch_name }}
+          HEAD_SHA: ${{ steps.commit.outputs.head_sha }}
+          CANDIDATE_KIND: ${{ needs.check-release.outputs.candidate_kind }}
+        run: |
+          controller_args=(
+            --ref master
+            -f "head_branch=${HEAD_BRANCH}"
+            -f "head_sha=${HEAD_SHA}"
+          )
+          if [ "${CANDIDATE_KIND}" = controlled ]; then
+            controller_args+=(-f controlled_acceptance=true)
+          fi
+          gh workflow run opencc-auto-merge.yml "${controller_args[@]}"
+          printf 'Dispatched the trusted %s exact-SHA merge evaluator for `%s` at `%s`.\n' \
+            "${CANDIDATE_KIND}" "${HEAD_BRANCH}" "${HEAD_SHA}" >> "${GITHUB_STEP_SUMMARY}"

@@ -66,6 +66,22 @@ class ControlledWorkflowContractTest(unittest.TestCase):
         self.assertIn("controlled_acceptance.py verify", self.upstream)
         self.assertIn("-f controlled_opencc_acceptance=true", self.upstream)
         self.assertIn("pr_args+=(--draft)", self.upstream)
+        self.assertIn("Snapshot mandatory gate run watermarks", self.upstream)
+        self.assertIn("wait_upstream_gates.py", self.upstream)
+        self.assertIn('--head-sha "${{ steps.commit.outputs.head_sha }}"', self.upstream)
+        self.assertIn('--build-watermark "${{ steps.gate_watermarks.outputs.build_watermark }}"', self.upstream)
+        self.assertIn('--markdown-watermark "${{ steps.gate_watermarks.outputs.markdown_watermark }}"', self.upstream)
+        self.assertIn("Dispatch trusted exact-SHA merge evaluation", self.upstream)
+        self.assertIn('gh workflow run opencc-auto-merge.yml "${controller_args[@]}"', self.upstream)
+        self.assertIn("controller_args+=(-f controlled_acceptance=true)", self.upstream)
+        self.assertLess(
+            self.upstream.index("Create the upstream upgrade pull request"),
+            self.upstream.index("Wait for exact dispatched gates"),
+        )
+        self.assertLess(
+            self.upstream.index("Wait for exact dispatched gates"),
+            self.upstream.index("Dispatch trusted exact-SHA merge evaluation"),
+        )
         for output_name in (
             "update_available",
             "latest_version",
