@@ -161,6 +161,18 @@ the `pr-only` policy did not change. The same source commit's
 also passed all five jobs: build/APK inventory, API 24 minSdk, arm64 Binder, x86_64 4 KB Binder, and
 x86_64 16 KB Binder.
 
+After the draft controller landed, [run 33738494609](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33738494609)
+repeated the complete candidate path from exact source `b41d0286b071ba6160ea83c5dba5c2da11a5b474`.
+It uploaded exactly one `opencc-signed-candidate-v1.3.0-build20-b41d0286b071` artifact (ID
+`9886881929`, 9,749,717 bytes, server archive SHA-256
+`d54e4bef6d114ab30185dd9f33640c9b49cedd601d15f3f4b8048c16b96b5707`); every candidate,
+cleanup, and post-step succeeded and all five jobs had zero annotations. The same source's
+[Build integrity run 33737709352](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33737709352)
+passed the exact five-job inventory. Its Android 10+ clipboard test uses the observable Paste UI
+result and `ClipboardManager` readback as the gate after restoring the task to the foreground,
+because headless emulators can report `Activity.hasWindowFocus()` as false while the task itself is
+focused. The exact test also passed locally on API 35 and API 28 devices before the rerun.
+
 ### Draft Release promotion
 
 The `draft` operation is implemented but deliberately unavailable under the current `pr-only` policy.
@@ -192,6 +204,20 @@ that the future version tag has not yet been created; GitHub will create that ta
 separately gated operation publishes the draft. If upload or readback fails, the controller deletes only
 the draft ID created by that invocation and verifies that neither the draft nor a tag remains. It never
 updates an existing Release and never dispatches the plugin index.
+
+### Online draft policy-lock acceptance
+
+[Run 33739003669](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33739003669)
+exercised `operation=draft` at the same exact source while the repository variable was still
+`OPENCC_AUTOMATION_MODE=pr-only`. Only `Report the draft policy lock without release writes` ran and
+succeeded; the credential, candidate, exact-SHA gate-dispatch, and draft-write jobs were all skipped.
+The run produced zero artifacts and zero annotations. It did not enter `opencc-release`: the deployment
+list remained the single entry created by the preceding candidate run (deployment ID `6240871530`).
+Before/after API snapshots had the same five published Releases and tags, v1.3.0 remained Latest, the
+official index remained at `3b9b47cf4acd306ab2de63638e1aa761c82c28ad` with no new workflow run,
+and the repository policy remained `pr-only`. This accepts the online locked path only; the actual
+draft-write transaction still requires the D2/D3 online exercises, a genuinely newer version/build,
+and an explicit temporary transition to `release`.
 
 The `opencc-release` Environment contains these encrypted secrets:
 
