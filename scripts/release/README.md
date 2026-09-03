@@ -126,6 +126,38 @@ gh workflow run opencc-release.yml \
   -f source_sha=<exact-40-character-origin-master-SHA>
 ```
 
+### Online candidate acceptance
+
+[Run 33722685481](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33722685481)
+completed the first production-Environment candidate exercise from source
+`42e6fde7fdae5fdd9dbb76e37c09488e0bacbb2a`. Every candidate step and cleanup/post-step succeeded,
+the mutually exclusive preflight/index-token job was skipped, and the run produced no annotation.
+
+The run uploaded exactly one artifact named
+`opencc-signed-candidate-v1.3.0-build20-42e6fde7fdae` (artifact ID `9880889042`, archive SHA-256
+`6db5af151a19e9d4083fd67de77b45b8ae4c4343975d3627e471e30b1fad775e`). An independent download
+contained exactly the following five APKs plus `SHA256SUMS.txt`, `RELEASE_NOTES.md`, and
+`CANDIDATE.json`:
+
+| ABI | Size (bytes) | SHA-256 |
+|---|---:|---|
+| `arm64-v8a` | 1,555,356 | `01ae8d63a14cc041308071d1ece21f62a385fcb7defbd46d4a92e70936de0645` |
+| `armeabi-v7a` | 1,216,354 | `3f22fa6f87517122252a0c3759fb838ba424ed958175be47b3d40322679f01ff` |
+| `x86_64` | 1,563,529 | `aa5ed1660abbe272b88b3482c47c91e375f664c55f524df520a1e893472b21bf` |
+| `x86` | 1,517,234 | `ccd93914a4e111ddccb0ba4ffd72e881aaa03d0da6ef2f0c85dad97550b7b05c` |
+| `universal` | 3,890,281 | `dc22ecb5d943c21b52e0e4d33e666c627cee49e8ff50a7a76d6b253464a834f4` |
+
+The downloaded manifest SHA-256 was
+`9827de8d882b5394c4997c7e3b48304778b44745ce30b38cab52ce776b0f1d1a`. Its source, version/build,
+OpenCC 1.4.2 lock and resource digest, signer certificate, per-package metadata, and size limits all
+matched independent recalculation; a second local `apksigner` pass returned the expected release
+certificate. Before/after GitHub API snapshots also proved that the five existing tags, v1.3.0
+Release ID `381556777` and its seven assets, official index `main` commit and workflow history, and
+the `pr-only` policy did not change. The same source commit's
+[Build integrity run 33722663942](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33722663942)
+also passed all five jobs: build/APK inventory, API 24 minSdk, arm64 Binder, x86_64 4 KB Binder, and
+x86_64 16 KB Binder.
+
 The `opencc-release` Environment contains these encrypted secrets:
 
 - `OPENCC_RELEASE_KEYSTORE_BASE64`
