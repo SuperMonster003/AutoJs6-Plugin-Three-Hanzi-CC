@@ -35,6 +35,7 @@ SHA_PATTERN = re.compile(r"[0-9a-f]{40}")
 SHA256_PATTERN = re.compile(r"[0-9a-f]{64}")
 POLICY_MODES = {"paused", "pr-only", "merge", "release"}
 CANDIDATE_KINDS = {"official", "controlled"}
+ALLOWED_MERGEABLE_STATES = {"clean", "unstable"}
 FUSE_LABELS = {"do-not-merge", "automation-pause", "automation-paused"}
 CONTROLLED_BUILD_STEP = "Verify controlled OpenCC acceptance fixture"
 MAX_CONTENT_BYTES = 64 * 1024 * 1024
@@ -620,7 +621,12 @@ def evaluate_candidate(
 
         base_sha = current_base_sha(api, normalized_repository)
         require(str(base.get("sha", "")).lower() == base_sha, f"pull request base SHA is stale relative to {BASE_BRANCH}")
-        require(pull.get("mergeable") is True and pull.get("mergeable_state") == "clean", "pull request is not currently cleanly mergeable")
+        require(pull.get("mergeable") is True, "pull request has conflicts or GitHub cannot establish mergeability")
+        mergeable_state = pull.get("mergeable_state")
+        require(
+            mergeable_state in ALLOWED_MERGEABLE_STATES,
+            f"pull request mergeability state is not trusted: {mergeable_state!r}",
+        )
 
         commits = api.get_paginated(f"/repos/{normalized_repository}/pulls/{pull_number}/commits")
         require(len(commits) == 1, "GitHub commit list does not contain exactly one commit")

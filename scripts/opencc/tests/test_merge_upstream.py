@@ -358,8 +358,15 @@ class MergeUpstreamTest(unittest.TestCase):
         self.assertEqual({"build.yml", "markdown.yml"}, {item.workflow_file for item in result.evidence})
         self.assertFalse(result.merged)
 
+    def test_unstable_mergeable_state_defers_to_exact_workflow_evidence(self) -> None:
+        api = FixtureApi()
+        api.pull["mergeable_state"] = "unstable"
+        result = evaluate(api)
+        self.assertTrue(result.eligible, result.reason)
+
     def test_controlled_candidate_is_eligible_only_as_draft_in_pr_only(self) -> None:
         api = controlled_api()
+        api.pull["mergeable_state"] = "unstable"
         result = evaluate_controlled(api)
         self.assertTrue(result.eligible, result.reason)
         self.assertEqual("controlled", result.candidate_kind)
@@ -414,13 +421,19 @@ class MergeUpstreamTest(unittest.TestCase):
         self.assertFalse(result.eligible)
         self.assertIn("base SHA is stale", result.reason)
 
-    def test_conflicted_or_blocked_pull_request_is_rejected(self) -> None:
+    def test_conflicted_or_untrusted_mergeability_state_is_rejected(self) -> None:
         api = FixtureApi()
         api.pull["mergeable"] = False
         api.pull["mergeable_state"] = "dirty"
         result = evaluate(api)
         self.assertFalse(result.eligible)
-        self.assertIn("cleanly mergeable", result.reason)
+        self.assertIn("conflicts", result.reason)
+
+        api = FixtureApi()
+        api.pull["mergeable_state"] = "blocked"
+        result = evaluate(api)
+        self.assertFalse(result.eligible)
+        self.assertIn("mergeability state is not trusted", result.reason)
 
     def test_extra_or_replaced_path_is_rejected(self) -> None:
         api = FixtureApi()

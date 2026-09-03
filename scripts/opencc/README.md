@@ -89,6 +89,12 @@ unchanged automation branch. Any mismatch leaves the PR open; service failures m
 fail visibly. `release` is recognized but intentionally fails closed until the isolated M4-D-4 signing
 and publication controller exists.
 
+GitHub's REST `mergeable=true` is the conflict gate. The controller accepts only the corresponding
+`clean` or `unstable` mergeable states: `unstable` is necessary because bot-authored PRs can have
+unapproved automatic `pull_request` runs even when the separately dispatched, exact-head Build and
+Markdown runs are green. Those explicit runs are checked independently below; `dirty`, `blocked`,
+`behind`, `unknown`, missing, and future unrecognized states remain rejected.
+
 ## Controlled online acceptance
 
 The manual `controlled_acceptance` input of `opencc-upstream.yml` may be used only while the repository
