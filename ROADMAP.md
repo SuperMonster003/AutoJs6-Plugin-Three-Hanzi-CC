@@ -107,10 +107,13 @@ M4-A 官方后端原型 ──> M4-B 兼容/性能/16 KB ──> M4-C 正式替�
 
 当前检查点 (2026-09-03): M4-A、M4-B 与 M4-C 已完成；`v1.2.0` 的官方后端发布证据保持归档。
 M4-D-2 的原子更新器、升级 PR 正文、最小权限双阶段工作流、显式 Build/Markdown 调度和远端 Actions
-建 PR 权限均已落地，真实 GitHub 当前版本重放返回无更新、无漂移。M4-D-3 的默认分支可信判定器、
-读/写 job 隔离、精确 SHA 工作流证据、资源/许可证门禁、合并前二次判定和离线故障矩阵已实现；远端
-`OPENCC_AUTOMATION_MODE=pr-only`，因此当前只产生判定摘要而不会写入。`master` 按维护策略保持不受
-保护；待首个真实或受控更新 PR 完成在线 dry-run 后，才将策略提升为 `merge`。M4-D-4 已建立只允许
+建 PR 权限均已落地；当前正式上游仍为 1.4.2，无更新重放保持无漂移。受控 PR #4 已以与正式升级相同
+的四路径形状完成端到端生成、全量 Build/Markdown、精确 SHA 等待、可信控制器自动回调和已有 PR
+幂等重放，M4-D-2 在线验收完成。M4-D-3 的默认分支可信判定器、读/写 job 隔离、精确 SHA 工作流
+证据、资源/许可证门禁、合并前二次判定和离线故障矩阵均已实现；自动回调在远端
+`OPENCC_AUTOMATION_MODE=pr-only` 下判定 eligible 且 `merged=false`，写 job 被跳过。`master` 按维护
+策略保持不受保护；策略继续固定为 `pr-only`，只有首个真实正式上游升级才可用于一次 `merge` 模式
+squash merge/分支清理/降级实跑，受控 fixture 永远不允许写入。M4-D-4 已建立只允许
 `master` 的 `opencc-release` Environment 与无副作用可信预检；[run 33709691193](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33709691193)
 实际验证现有 Android 签名身份、全部口令以及仅限官方索引仓库的短期 GitHub App token，且 token
 吊销后置步骤成功。现已在 `pr-only` 内补充绑定精确远端 `master` SHA 的无发布副作用签名候选路径；
@@ -175,26 +178,27 @@ M4-D 使用分阶段信任模型。仓库默认 `GITHUB_TOKEN` 权限保持 `con
 
 M4-D-1 验收条件: 当前版本重放稳定、普通构建无网络依赖、发现异常失败关闭。(已满足)
 
-#### M4-D-2: 原子升级 PR (当前阶段)
+#### M4-D-2: 原子升级 PR (已完成)
 
 - [x] (CI/依赖) `update_upstream.py` 对新版本二次校验正式标签提交、GitHub 资源大小/digest、ZIP manifest 提交/来源、stored entry、逐文件 SHA-256 与 16 配置；仅在干净检出中原子更新子模块指针、锁文件和版本化资源，生成后验证或文件清单异常时回滚并失败关闭。14 个离线测试覆盖当前/更新、schema、路径逃逸、精确变更清单、回滚、工作流输出和审阅正文。
 - [x] (CI/依赖) 工作流先以 `contents: read` 只读发现，再仅对已验证的新版本启动具有 `actions: write`、`contents: write` 与 `pull-requests: write` 的独立 job；它二次下载并拒绝 TOCTOU 漂移，保护已有开放 PR 中的修订，使用 lease 更新 `automation/opencc-<version>` 分支，并显式 dispatch Build/Markdown。
 - [x] (CI/测试) Build integrity 同时生成并审计 debug/release 各 5 APK；升级分支执行四 ABI、固定转换语料、Binder 4 KB/16 KB、RELRO/ZIP 对齐、R8/资源/旧后端排除和 APK 字节报告。
 - [x] (CI/治理) 2026-09-02 已启用仓库 “Allow GitHub Actions to create and approve pull requests”，同时保留默认 workflow permission 为只读；`master` 按维护者选择不启用 branch protection。当前生成工作流不调用 approve、merge、tag 或 release API。
-- [ ] (CI/测试) 以首个真实新 Release 或受控模拟 Release 端到端生成一次 PR，核对自动分支、PR 正文、两条显式 dispatch、失败时保留开放 PR、同版本开放 PR 不被后续定时任务覆盖；当前 1.4.2 在线重放已满足无更新路径。
+- [x] (CI/在线验收) 固定受控 Release 已连续生成与清理四个 Draft PR，暴露并修复 GitHub 对高相似二进制 ZIP 的 rename 分类、受未批准旁路检查影响的 `mergeable_state=unstable` 语义，以及 `GITHUB_TOKEN` 不递归触发后续 `workflow_run` 的编排缺口。最终 [upstream run 33756829951](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33756829951) 创建 [PR #4](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/pull/4)：唯一 bot commit `8505bbe86a1d063297493a6eaeb948700ce21a0c` 的父提交精确为 `e4079964920aed7165cd21e1d38dc3a6afb8cf73`，GitHub API 回读恰为旧 ZIP removed、新 ZIP added、子模块 modified、锁文件 modified 四项。显式 [Build run 33756893128](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33756893128) 五个 job 与 [Markdown run 33756895379](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33756895379) 全绿；[existing-PR replay 33757917177](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33757917177) 保持同一 SHA/单一 commit，未重复 dispatch 或覆盖分支。较早失败 [Build run 33749862287](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33749862287) 留下开放 PR 且无合并/发布，日志定位为 16 KB Android 系统镜像的 `system_server` SIGSEGV；后续相同门禁多次通过，未缩减测试。验收后只关闭 Draft 并删除未变化 fixture 分支。
 
-M4-D-2 验收条件: 清洁 CI 不依赖 Maven Local、开发机缓存或 `T:\\...`；新版本只产生精确白名单变更和可追溯 PR，失败不合并、不覆盖人工/机器人修订。当前代码、权限和无更新路径已满足，尚待一次更新 PR 实跑。
+M4-D-2 验收条件: 清洁 CI 不依赖 Maven Local、开发机缓存或 `T:\\...`；新版本只产生精确白名单变更和可追溯 PR，失败不合并、不覆盖人工/机器人修订。(已由正式无更新路径与受控更新路径共同满足；首个正式新 Release 将复用同一生产路径。)
 
 #### M4-D-3: 无人值守自动合并 (`pr-only` 部署阶段)
 
 - [x] (CI/治理) 增加独立于 PR 生成器的 `opencc-auto-merge.yml` / `merge_upstream.py` 可信控制器；仓库变量支持 `paused` / `pr-only` / `merge`，默认并已远端固定为 `pr-only`，预留的 `release` 值在 M4-D-4 落地前明确失败关闭。任何异常保留 PR 并告警，不自动修测试、改词典预期或绕过失败。
-- [x] (CI/安全) `workflow_run` 控制器只显式 checkout 默认分支中已审计的代码且 evaluator 仅有读权限，不以写权限 checkout/执行 PR 内容；只接受同仓库、base=`master`、作者为预期 GitHub Actions Bot、head=`automation/opencc-<semver>` 且 SHA 精确匹配的开放 PR，并核对单一直接 bot commit 及锁文件/子模块/旧新资源四项 path/status 清单。
+- [x] (CI/安全) 控制器只显式 checkout 默认分支中已审计的代码且 evaluator 仅有读权限，不以写权限 checkout/执行 PR 内容；只接受同仓库、base=`master`、作者为预期 GitHub Actions Bot、head=`automation/opencc-<semver>` 且 SHA 精确匹配的开放 PR，并核对单一直接 bot commit 及锁文件/子模块/旧新资源四项 path/status 清单。保留 `workflow_run` 入口，同时由可信上游 job 记录运行水位线、等待本次精确 SHA 的两条显式运行终态，再从 `master` 显式 dispatch 控制器，避免依赖 `GITHUB_TOKEN` 被 GitHub 阻止的递归事件。
 - [x] (CI/测试) 对同一 head SHA 查询显式 dispatch 的 Build integrity 与 Markdown integrity，选择最新精确 run 并要求精确 job 清单全部 `completed/success`；同时重新下载并验证最新官方 Release/ZIP，固定许可证证据不得变化，资源增长不得超过 512 KiB 或 25%。较旧成功 run、分支同名 run 或 PR 页面可合并状态均不能替代证据。
 - [x] (CI/并发) 读侧和写侧都确认当前 base SHA、单一 commit parent、无冲突/请求更改/`do-not-merge` 或 `automation-pause[d]` 熔断；写 job 获得权限后重复全部门禁，合并调用绑定预期 head SHA，仅删除未变化分支。workflow 按 branch/head concurrency 串行，判定与 merge API 均为幂等设计并记录摘要。
-- [x] (CI/治理) 不要求同一机器人批准自己创建的 PR；若未来引入独立 Reviewer App，其 approval 只作为额外审计信号，不能替代上述可复核门禁。12 个离线样本已覆盖成功、paused/release 失败关闭、陈旧 base、冲突、额外路径、错误/失败 run、请求更改、熔断、许可证/体积漂移、GitHub 服务故障、SHA 绑定 merge，以及 M5 新增 API 24 minSdk job 后精确 Build 清单不漂移。
-- [ ] (CI/在线验收) 以 M4-D-2 的首个真实或受控更新 PR 在远端 `pr-only` 连续重放成功与失败样本，确认 workflow summary、无写副作用和 GitHub API 实际字段；随后才由维护者把变量提升为 `merge`，并以一次真实升级验证自动 squash merge/分支清理及一键退回 `pr-only`。
+- [x] (CI/治理) 不要求同一机器人批准自己创建的 PR；若未来引入独立 Reviewer App，其 approval 只作为额外审计信号，不能替代上述可复核门禁。51 个 OpenCC 自动化离线测试覆盖成功、paused/release 失败关闭、陈旧 base、冲突、额外路径、错误/失败 run、请求更改、熔断、许可证/体积漂移、GitHub 服务故障、SHA 绑定 merge、精确运行水位线/超时/分支移动，以及 M5 新增 API 24 minSdk job 后精确 Build 清单不漂移。
+- [x] (CI/在线验收/pr-only) PR #1 的四路径失败判定 [run 33751655922](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33751655922)、PR #2 的陈旧 SHA 判定 [run 33752744261](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33752744261) 和 PR #3 的生产控制器 Draft 拒绝 [run 33754859128](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33754859128) 均保持未合并。最终 PR #4 的 Build/Markdown 终态由 upstream run 33756829951 自动识别，且不采信同 SHA 的 `pull_request/action_required` 旁路运行；它无需人工调用即创建 [controller run 33757800841](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33757800841)，控制器重新验证 PR、正式 1.4.2 基线、fixture 父提交、资源/许可证与精确 job 清单后输出 `OPENCC_AUTO_MERGE_ELIGIBLE mode=pr-only ... merged=false`，写 job 为 skipped。前后仓库策略、5 个 tag、全部 Release/Latest 与官方索引提交均未变化。
+- [ ] (CI/在线验收/merge) 等首个真实正式 OpenCC 新 Release 到达后，临时把变量提升为 `merge`，完成一次生产控制器自动 squash merge、未变化分支清理和立即退回 `pr-only`；受控 fixture 被代码硬限制为 Draft + `pr-only`，不得为完成此项而写入 `master`。
 
-M4-D-3 验收条件: 在不保护 `master` 的治理选择下，受控成功样本可在所有精确门禁完成后自动合并；失败、陈旧 SHA、额外文件、冲突、熔断或服务异常样本全部保持未合并，且能一键退回 `pr-only`。当前代码、离线故障注入和远端只读策略已满足，尚待更新 PR 的在线 dry-run 与一次 `merge` 实跑。
+M4-D-3 验收条件: 在不保护 `master` 的治理选择下，受控成功样本在 `pr-only` 可由完整可信链路自动判定 eligible 但绝不写入；首个真实正式升级在 `merge` 完成 SHA 绑定 squash merge。失败、陈旧 SHA、额外文件、冲突、熔断或服务异常样本全部保持未合并，且能一键退回 `pr-only`。当前代码、离线故障注入和远端 `pr-only` dry-run 已满足，尚待真实升级的一次 `merge` 实跑。
 
 #### M4-D-4: 自动签名与发布
 
@@ -206,9 +210,9 @@ M4-D-3 验收条件: 在不保护 `master` 的治理选择下，受控成功样�
 - [x] (CI/在线复验) API 35 无头模拟器连续重放证明 `Activity.hasWindowFocus()` 与单次程序化 Paste 均不是稳定的剪贴板前台代理；最终提交 `315f4825277d5a7c50cad7ff9ead76972344dd85` 在 Android 10+ 以前台恢复、按钮真实可见区域输入 tap 和最多四次有界重试执行 Paste，只接受来源/status 的最终可见结果，Copy 则保持显式写入并在恢复前台后由 ClipboardManager 回读。该用例在 API 35 真机连续 6 次及 API 28 真机通过；[Build integrity run 33741159918](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33741159918) 首次尝试仅 16 KB 模拟器在测试前因 `adb` 退出码 20 连接失败，精确重跑后构建/API 24/arm64/x86_64 4 KB/x86_64 16 KB 五项全绿且 attempt 2 零 annotation。[candidate run 33742434419](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33742434419) 随后通过同 SHA 的签名、深度 APK、清单与清理门禁，唯一 artifact `opencc-signed-candidate-v1.3.0-build20-315f4825277d`（ID `9888406464`，9,749,717 B，归档 SHA-256 `fdf19dc67c55d82156dc0bee0ae50e952495cf80088ad537768e7aa3e0a7bc93`），全部 job 零 annotation。
 - [x] (发布/安全/draft 代码) 在候选在线验收后实现 policy-locked draft 控制器。当前非 `release` 模式只运行无 Environment、无 secret、无写权限的锁定报告；未来可达路径复用隔离签名候选，签名材料仍仅进入原构建步骤，提升 job 只接收同一 run 的 immutable artifact ID/digest。没有完整签名配置或任一候选门禁失败时不得降级为未签名发布。
 - [x] (发布/门禁/draft 代码) `draft_release.py` 在任何 Release 写入前重新核对远端 `master`、候选 manifest/签名/五 APK 深度内容与双体积限制、同 run artifact 身份，以及显式新调度的精确 SHA Build/Markdown；Build 清单包含构建、API 24 minSdk、arm64、x86_64 4 KB 与 16 KB 五项。版本和 build 必须同时严格高于 v1.3.0 发布基线，线上 Latest/tag/七资产基线必须仍一致，任何同名 tag、正式或 draft Release 都按冲突停止。
-- [x] (发布/事务/draft 代码) 唯一 `contents: write` job 只创建 `draft=true`、`prerelease=false`、`make_latest=false` 的未发布 Release，上传五 APK、`SHA256SUMS.txt` 与 `RELEASE_NOTES.md` 后按名称、大小、content type、uploader 和 GitHub SHA-256 回读；要求 Latest 不变且 draft 阶段不创建 Git ref。上传/回读失败只删除本次刚创建且仍为 draft 的 Release ID 并验证回滚，不删除 tag、不覆盖任何既有 Release，且不生成索引 token。43 个 release 工具测试与 26 个 OpenCC 自动化测试覆盖成功、冲突、漂移、权限分层及事务回滚。
+- [x] (发布/事务/draft 代码) 唯一 `contents: write` job 只创建 `draft=true`、`prerelease=false`、`make_latest=false` 的未发布 Release，上传五 APK、`SHA256SUMS.txt` 与 `RELEASE_NOTES.md` 后按名称、大小、content type、uploader 和 GitHub SHA-256 回读；要求 Latest 不变且 draft 阶段不创建 Git ref。上传/回读失败只删除本次刚创建且仍为 draft 的 Release ID 并验证回滚，不删除 tag、不覆盖任何既有 Release，且不生成索引 token。43 个 release 工具测试与 51 个 OpenCC 自动化测试覆盖成功、冲突、漂移、权限分层及事务回滚。
 - [x] (发布/在线验收/draft 锁定) [run 33742904676](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33742904676) 在上述最终精确 SHA 和 `pr-only` 模式下真实调用 `operation=draft`：仅无 Environment/secret/写权限的锁定报告成功，凭据、候选、显式 Build/Markdown dispatch 和 draft 写入四个 job 全部 skipped，artifact 与 annotation 均为 0；该 SHA 唯一 Environment deployment `6241563946` 来自前序 candidate，draft 调用未新增 deployment。前后 Release/tag/Latest 均不变，索引仍为 `3b9b47cf4acd306ab2de63638e1aa761c82c28ad` 且无新 run，仓库变量仍为 `pr-only`；这只验收锁定路径，不代表已放行实际草稿写入。
-- [ ] (发布/在线验收) 在 D2/D3 在线升级 PR 与一次受控 merge 验收后，才把模式临时提升为 `release`，使用真正递增的版本/build 完成一次 draft 创建、七资产回读与回滚演练，再恢复 `pr-only`；当前不得用已存在的 v1.3.0 tag 绕过严格递增门禁。
+- [ ] (发布/在线验收) D2 与 D3 的 `pr-only` 在线升级 PR 验收现已完成；仍须等待首个真实正式升级通过一次 `merge` 实跑，之后才把模式临时提升为 `release`，使用真正递增的版本/build 完成一次 draft 创建、七资产回读与回滚演练，再恢复 `pr-only`。当前不得用已存在的 v1.3.0 tag 或受控 fixture 绕过严格递增门禁。
 - [ ] (发布) 为纯 OpenCC 依赖升级定义确定性的版本/build 递增、十语言 changelog/迁移记录生成和兼容性分类；API、权限、applicationId、签名或许可证发生非白名单变化时自动停止并退回 `pr-only`。
 - [ ] (发布/测试) 从刚合并且精确固定的 `master` commit 重建 5 个签名 APK，复跑签名连续性、四 ABI、R8、ELF/ZIP 16 KB、Binder 4 KB/16 KB、资源摘要与 APK 体积门禁；原子创建 tag、GitHub Release、`SHA256SUMS.txt` 和 release notes，并从 GitHub 回读全部资产名称/大小/SHA-256。
 - [ ] (发布/索引) Release 回读一致后才显式 dispatch 插件索引更新并回读线上条目；tag/Release/索引任一步已有冲突、版本倒退或内容不一致时停止，不覆盖既有正式版本。合并由 `GITHUB_TOKEN` 产生时显式 dispatch 发布工作流，不依赖不会触发的递归 push 事件。
