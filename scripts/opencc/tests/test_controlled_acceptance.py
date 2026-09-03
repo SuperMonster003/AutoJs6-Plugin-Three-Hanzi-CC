@@ -21,10 +21,14 @@ import update_upstream  # noqa: E402
 import verify_upstream  # noqa: E402
 
 
-def miniature_archive(commit: str) -> bytes:
+def miniature_archive(commit: str, dictionary: bytes = b"one\tone\ntwo\ttwo\n") -> bytes:
     manifest = {
         "commit_id": commit,
         "entries": {
+            "dictionary.txt": {
+                "sha256": hashlib.sha256(dictionary).hexdigest(),
+                "size": len(dictionary),
+            },
             "s2t.json": {
                 "sha256": hashlib.sha256(b"{}").hexdigest(),
                 "size": 2,
@@ -37,6 +41,7 @@ def miniature_archive(commit: str) -> bytes:
     }
     output = io.BytesIO()
     with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_STORED) as archive:
+        archive.writestr("dictionary.txt", dictionary)
         archive.writestr("s2t.json", b"{}")
         archive.writestr(
             verify_upstream.RESOURCE_MANIFEST,
@@ -89,8 +94,15 @@ class ControlledAcceptanceTest(unittest.TestCase):
         self.assertEqual(first, second)
         with zipfile.ZipFile(io.BytesIO(first)) as archive:
             manifest = json.loads(archive.read(verify_upstream.RESOURCE_MANIFEST))
+            dictionary = archive.read("dictionary.txt")
             self.assertEqual(fixture_commit, manifest["commit_id"])
             self.assertEqual(controlled_acceptance.FIXTURE_MARKER, manifest["controlled_acceptance"])
+            self.assertEqual(b"one\tone\r\ntwo\ttwo\r\n", dictionary)
+            self.assertEqual(len(dictionary), manifest["entries"]["dictionary.txt"]["size"])
+            self.assertEqual(
+                hashlib.sha256(dictionary).hexdigest(),
+                manifest["entries"]["dictionary.txt"]["sha256"],
+            )
             self.assertTrue(all(info.compress_type == zipfile.ZIP_STORED for info in archive.infolist()))
 
     def test_manifest_rewrite_rejects_wrong_base_or_existing_marker(self) -> None:
@@ -101,6 +113,14 @@ class ControlledAcceptanceTest(unittest.TestCase):
         once = controlled_acceptance.rewrite_archive_manifest(base, "1" * 40, "2" * 40, {})
         with self.assertRaisesRegex(controlled_acceptance.ControlledAcceptanceError, "already contains"):
             controlled_acceptance.rewrite_archive_manifest(once, "2" * 40, "3" * 40, {})
+
+        with self.assertRaisesRegex(controlled_acceptance.ControlledAcceptanceError, "unexpected CR bytes"):
+            controlled_acceptance.rewrite_archive_manifest(
+                miniature_archive("1" * 40, b"one\tone\r\n"),
+                "1" * 40,
+                "2" * 40,
+                {},
+            )
 
     def test_repository_asset_reproduces_locked_fixture_when_available(self) -> None:
         root = Path(__file__).resolve().parents[3]

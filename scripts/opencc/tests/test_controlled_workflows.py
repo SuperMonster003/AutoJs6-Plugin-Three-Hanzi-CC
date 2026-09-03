@@ -53,7 +53,7 @@ class ControlledWorkflowContractTest(unittest.TestCase):
             "999.4.2",
             "controlled-ver.999.4.2",
             "b8bf091a83e7b318945352a8298127ecd0158643",
-            "dbcd3cf917e960db3562e663f4baf3fcadc21d2b38102937fa266b4b2cdc809e",
+            "c12180e4d5e1ea01046540d1fcc8e7734b1cb1afb50a8b429f731bfea2f3696b",
         ):
             self.assertIn(value, self.runtime_test)
             self.assertIn(value, self.device_test)

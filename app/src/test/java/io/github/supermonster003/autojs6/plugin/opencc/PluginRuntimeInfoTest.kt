@@ -49,7 +49,7 @@ class PluginRuntimeInfoTest {
             "025f371dc76b598d77384fbdab90c937471844d8"
         }
         val expectedResourceSha256 = if (controlledAcceptance) {
-            "dbcd3cf917e960db3562e663f4baf3fcadc21d2b38102937fa266b4b2cdc809e"
+            "c12180e4d5e1ea01046540d1fcc8e7734b1cb1afb50a8b429f731bfea2f3696b"
         } else {
             "9ea0d303219b34d014d5c116677b5d325043beafb2c8a62ee889ca67f4d054a5"
         }

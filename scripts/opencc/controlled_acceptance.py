@@ -30,13 +30,14 @@ FIXTURE_VERSION = "999.4.2"
 FIXTURE_TAG = f"controlled-ver.{FIXTURE_VERSION}"
 FIXTURE_COMMIT = "b8bf091a83e7b318945352a8298127ecd0158643"
 FIXTURE_ASSET = f"opencc-v{FIXTURE_VERSION}-resources.zip"
-FIXTURE_ARCHIVE_SIZE = 1_237_814
-FIXTURE_ARCHIVE_SHA256 = "dbcd3cf917e960db3562e663f4baf3fcadc21d2b38102937fa266b4b2cdc809e"
+FIXTURE_ARCHIVE_SIZE = 1_303_028
+FIXTURE_ARCHIVE_SHA256 = "c12180e4d5e1ea01046540d1fcc8e7734b1cb1afb50a8b429f731bfea2f3696b"
 FIXTURE_BRANCH = f"automation/opencc-{FIXTURE_VERSION}"
 FIXTURE_TITLE = f"test(ci): exercise controlled OpenCC upgrade fixture {FIXTURE_VERSION}"
 FIXTURE_MARKER = {
     "fixture_id": FIXTURE_ID,
     "production_release": False,
+    "dictionary_line_endings": "CRLF",
 }
 
 BASE_PROPERTIES = {
@@ -133,13 +134,33 @@ def rewrite_archive_manifest(
             require("controlled_acceptance" not in manifest, "base resource already contains a fixture marker")
             manifest["commit_id"] = fixture_commit
             manifest["controlled_acceptance"] = dict(marker)
+            entries = manifest.get("entries")
+            require(isinstance(entries, dict), "base resource manifest entries are not an object")
+
+            rewritten_entries: dict[str, bytes] = {}
+            for info in source.infolist():
+                if info.filename == verify_upstream.RESOURCE_MANIFEST:
+                    continue
+                data = source.read(info.filename)
+                if info.filename.endswith(".txt"):
+                    require(b"\r" not in data, f"base dictionary has unexpected CR bytes: {info.filename}")
+                    data = data.replace(b"\n", b"\r\n")
+                    entry = entries.get(info.filename)
+                    require(isinstance(entry, dict), f"base manifest entry is missing: {info.filename}")
+                    entry["size"] = len(data)
+                    entry["sha256"] = hashlib.sha256(data).hexdigest()
+                rewritten_entries[info.filename] = data
             manifest_data = (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
 
             output = io.BytesIO()
             with zipfile.ZipFile(output, "w", allowZip64=True) as target:
                 target.comment = source.comment
                 for info in source.infolist():
-                    data = manifest_data if info.filename == verify_upstream.RESOURCE_MANIFEST else source.read(info.filename)
+                    data = (
+                        manifest_data
+                        if info.filename == verify_upstream.RESOURCE_MANIFEST
+                        else rewritten_entries[info.filename]
+                    )
                     target.writestr(copy.copy(info), data)
     except (KeyError, UnicodeDecodeError, json.JSONDecodeError, zipfile.BadZipFile) as error:
         raise ControlledAcceptanceError(f"unable to derive controlled resource fixture: {error}") from None
@@ -284,9 +305,11 @@ def render_pull_request_body() -> str:
 - Fixture identity: `{FIXTURE_ID}`
 
 The selected commit is the first direct child of the locked 1.4.2 release commit in the official
-BYVoid/OpenCC repository. Its declared license evidence is unchanged. The resource payload is copied
-byte-for-byte from the official 1.4.2 asset; only the manifest commit and an explicit
-`controlled_acceptance` marker are changed, then the stored-entry ZIP is rebuilt deterministically.
+BYVoid/OpenCC repository. Its declared license evidence is unchanged. The official dictionaries are
+normalized from LF to the CRLF line endings explicitly supported by OpenCC's in-memory parser. Their
+manifest sizes and digests, the manifest commit, and an explicit `controlled_acceptance` marker are
+updated before the stored-entry ZIP is rebuilt deterministically. This semantic no-op also makes the
+fixture exercise the production four-path delete/add contract instead of GitHub's binary rename heuristic.
 
 ## Acceptance invariants
 

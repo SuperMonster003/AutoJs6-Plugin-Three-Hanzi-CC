@@ -99,6 +99,12 @@ Draft state are independent production-controller rejection barriers. The fixtur
 paths as an upgrade and dispatches the same Build/Markdown workflows, but the Build workflow requires an
 explicit manual boolean and records a uniquely named successful verification step.
 
+The generated fixture normalizes every text dictionary from LF to CRLF and updates the manifest's exact
+sizes and SHA-256 values. OpenCC's in-memory parser explicitly removes a trailing CR before parsing each
+line, so this is a deterministic semantic no-op; it also prevents GitHub's binary similarity heuristic
+from collapsing the old-resource deletion and new-resource addition into a rename. The production
+controller's exact four-path add/delete contract therefore remains unchanged.
+
 For the read-only D3 replay, manually dispatch `opencc-auto-merge.yml` with the exact draft branch/SHA and
 `controlled_acceptance=true`. That path revalidates the formal base release, fixture commit parent,
 resource bytes, licenses, PR shape, and exact workflow runs. It can report eligible only in `pr-only`;
