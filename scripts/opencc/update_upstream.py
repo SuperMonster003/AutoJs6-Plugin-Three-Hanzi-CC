@@ -69,7 +69,10 @@ def git(repository: Path, *arguments: str) -> str:
         raise UpstreamUpdateError(
             f"git {' '.join(arguments)} failed for {repository}: {detail}",
         ) from None
-    return result.stdout.strip()
+    # Porcelain status uses leading spaces as data in its two-column XY field.
+    # Trimming the whole stream corrupts the first path when that entry starts
+    # with an unstaged deletion (" D path"). Only remove line terminators.
+    return result.stdout.rstrip("\r\n")
 
 
 def ensure_clean_worktree(root: Path) -> None:

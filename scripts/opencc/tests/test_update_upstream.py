@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -64,6 +65,24 @@ class UpstreamUpdateTest(unittest.TestCase):
         self.assertEqual(sorted(positions), positions)
         with self.assertRaisesRegex(update_upstream.UpstreamUpdateError, "lock schema"):
             update_upstream.render_lock({**LOCKED, "UNEXPECTED": "value"})
+
+    def test_git_preserves_the_leading_porcelain_status_column(self) -> None:
+        completed = subprocess.CompletedProcess(
+            ["git"],
+            0,
+            stdout=" D opencc-native/old.zip\n?? opencc-native/new.zip\n",
+            stderr="",
+        )
+        with mock.patch.object(update_upstream.subprocess, "run", return_value=completed):
+            output = update_upstream.git(Path("."), "status", "--porcelain=v1")
+        self.assertTrue(output.startswith(" D "))
+        self.assertEqual(
+            {"opencc-native/old.zip", "opencc-native/new.zip"},
+            {
+                line[3:]
+                for line in output.splitlines()
+            },
+        )
 
     def test_resource_path_rejects_traversal_and_wrong_name(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
