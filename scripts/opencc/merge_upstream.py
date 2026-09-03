@@ -49,6 +49,7 @@ EXPECTED_WORKFLOWS = {
         "Build integrity",
         {
             "Unit tests and debug/release APKs",
+            "Debug/release runtime (x86, API 24 minSdk)",
             "Binder round trip (arm64-v8a)",
             "Binder round trip (x86_64)",
             "Binder round trip (x86_64, 16 KB pages)",

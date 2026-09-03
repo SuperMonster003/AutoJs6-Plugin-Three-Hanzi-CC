@@ -256,6 +256,18 @@ def evaluate(api: FixtureApi, mode: str = "pr-only") -> merge_upstream.Evaluatio
 
 
 class MergeUpstreamTest(unittest.TestCase):
+    def test_build_workflow_contract_includes_every_current_runtime_gate(self) -> None:
+        self.assertEqual(
+            {
+                "Unit tests and debug/release APKs",
+                "Debug/release runtime (x86, API 24 minSdk)",
+                "Binder round trip (arm64-v8a)",
+                "Binder round trip (x86_64)",
+                "Binder round trip (x86_64, 16 KB pages)",
+            },
+            merge_upstream.EXPECTED_WORKFLOWS["build.yml"][1],
+        )
+
     def test_exact_candidate_is_eligible_in_pr_only_mode(self) -> None:
         result = evaluate(FixtureApi())
         self.assertTrue(result.eligible, result.reason)

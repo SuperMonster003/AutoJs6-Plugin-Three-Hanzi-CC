@@ -11,8 +11,9 @@ on:
         options:
           - preflight
           - candidate
+          - draft
       source_sha:
-        description: Exact master commit to build (required for candidate)
+        description: Exact master commit to build (required for candidate or draft)
         required: false
         type: string
 
@@ -24,6 +25,55 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  report-draft-policy-lock:
+    name: Report the draft policy lock without release writes
+    if: ${{ inputs.operation == 'draft' && vars.OPENCC_AUTOMATION_MODE != 'release' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+
+    steps:
+      - name: Confirm draft publication remains locked
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_REPOSITORY: SuperMonster003/AutoJs6-Plugin-OpenCC
+          AUTOMATION_MODE: ${{ vars.OPENCC_AUTOMATION_MODE }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REPOSITORY}" = "${EXPECTED_REPOSITORY}"
+          test "${GITHUB_EVENT_NAME}" = workflow_dispatch
+          test "${GITHUB_REF}" = refs/heads/master
+          test "${{ github.event.repository.default_branch }}" = master
+          [[ "${SOURCE_SHA}" =~ ^[0-9a-f]{40}$ ]]
+          test "${SOURCE_SHA}" = "${GITHUB_SHA}"
+          case "${AUTOMATION_MODE}" in
+            paused|pr-only|merge) ;;
+            release)
+              echo 'The release-mode draft path should have run instead of the policy-lock job.' >&2
+              exit 1
+              ;;
+            *)
+              echo "Unknown OPENCC_AUTOMATION_MODE: ${AUTOMATION_MODE}" >&2
+              exit 1
+              ;;
+          esac
+          remote_master_sha="$(
+            gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/master" --jq '.object.sha'
+          )"
+          test "${remote_master_sha}" = "${SOURCE_SHA}"
+
+          {
+            echo '## Draft Release policy lock'
+            echo
+            echo "- Source commit: \`${SOURCE_SHA}\`"
+            echo "- Automation mode: \`${AUTOMATION_MODE}\`"
+            echo '- Result: draft signing, gate dispatch, tag creation, Release creation, and index dispatch were all skipped'
+            echo '- To unlock: M4-D-2/M4-D-3 online acceptance must complete before the repository mode becomes `release`'
+          } >> "${GITHUB_STEP_SUMMARY}"
+
   verify-release-environment:
     name: Verify isolated signing and index credentials
     if: ${{ inputs.operation == 'preflight' }}
@@ -149,11 +199,17 @@ jobs:
 
   build-signed-candidate:
     name: Build signed candidate from exact master SHA
-    if: ${{ inputs.operation == 'candidate' }}
+    if: >-
+      inputs.operation == 'candidate' ||
+      (inputs.operation == 'draft' && vars.OPENCC_AUTOMATION_MODE == 'release')
     runs-on: ubuntu-latest
     timeout-minutes: 45
     environment:
       name: opencc-release
+    outputs:
+      artifact_id: ${{ steps.candidate-upload.outputs['artifact-id'] }}
+      artifact_digest: ${{ steps.candidate-upload.outputs['artifact-digest'] }}
+      artifact_name: ${{ steps.candidate.outputs.artifact_name }}
 
     steps:
       - name: Require the trusted candidate deployment context
@@ -161,6 +217,7 @@ jobs:
         env:
           EXPECTED_REPOSITORY: SuperMonster003/AutoJs6-Plugin-OpenCC
           AUTOMATION_MODE: ${{ vars.OPENCC_AUTOMATION_MODE }}
+          OPERATION: ${{ inputs.operation }}
           SOURCE_SHA: ${{ inputs.source_sha }}
         run: |
           set -euo pipefail
@@ -168,7 +225,18 @@ jobs:
           test "${GITHUB_EVENT_NAME}" = workflow_dispatch
           test "${GITHUB_REF}" = refs/heads/master
           test "${{ github.event.repository.default_branch }}" = master
-          test "${AUTOMATION_MODE}" = pr-only
+          case "${OPERATION}" in
+            candidate)
+              [[ "${AUTOMATION_MODE}" = pr-only || "${AUTOMATION_MODE}" = release ]]
+              ;;
+            draft)
+              test "${AUTOMATION_MODE}" = release
+              ;;
+            *)
+              echo "Unexpected candidate-build operation: ${OPERATION}" >&2
+              exit 1
+              ;;
+          esac
           [[ "${SOURCE_SHA}" =~ ^[0-9a-f]{40}$ ]]
           test "${SOURCE_SHA}" = "${GITHUB_SHA}"
 
@@ -366,6 +434,7 @@ jobs:
           } >> "${GITHUB_STEP_SUMMARY}"
 
       - name: Upload the public signed candidate only
+        id: candidate-upload
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: ${{ steps.candidate.outputs.artifact_name }}
@@ -384,3 +453,146 @@ jobs:
           rm -rf -- "${RUNNER_TEMP}/opencc-candidate-signing"
           test ! -e "${GITHUB_WORKSPACE}/sign.properties"
           test ! -e "${RUNNER_TEMP}/opencc-candidate-signing"
+
+  dispatch-draft-gates:
+    name: Dispatch and require exact-SHA release gates
+    needs: build-signed-candidate
+    if: ${{ inputs.operation == 'draft' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      actions: write
+      contents: read
+    outputs:
+      build_run_id: ${{ steps.gates.outputs.build_run_id }}
+      markdown_run_id: ${{ steps.gates.outputs.markdown_run_id }}
+
+    steps:
+      - name: Check out the exact trusted release controller
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ inputs.source_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+          submodules: false
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.13"
+
+      - name: Dispatch Build and Markdown gates and wait for exact results
+        id: gates
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          AUTOMATION_MODE: ${{ vars.OPENCC_AUTOMATION_MODE }}
+        run: >-
+          python scripts/release/draft_release.py dispatch-gates
+          --repository "${GITHUB_REPOSITORY}"
+          --source-sha "${SOURCE_SHA}"
+          --mode "${AUTOMATION_MODE}"
+          --github-output "${GITHUB_OUTPUT}"
+
+  create-draft-release:
+    name: Create and verify an unpublished non-latest draft
+    needs:
+      - build-signed-candidate
+      - dispatch-draft-gates
+    if: ${{ inputs.operation == 'draft' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: opencc-release
+    permissions:
+      actions: read
+      contents: write
+
+    steps:
+      - name: Check out the exact draft source without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ inputs.source_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+          submodules: recursive
+
+      - name: Set up Java
+        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.13"
+
+      - name: Download only this run's immutable candidate artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          artifact-ids: ${{ needs.build-signed-candidate.outputs.artifact_id }}
+          path: ${{ runner.temp }}/opencc-draft-candidate
+          merge-multiple: true
+
+      - name: Reverify and atomically create the draft Release
+        id: draft
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          AUTOMATION_MODE: ${{ vars.OPENCC_AUTOMATION_MODE }}
+          EXPECTED_CERT_SHA256: ${{ vars.OPENCC_RELEASE_EXPECTED_CERT_SHA256 }}
+          ARTIFACT_ID: ${{ needs.build-signed-candidate.outputs.artifact_id }}
+          ARTIFACT_DIGEST: ${{ needs.build-signed-candidate.outputs.artifact_digest }}
+          BUILD_RUN_ID: ${{ needs.dispatch-draft-gates.outputs.build_run_id }}
+          MARKDOWN_RUN_ID: ${{ needs.dispatch-draft-gates.outputs.markdown_run_id }}
+        run: |
+          set -euo pipefail
+          test "${AUTOMATION_MODE}" = release
+          test "${SOURCE_SHA}" = "${GITHUB_SHA}"
+          apksigner="$(
+            python -c 'from scripts.release.prepare_release import find_apksigner; print(find_apksigner())'
+          )"
+          zipalign="$(dirname "${apksigner}")/zipalign"
+          test -x "${zipalign}"
+
+          python scripts/release/draft_release.py create-draft \
+            --root "${GITHUB_WORKSPACE}" \
+            --bundle "${RUNNER_TEMP}/opencc-draft-candidate" \
+            --repository "${GITHUB_REPOSITORY}" \
+            --source-sha "${SOURCE_SHA}" \
+            --mode "${AUTOMATION_MODE}" \
+            --expected-signer-sha256 "${EXPECTED_CERT_SHA256}" \
+            --apksigner "${apksigner}" \
+            --zipalign "${zipalign}" \
+            --artifact-id "${ARTIFACT_ID}" \
+            --artifact-digest "${ARTIFACT_DIGEST}" \
+            --candidate-run-id "${GITHUB_RUN_ID}" \
+            --build-run-id "${BUILD_RUN_ID}" \
+            --markdown-run-id "${MARKDOWN_RUN_ID}" \
+            --github-output "${GITHUB_OUTPUT}" \
+            --execute
+
+      - name: Summarize the verified unpublished draft
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          DRAFT_TAG: ${{ steps.draft.outputs.tag }}
+          DRAFT_RELEASE_ID: ${{ steps.draft.outputs.release_id }}
+          DRAFT_ASSET_COUNT: ${{ steps.draft.outputs.asset_count }}
+        run: |
+          set -euo pipefail
+          [[ "${DRAFT_TAG}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          [[ "${DRAFT_RELEASE_ID}" =~ ^[1-9][0-9]*$ ]]
+          test "${DRAFT_ASSET_COUNT}" = 7
+          {
+            echo '## Verified unpublished OpenCC draft'
+            echo
+            echo "- Source commit: \`${SOURCE_SHA}\`"
+            echo "- Draft tag name: \`${DRAFT_TAG}\` (Git ref is not created until publication)"
+            echo "- Draft Release ID: \`${DRAFT_RELEASE_ID}\`"
+            echo "- Assets: \`${DRAFT_ASSET_COUNT}\`, all read back by name, size, and SHA-256"
+            echo '- Latest Release: unchanged'
+            echo '- Plugin index: not dispatched'
+          } >> "${GITHUB_STEP_SUMMARY}"

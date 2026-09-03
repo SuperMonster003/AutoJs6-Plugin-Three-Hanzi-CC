@@ -73,10 +73,12 @@ resource or code optimizations that only fail on older Android releases cannot p
 
 ## Trusted release controller
 
-`.github/workflows/opencc-release.yml` is the fail-closed entry point for M4-D-4. It currently exposes
-two manual-only operations, `preflight` (the default) and `candidate`. Both may run only from `master`
-through the `opencc-release` Environment and have no tag, GitHub Release, index-dispatch, pull-request,
-or repository-write capability.
+`.github/workflows/opencc-release.yml` is the fail-closed entry point for M4-D-4. It exposes three
+manual-only operations: `preflight` (the default), `candidate`, and `draft`. All trusted work is bound
+to `master`. `preflight` and `candidate` have no tag, GitHub Release, index-dispatch, pull-request, or
+repository-write capability. `draft` remains policy-locked while `OPENCC_AUTOMATION_MODE` is anything
+other than `release`; its locked path has read-only permissions, does not enter the release Environment,
+and does not start signing or gate-dispatch jobs.
 
 The `preflight` operation reconstructs the Android keystore in an ephemeral runner directory, checks
 the pinned keystore and signer-certificate SHA-256 values, and signs a disposable JAR to prove that the
@@ -90,7 +92,8 @@ no dispatch, and lets the action revoke the short-lived token in its post-step.
 
 The `candidate` operation requires an explicit 40-character source SHA. Before any secret is exposed,
 the controller requires that SHA to equal the workflow event SHA, the checked-out commit, and a fresh
-GitHub API read of `master`; it also requires `OPENCC_AUTOMATION_MODE=pr-only`, a clean recursive
+GitHub API read of `master`; it also requires `OPENCC_AUTOMATION_MODE=pr-only` (or `release` for a
+future release-mode rehearsal), a clean recursive
 submodule checkout, and the pinned OpenCC source/resource verification. Its checkout, Java, Python,
 and artifact actions are pinned to exact commits and checkout credentials are not persisted.
 
@@ -158,6 +161,38 @@ the `pr-only` policy did not change. The same source commit's
 also passed all five jobs: build/APK inventory, API 24 minSdk, arm64 Binder, x86_64 4 KB Binder, and
 x86_64 16 KB Binder.
 
+### Draft Release promotion
+
+The `draft` operation is implemented but deliberately unavailable under the current `pr-only` policy.
+Once the M4-D-2/M4-D-3 online upgrade-PR exercises permit the repository mode to become `release`, the
+operation first runs the same isolated signed-candidate build. The upload step exposes its immutable
+artifact ID and SHA-256 digest to later jobs; signing secrets never enter either promotion job.
+
+An `actions: write`, `contents: read` job then explicitly dispatches fresh Build integrity and Markdown
+integrity runs on `master`. `draft_release.py` binds both runs to the candidate source SHA, trusted
+repository, workflow name/path, `workflow_dispatch` event, and exact job inventory. It requires all five
+Build jobs—including the API 24 minSdk release probe—and the Markdown job to complete successfully.
+It rechecks that remote `master` did not move before dispatch, after dispatch, or after both runs finish.
+This explicit dispatch is required because a merge performed with `GITHUB_TOKEN` does not produce the
+ordinary recursive `push` workflow runs used by human pushes.
+
+Only the final job receives `contents: write`, and it still checks out the exact source without persisted
+credentials. It downloads only the artifact ID produced earlier in the same release-controller run and
+revalidates its API metadata, workflow-run ownership, digest, `CANDIDATE.json`, five APK hashes, signer,
+ABI/Manifest/API/R8/OpenCC/ELF/ZIP gates, and size limits. Draft promotion additionally requires both the
+semantic version and `VERSION_BUILD` to be strictly newer than the checked-in published baseline, proves
+that the baseline still matches the current Latest Release and tag, and refuses any existing candidate
+tag or Release—including another draft.
+
+The write transaction creates a GitHub Release with `draft=true`, `prerelease=false`, and
+`make_latest=false`, targeting the exact 40-character source SHA. It uploads exactly the five APKs,
+`SHA256SUMS.txt`, and `RELEASE_NOTES.md`, then reads back all seven assets by name, byte size, content
+type, uploader, and GitHub-computed SHA-256. It also requires Latest to remain unchanged and requires
+that the future version tag has not yet been created; GitHub will create that tag only when a later,
+separately gated operation publishes the draft. If upload or readback fails, the controller deletes only
+the draft ID created by that invocation and verifies that neither the draft nor a tag remains. It never
+updates an existing Release and never dispatches the plugin index.
+
 The `opencc-release` Environment contains these encrypted secrets:
 
 - `OPENCC_RELEASE_KEYSTORE_BASE64`
@@ -172,7 +207,7 @@ It also contains these non-secret variables:
 - `OPENCC_RELEASE_EXPECTED_CERT_SHA256`
 - `OPENCC_INDEX_APP_CLIENT_ID`
 
-Neither current operation can publish or modify repository state. A signed candidate is an auditable
-workflow artifact, not a Release asset and not permission to publish it. Draft/final Release creation,
-device promotion gates, and index dispatch remain disabled until their own failure-closed phases are
-implemented and the M4-D-2/M4-D-3 online upgrade-PR exercises have passed.
+The current `pr-only` mode cannot create a draft or publish anything. A signed candidate is an auditable
+workflow artifact, not a Release asset and not permission to promote it. The draft write path can become
+reachable only after the M4-D-2/M4-D-3 online upgrade-PR exercises and an explicit transition to
+`release`; final publication, tag creation, Latest promotion, and index dispatch remain unimplemented.
