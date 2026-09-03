@@ -10,6 +10,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
+import android.os.ParcelFileDescriptor
 import android.os.SystemClock
 import android.view.View
 import android.widget.Button
@@ -310,8 +311,25 @@ class OpenccStandaloneUiTest {
 
     private fun awaitWindowFocus(activity: Activity) {
         // Programmatic performClick() does not itself require a focused window, while Android's
-        // clipboard service does. Wait out transient system overlays so the test models a real tap.
+        // clipboard service does. A translated-ABI emulator can leave the task visible without
+        // focusing its window, so explicitly restore the same Launcher task before modelling a tap.
+        if (!onMain { activity.hasWindowFocus() }) {
+            val component = activity.componentName.flattenToShortString()
+            val output = runShellCommand(
+                "am start --activity-reorder-to-front --activity-single-top " +
+                    "-a ${Intent.ACTION_MAIN} -c ${Intent.CATEGORY_LAUNCHER} -n $component",
+            )
+            assertFalse("Shell failed to return the standalone Activity to foreground: $output", "Error:" in output)
+            instrumentation.waitForIdleSync()
+        }
         await("standalone Activity window focus") { onMain { activity.hasWindowFocus() } }
+    }
+
+    private fun runShellCommand(command: String): String {
+        val descriptor = instrumentation.uiAutomation.executeShellCommand(command)
+        return ParcelFileDescriptor.AutoCloseInputStream(descriptor)
+            .bufferedReader()
+            .use { it.readText() }
     }
 
     private fun await(description: String, predicate: () -> Boolean) {
