@@ -173,6 +173,23 @@ result and `ClipboardManager` readback as the gate after restoring the task to t
 because headless emulators can report `Activity.hasWindowFocus()` as false while the task itself is
 focused. The exact test also passed locally on API 35 and API 28 devices before the rerun.
 
+Later clean-emulator repetitions showed that one programmatic Paste click could still race the
+Android clipboard overlay. Commit `315f4825277d5a7c50cad7ff9ead76972344dd85` therefore keeps the
+pre-Android-10 path unchanged but performs Android 10+ Paste as a bounded sequence of real foreground
+input taps, accepting only the final visible source/status result; Copy remains an explicit write and
+is followed by a foreground `ClipboardManager` readback. The exact UI test passed six consecutive
+API 35 device runs plus an API 28 run locally. Its
+[Build integrity run 33741159918](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33741159918)
+passed all five jobs on attempt 2 with zero annotations. Attempt 1's only failed job was the 16 KB
+emulator failing to connect through `adb` with exit code 20 before tests started; rerunning that job
+against the same SHA passed the complete 16 KB device script.
+
+[Candidate run 33742434419](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33742434419)
+then revalidated that exact final code SHA. It produced exactly one
+`opencc-signed-candidate-v1.3.0-build20-315f4825277d` artifact (ID `9888406464`, 9,749,717 bytes,
+server archive SHA-256 `fdf19dc67c55d82156dc0bee0ae50e952495cf80088ad537768e7aa3e0a7bc93`),
+with every candidate/cleanup/post-step successful and zero annotations.
+
 ### Draft Release promotion
 
 The `draft` operation is implemented but deliberately unavailable under the current `pr-only` policy.
@@ -218,6 +235,13 @@ official index remained at `3b9b47cf4acd306ab2de63638e1aa761c82c28ad` with no ne
 and the repository policy remained `pr-only`. This accepts the online locked path only; the actual
 draft-write transaction still requires the D2/D3 online exercises, a genuinely newer version/build,
 and an explicit temporary transition to `release`.
+
+[Run 33742904676](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33742904676)
+repeated the same lock acceptance at final controller/test source
+`315f4825277d5a7c50cad7ff9ead76972344dd85`: one read-only report succeeded, the other four jobs were
+skipped, and artifact/annotation counts remained zero. The only `opencc-release` deployment at that
+SHA was deployment `6241563946` from the immediately preceding candidate; the draft invocation added
+none. Releases, tags, Latest, index commit/history, and `pr-only` mode again remained unchanged.
 
 The `opencc-release` Environment contains these encrypted secrets:
 
