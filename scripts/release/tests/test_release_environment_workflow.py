@@ -33,6 +33,8 @@ class ReleaseEnvironmentWorkflowTest(unittest.TestCase):
             self.assertIn(name, self.text)
         self.assertNotIn("upload-artifact", self.text)
         self.assertNotIn("cache:", self.text)
+        self.assertIn('jarsigner -verify "${signed_jar}"', self.text)
+        self.assertNotIn("jarsigner -verify -strict", self.text)
 
     def test_index_token_uses_the_client_id_and_exact_repository_scope(self) -> None:
         self.assertIn(

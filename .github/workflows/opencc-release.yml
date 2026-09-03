@@ -87,7 +87,10 @@ jobs:
             "${unsigned_jar}" \
             "${KEY_ALIAS}" \
             > /dev/null
-          jarsigner -verify -strict "${signed_jar}" > /dev/null
+          # Android release certificates are intentionally self-signed. Jarsigner's strict
+          # mode turns that expected certificate-chain warning into exit code 4, so verify
+          # the disposable JAR's signature without imposing a public-CA trust requirement.
+          jarsigner -verify "${signed_jar}" > /dev/null
 
           {
             echo '## OpenCC release environment preflight'
