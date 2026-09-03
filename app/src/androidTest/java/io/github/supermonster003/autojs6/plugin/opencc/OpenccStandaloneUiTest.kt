@@ -8,6 +8,7 @@ import android.content.ClipboardManager
 import android.content.ComponentName
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
@@ -150,16 +151,17 @@ class OpenccStandaloneUiTest {
         onMain { views.source.setText(unchangedSource) }
         clipboard.setPrimaryClip(ClipData.newPlainText("OpenCC UI test", CLIPBOARD_SOURCE))
         instrumentation.waitForIdleSync()
-        awaitWindowFocus(activity)
         assertEquals(
             "Setting the clipboard must not change the source until Paste is clicked",
             unchangedSource,
             readText(views.source),
         )
 
-        onMain { views.paste.performClick() }
-        assertEquals(CLIPBOARD_SOURCE, readText(views.source))
-        assertEquals(context.getString(R.string.standalone_status_pasted), readText(views.status))
+        tapAsUser(activity, views.paste)
+        val pastedStatus = context.getString(R.string.standalone_status_pasted)
+        await("explicit Paste action") {
+            readText(views.source) == CLIPBOARD_SOURCE && readText(views.status) == pastedStatus
+        }
 
         onMain { views.clear.performClick() }
         assertEquals("", readText(views.source))
@@ -167,10 +169,11 @@ class OpenccStandaloneUiTest {
         assertEquals(context.getString(R.string.standalone_status_cleared), readText(views.status))
 
         convert(activity, views, "软件", OpenccConversionType.S2T, "軟件")
-        onMain { views.copy.performClick() }
-        awaitWindowFocus(activity)
+        tapAsUser(activity, views.copy)
+        val copiedStatus = context.getString(R.string.standalone_status_copied)
+        await("explicit Copy action") { readText(views.status) == copiedStatus }
         assertEquals("軟件", clipboard.primaryClip?.getItemAt(0)?.text?.toString())
-        assertEquals(context.getString(R.string.standalone_status_copied), readText(views.status))
+        assertEquals(copiedStatus, readText(views.status))
     }
 
     private fun assertSwapKeepsConversionType(activity: OpenccActivity, views: Views) {
@@ -309,10 +312,9 @@ class OpenccStandaloneUiTest {
 
     private fun isEnabled(view: View): Boolean = onMain { view.isEnabled }
 
-    private fun awaitWindowFocus(activity: Activity) {
-        // Programmatic performClick() does not itself require a focused window, while Android's
-        // clipboard service does. A translated-ABI emulator can leave the task visible without
-        // focusing its window, so explicitly restore the same Launcher task before modelling a tap.
+    private fun tapAsUser(activity: Activity, view: View) {
+        // Clipboard access is focus-gated on modern Android. Inject a real tap after restoring the
+        // Launcher task instead of relying on performClick(), which bypasses WindowManager focus.
         if (!onMain { activity.hasWindowFocus() }) {
             val component = activity.componentName.flattenToShortString()
             val output = runShellCommand(
@@ -322,7 +324,22 @@ class OpenccStandaloneUiTest {
             assertFalse("Shell failed to return the standalone Activity to foreground: $output", "Error:" in output)
             instrumentation.waitForIdleSync()
         }
-        await("standalone Activity window focus") { onMain { activity.hasWindowFocus() } }
+
+        onMain {
+            check(view.isShown) { "The target action is not attached to a visible window" }
+            check(view.isEnabled) { "The target action is disabled" }
+            view.requestRectangleOnScreen(Rect(0, 0, view.width, view.height), true)
+        }
+        instrumentation.waitForIdleSync()
+        val location = IntArray(2)
+        val center = onMain {
+            view.getLocationOnScreen(location)
+            check(view.width > 0 && view.height > 0) { "The target action has no screen area" }
+            Pair(location[0] + view.width / 2, location[1] + view.height / 2)
+        }
+        val tapOutput = runShellCommand("input tap ${center.first} ${center.second}")
+        assertFalse("Shell failed to inject the user action: $tapOutput", "Error:" in tapOutput)
+        instrumentation.waitForIdleSync()
     }
 
     private fun runShellCommand(command: String): String {
