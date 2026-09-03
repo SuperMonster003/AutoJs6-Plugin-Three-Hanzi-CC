@@ -110,7 +110,10 @@ M4-D-2 的原子更新器、升级 PR 正文、最小权限双阶段工作流、
 建 PR 权限均已落地，真实 GitHub 当前版本重放返回无更新、无漂移。M4-D-3 的默认分支可信判定器、
 读/写 job 隔离、精确 SHA 工作流证据、资源/许可证门禁、合并前二次判定和离线故障矩阵已实现；远端
 `OPENCC_AUTOMATION_MODE=pr-only`，因此当前只产生判定摘要而不会写入。`master` 按维护策略保持不受
-保护；待首个真实或受控更新 PR 完成在线 dry-run 后，才将策略提升为 `merge`。M4-D-4 不阻塞 M4-E。
+保护；待首个真实或受控更新 PR 完成在线 dry-run 后，才将策略提升为 `merge`。M4-D-4 已建立只允许
+`master` 的 `opencc-release` Environment 与无副作用可信预检；[run 33709691193](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33709691193)
+实际验证现有 Android 签名身份、全部口令以及仅限官方索引仓库的短期 GitHub App token，且 token
+吊销后置步骤成功。候选构建、正式 Release 与索引写入仍未启用，M4-D-4 不阻塞 M4-E。
 
 M5-A 至 M5-E 已全部完成。`v1.3.0` / build 20 在同一 APK 中正式加入独立 Launcher 和 14 类型离线
 编辑器，同时保持原 Binder 契约、applicationId 与签名证书。签名 minified release 已从 v1.2.0 在
@@ -187,7 +190,9 @@ M4-D-3 验收条件: 在不保护 `master` 的治理选择下，受控成功样�
 
 #### M4-D-4: 自动签名与发布
 
-- [ ] (发布/安全) 建立与合并控制器隔离的发布工作流和 GitHub Environment；签名材料仅来自加密 secrets，固定并校验现有证书 SHA-256，日志、缓存和 artifact 均不得包含 keystore/口令。没有完整签名配置时只生成可审计候选，不降级为未签名发布。
+- [x] (发布/安全/预检) 建立与合并控制器隔离的 `.github/workflows/opencc-release.yml` 和 `opencc-release` GitHub Environment；仅允许 `master`、不设人工审批或等待时间。真实 Actions 预检在临时目录恢复 keystore，核对固定 keystore/证书 SHA-256，并以别名、store password 与 key password 签署一次性 JAR；不缓存或上传任何签名材料，退出时删除临时文件。
+- [x] (发布/索引/预检) GitHub App 私钥仅存于 Environment secret，Client ID 存于 Environment variable；控制器固定 `actions/create-github-app-token` v3.2.0 commit，以推荐的 `client-id` 输入申请只含 `Actions: write`、只覆盖 `SuperMonster003/AutoJs6-Official-Plugins-Index` 的短期 token，确认 `plugin-index.yml` active 后由 action 自动吊销。在线 run 33709691193 全绿且未 dispatch 索引、未创建 tag/Release/commit。
+- [ ] (发布/安全) 将已验证的无副作用入口扩展为候选构建与发布控制器；签名材料继续仅来自加密 secrets，日志、缓存和 artifact 均不得包含 keystore/口令。没有完整签名配置时只生成可审计候选，不降级为未签名发布。
 - [ ] (发布) 为纯 OpenCC 依赖升级定义确定性的版本/build 递增、十语言 changelog/迁移记录生成和兼容性分类；API、权限、applicationId、签名或许可证发生非白名单变化时自动停止并退回 `pr-only`。
 - [ ] (发布/测试) 从刚合并且精确固定的 `master` commit 重建 5 个签名 APK，复跑签名连续性、四 ABI、R8、ELF/ZIP 16 KB、Binder 4 KB/16 KB、资源摘要与 APK 体积门禁；原子创建 tag、GitHub Release、`SHA256SUMS.txt` 和 release notes，并从 GitHub 回读全部资产名称/大小/SHA-256。
 - [ ] (发布/索引) Release 回读一致后才显式 dispatch 插件索引更新并回读线上条目；tag/Release/索引任一步已有冲突、版本倒退或内容不一致时停止，不覆盖既有正式版本。合并由 `GITHUB_TOKEN` 产生时显式 dispatch 发布工作流，不依赖不会触发的递归 push 事件。
