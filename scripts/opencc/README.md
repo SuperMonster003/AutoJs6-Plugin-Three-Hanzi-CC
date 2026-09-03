@@ -13,6 +13,8 @@ The repository separates upstream discovery from mutation:
 - `merge_upstream.py` is the trusted, fail-closed M4-D-3 controller. It reads pull-request and workflow
   evidence through the GitHub API without executing the proposed tree. In `merge` mode its separate
   write-side job repeats every gate and binds the squash merge to the expected head SHA.
+- `controlled_acceptance.py` supplies one pinned, non-release fixture for remote D2/D3 acceptance while
+  no newer formal OpenCC release exists. It is deliberately isolated from the official update path.
 - `verify_upstream.py` is the offline build gate. Normal Gradle builds do not contact GitHub.
 
 Run the current-release replay locally:
@@ -86,6 +88,24 @@ API/upstream gate, rechecks the base SHA immediately before a SHA-bound squash m
 unchanged automation branch. Any mismatch leaves the PR open; service failures make the controller run
 fail visibly. `release` is recognized but intentionally fails closed until the isolated M4-D-4 signing
 and publication controller exists.
+
+## Controlled online acceptance
+
+The manual `controlled_acceptance` input of `opencc-upstream.yml` may be used only while the repository
+policy is `pr-only`. It revalidates the real latest formal release first, then creates a draft from the
+pinned first direct child of the 1.4.2 source commit. Its reserved `999.4.2` version, deliberately
+non-official `controlled-ver.999.4.2` tag, distinct test commit title, explicit ZIP manifest marker, and
+Draft state are independent production-controller rejection barriers. The fixture changes the same four
+paths as an upgrade and dispatches the same Build/Markdown workflows, but the Build workflow requires an
+explicit manual boolean and records a uniquely named successful verification step.
+
+For the read-only D3 replay, manually dispatch `opencc-auto-merge.yml` with the exact draft branch/SHA and
+`controlled_acceptance=true`. That path revalidates the formal base release, fixture commit parent,
+resource bytes, licenses, PR shape, and exact workflow runs. It can report eligible only in `pr-only`;
+the controller rejects the fixture in `merge` or `release`, rejects `--execute`, and the write job also
+requires `candidate_kind == 'official'`. The ordinary `workflow_run` trigger can never select controlled
+evaluation. After recording successful, failing, and existing-PR replays, close the draft and delete the
+test branch. This acceptance lane is not evidence for a real automatic merge.
 
 Automated release must pin the merged commit, obtain signing material only from encrypted secrets, verify
 the existing certificate digest and five signed APKs, create the tag and Release idempotently, read every

@@ -17,6 +17,11 @@ on:
         description: Exact 40-character pull-request head SHA to evaluate
         required: true
         type: string
+      controlled_acceptance:
+        description: Evaluate the pinned draft-only fixture (pr-only; never executable)
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -45,6 +50,7 @@ jobs:
       head_sha: ${{ steps.evaluate.outputs.head_sha }}
       version: ${{ steps.evaluate.outputs.version }}
       base_sha: ${{ steps.evaluate.outputs.base_sha }}
+      candidate_kind: ${{ steps.evaluate.outputs.candidate_kind }}
 
     steps:
       - name: Check out trusted controller from the default branch
@@ -67,17 +73,22 @@ jobs:
           HEAD_BRANCH: ${{ github.event.workflow_run.head_branch || inputs.head_branch }}
           HEAD_SHA: ${{ github.event.workflow_run.head_sha || inputs.head_sha }}
           OPENCC_AUTOMATION_MODE: ${{ vars.OPENCC_AUTOMATION_MODE || 'pr-only' }}
+          CANDIDATE_KIND: ${{ github.event_name == 'workflow_dispatch' && inputs.controlled_acceptance == true && 'controlled' || 'official' }}
         run: >-
           python scripts/opencc/merge_upstream.py
           --repository "${GITHUB_REPOSITORY}"
           --head-branch "${HEAD_BRANCH}"
           --head-sha "${HEAD_SHA}"
           --mode "${OPENCC_AUTOMATION_MODE}"
+          --candidate-kind "${CANDIDATE_KIND}"
 
   merge:
     name: Re-evaluate and merge eligible OpenCC upgrade
     needs: evaluate
-    if: needs.evaluate.outputs.eligible == 'true' && needs.evaluate.outputs.mode == 'merge'
+    if: >-
+      needs.evaluate.outputs.eligible == 'true' &&
+      needs.evaluate.outputs.mode == 'merge' &&
+      needs.evaluate.outputs.candidate_kind == 'official'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:

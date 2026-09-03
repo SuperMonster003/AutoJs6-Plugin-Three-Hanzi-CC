@@ -4,6 +4,12 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+    inputs:
+      controlled_opencc_acceptance:
+        description: Verify the pinned non-release OpenCC automation fixture (never publishable)
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -40,8 +46,13 @@ jobs:
           python -m unittest discover -s scripts/opencc/tests -p "test_*.py"
           python -m unittest discover -s scripts/benchmark/tests -p "test_*.py"
 
-      - name: Verify pinned OpenCC source and resources
+      - name: Verify pinned official OpenCC source and resources
+        if: github.event_name != 'workflow_dispatch' || inputs.controlled_opencc_acceptance != true
         run: python scripts/opencc/verify_upstream.py --root .
+
+      - name: Verify controlled OpenCC acceptance fixture
+        if: github.event_name == 'workflow_dispatch' && inputs.controlled_opencc_acceptance == true
+        run: python scripts/opencc/controlled_acceptance.py verify --root .
 
       - name: Run unit tests and assemble debug/release APKs
         run: |

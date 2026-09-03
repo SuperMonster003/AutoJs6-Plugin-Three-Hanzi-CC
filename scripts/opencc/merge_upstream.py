@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 import check_upstream
+import controlled_acceptance
 import verify_upstream
 
 
@@ -33,7 +34,9 @@ REPOSITORY_PATTERN = re.compile(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+")
 SHA_PATTERN = re.compile(r"[0-9a-f]{40}")
 SHA256_PATTERN = re.compile(r"[0-9a-f]{64}")
 POLICY_MODES = {"paused", "pr-only", "merge", "release"}
+CANDIDATE_KINDS = {"official", "controlled"}
 FUSE_LABELS = {"do-not-merge", "automation-pause", "automation-paused"}
+CONTROLLED_BUILD_STEP = "Verify controlled OpenCC acceptance fixture"
 MAX_CONTENT_BYTES = 64 * 1024 * 1024
 MAX_PAGES = 10
 MAX_RESOURCE_GROWTH_BYTES = 512 * 1024
@@ -101,6 +104,7 @@ class Evaluation:
     merged: bool = False
     merge_sha: str = ""
     branch_deleted: bool = False
+    candidate_kind: str = "official"
 
 
 class GitHubApi:
@@ -451,6 +455,8 @@ def verify_workflow(
     expected_jobs: set[str],
     head_branch: str,
     head_sha: str,
+    *,
+    required_successful_step: str | None = None,
 ) -> WorkflowEvidence:
     runs = api.get_paginated(
         f"/repos/{repository}/actions/workflows/{workflow_file}/runs",
@@ -509,6 +515,26 @@ def verify_workflow(
         if job.get("status") != "completed" or job.get("conclusion") != "success"
     )
     require(not incomplete, f"{expected_name} contains non-success jobs: {incomplete}")
+    if required_successful_step is not None:
+        matching_steps: list[dict[str, Any]] = []
+        for job in jobs:
+            steps = job.get("steps")
+            if not isinstance(steps, list):
+                steps = []
+            matching_steps.extend(
+                step
+                for step in steps
+                if isinstance(step, dict) and step.get("name") == required_successful_step
+            )
+        require(
+            len(matching_steps) == 1,
+            f"{expected_name} does not contain exactly one {required_successful_step!r} step",
+        )
+        step = matching_steps[0]
+        require(
+            step.get("status") == "completed" and step.get("conclusion") == "success",
+            f"{required_successful_step} did not complete successfully",
+        )
     run_url = str(run.get("html_url", ""))
     require(run_url.startswith(f"https://github.com/{repository}/actions/runs/"), f"unexpected {expected_name} run URL")
     return WorkflowEvidence(workflow_file, run_id, run_url, tuple(sorted(actual_job_names)))
@@ -523,16 +549,26 @@ def evaluate_candidate(
     *,
     release_loader: Callable[[str, str], check_upstream.ValidatedRelease] = check_upstream.download_validated_release,
     upstream_api_base: str = check_upstream.DEFAULT_API_BASE,
+    candidate_kind: str = "official",
 ) -> Evaluation:
     normalized_repository = repository.strip()
     normalized_branch = head_branch.strip()
     normalized_sha = head_sha.strip().lower()
     try:
         require(mode in POLICY_MODES, f"unsupported automation policy mode: {mode!r}")
+        require(candidate_kind in CANDIDATE_KINDS, f"unsupported candidate kind: {candidate_kind!r}")
+        controlled = candidate_kind == "controlled"
+        if controlled and mode != "pr-only":
+            raise AutomationError("controlled acceptance is hard-limited to pr-only policy")
         require(REPOSITORY_PATTERN.fullmatch(normalized_repository) is not None, "malformed repository identity")
         branch_match = AUTOMATION_BRANCH_PATTERN.fullmatch(normalized_branch)
         require(branch_match is not None, "head branch is not an exact automation/opencc-<semver> branch")
         require(SHA_PATTERN.fullmatch(normalized_sha) is not None, "head SHA is malformed")
+        if controlled:
+            require(
+                normalized_branch == controlled_acceptance.FIXTURE_BRANCH,
+                "controlled acceptance branch differs from the pinned fixture",
+            )
         if mode == "paused":
             raise GateRejected("automation policy is paused")
         if mode == "release":
@@ -558,7 +594,10 @@ def evaluate_candidate(
         base_repository = object_value(base.get("repo"), f"pull request #{pull_number} base repository")
         head_repository = object_value(head.get("repo"), f"pull request #{pull_number} head repository")
         require(pull.get("state") == "open" and pull.get("merged") is not True, "pull request is not open")
-        require(pull.get("draft") is False, "pull request is a draft")
+        if controlled:
+            require(pull.get("draft") is True, "controlled acceptance pull request must remain a draft")
+        else:
+            require(pull.get("draft") is False, "pull request is a draft")
         require(user.get("login") == EXPECTED_BOT_LOGIN and user.get("type") == "Bot", "pull request author is not github-actions[bot]")
         require(base.get("ref") == BASE_BRANCH, f"pull request base is not {BASE_BRANCH}")
         require(str(base_repository.get("full_name", "")).lower() == normalized_repository.lower(), "pull request base repository differs from the target repository")
@@ -605,11 +644,31 @@ def evaluate_candidate(
             "head OpenCC lock",
         )
         base_version = validate_lock(base_lock, "base OpenCC lock")
-        head_version = validate_lock(head_lock, "head OpenCC lock")
+        if controlled:
+            try:
+                controlled_acceptance.exact_properties(
+                    base_lock,
+                    controlled_acceptance.BASE_PROPERTIES,
+                    "controlled acceptance base lock",
+                )
+                controlled_acceptance.exact_properties(
+                    head_lock,
+                    controlled_acceptance.FIXTURE_PROPERTIES,
+                    "controlled acceptance head lock",
+                )
+            except controlled_acceptance.ControlledAcceptanceError as error:
+                raise GateRejected(str(error)) from None
+            head_version = controlled_acceptance.FIXTURE_VERSION
+        else:
+            head_version = validate_lock(head_lock, "head OpenCC lock")
         require(branch_match.group(1) == head_version, "automation branch version differs from the head lock")
         require(check_upstream.version_tuple(head_version) > check_upstream.version_tuple(base_version), "head OpenCC version is not newer than the base lock")
         verify_resource_growth(base_lock, head_lock)
-        expected_title = f"chore(deps): upgrade OpenCC to {head_version}"
+        expected_title = (
+            controlled_acceptance.FIXTURE_TITLE
+            if controlled
+            else f"chore(deps): upgrade OpenCC to {head_version}"
+        )
         require(pull.get("title") == expected_title, "pull request title differs from the updater contract")
         require(commit_data.get("message") == expected_title, "automation commit message differs from the updater contract")
 
@@ -636,8 +695,27 @@ def evaluate_candidate(
             release = release_loader(upstream_api_base.rstrip("/"), head_lock["OPENCC_SOURCE_URL"])
         except check_upstream.UpstreamCheckError as error:
             raise AutomationError(f"unable to revalidate the latest official OpenCC release: {error}") from None
-        require(release.properties == head_lock, "head lock does not exactly match the latest validated official OpenCC release")
-        verify_head_resource(api, normalized_repository, normalized_sha, head_lock, release.archive_data)
+        if controlled:
+            require(
+                release.properties == base_lock,
+                "formal latest OpenCC release no longer matches the controlled acceptance base",
+            )
+            try:
+                expected_archive = controlled_acceptance.build_fixture_archive(release.archive_data)
+                fixture_commit = object_value(
+                    api.get_json(f"/repos/BYVoid/OpenCC/commits/{controlled_acceptance.FIXTURE_COMMIT}"),
+                    "controlled fixture commit",
+                )
+                controlled_acceptance.validate_fixture_commit_payload(fixture_commit)
+            except controlled_acceptance.ControlledAcceptanceError as error:
+                raise AutomationError(f"unable to revalidate the controlled OpenCC fixture: {error}") from None
+            verify_head_resource(api, normalized_repository, normalized_sha, head_lock, expected_archive)
+        else:
+            require(
+                release.properties == head_lock,
+                "head lock does not exactly match the latest validated official OpenCC release",
+            )
+            verify_head_resource(api, normalized_repository, normalized_sha, head_lock, release.archive_data)
         verify_license_evidence(api, base_lock["OPENCC_COMMIT"], head_lock["OPENCC_COMMIT"])
 
         reviews = api.get_paginated(f"/repos/{normalized_repository}/pulls/{pull_number}/reviews")
@@ -653,12 +731,19 @@ def evaluate_candidate(
                 expected_jobs,
                 normalized_branch,
                 normalized_sha,
+                required_successful_step=(
+                    CONTROLLED_BUILD_STEP if controlled and workflow_file == "build.yml" else None
+                ),
             )
             for workflow_file, (expected_name, expected_jobs) in EXPECTED_WORKFLOWS.items()
         )
         return Evaluation(
             True,
-            "all exact OpenCC auto-merge gates passed",
+            (
+                "all exact controlled OpenCC acceptance gates passed without write authority"
+                if controlled
+                else "all exact OpenCC auto-merge gates passed"
+            ),
             normalized_repository,
             normalized_branch,
             normalized_sha,
@@ -668,6 +753,7 @@ def evaluate_candidate(
             head_version,
             base_sha,
             evidence,
+            candidate_kind=candidate_kind,
         )
     except GateRejected as error:
         return Evaluation(
@@ -677,6 +763,7 @@ def evaluate_candidate(
             normalized_branch,
             normalized_sha,
             mode,
+            candidate_kind=candidate_kind,
         )
 
 
@@ -734,6 +821,7 @@ def merge_candidate(api: GitHubApi, evaluation: Evaluation) -> Evaluation:
         True,
         merge_sha,
         branch_deleted,
+        evaluation.candidate_kind,
     )
 
 
@@ -751,6 +839,7 @@ def append_workflow_outputs(evaluation: Evaluation) -> None:
         "base_sha": evaluation.base_sha,
         "merged": str(evaluation.merged).lower(),
         "merge_sha": evaluation.merge_sha,
+        "candidate_kind": evaluation.candidate_kind,
     }
     with Path(path_value).open("a", encoding="utf-8") as output:
         for name, value in outputs.items():
@@ -766,6 +855,7 @@ def append_workflow_summary(evaluation: Evaluation) -> None:
     with Path(path_value).open("a", encoding="utf-8") as summary:
         summary.write("## Trusted OpenCC merge controller\n\n")
         summary.write(f"- Policy: `{evaluation.mode}`\n")
+        summary.write(f"- Candidate kind: `{evaluation.candidate_kind}`\n")
         summary.write(f"- Decision: `{'eligible' if evaluation.eligible else 'rejected'}`\n")
         summary.write(f"- Head: `{evaluation.head_branch}` at `{evaluation.head_sha}`\n")
         if evaluation.pull_number is not None:
@@ -785,6 +875,12 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument("--head-branch", required=True, help="exact automation pull-request branch")
     parser.add_argument("--head-sha", required=True, help="exact automation pull-request head SHA")
     parser.add_argument("--mode", default="pr-only", choices=sorted(POLICY_MODES), help="automation policy")
+    parser.add_argument(
+        "--candidate-kind",
+        default="official",
+        choices=sorted(CANDIDATE_KINDS),
+        help="official release candidate or non-release controlled acceptance fixture",
+    )
     parser.add_argument("--execute", action="store_true", help="perform the merge after a fresh evaluation")
     parser.add_argument("--api-root", default=DEFAULT_API_ROOT, help="GitHub REST API root")
     parser.add_argument("--upstream-api-base", default=check_upstream.DEFAULT_API_BASE, help="OpenCC GitHub API URL")
@@ -794,6 +890,8 @@ def parse_arguments() -> argparse.Namespace:
 def main() -> int:
     arguments = parse_arguments()
     try:
+        if arguments.execute and arguments.candidate_kind != "official":
+            raise AutomationError("--execute is never permitted for a controlled acceptance fixture")
         api = GitHubApi(os.environ.get("GITHUB_TOKEN", ""), arguments.api_root)
         evaluation = evaluate_candidate(
             api,
@@ -802,6 +900,7 @@ def main() -> int:
             arguments.head_sha,
             arguments.mode,
             upstream_api_base=arguments.upstream_api_base,
+            candidate_kind=arguments.candidate_kind,
         )
         if arguments.execute:
             if arguments.mode != "merge":

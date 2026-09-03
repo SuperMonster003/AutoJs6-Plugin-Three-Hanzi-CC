@@ -7,12 +7,14 @@ import unittest
 import urllib.parse
 from pathlib import Path
 from typing import Any
+from unittest import mock
 
 
 SCRIPT_DIRECTORY = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SCRIPT_DIRECTORY))
 
 import check_upstream  # noqa: E402
+import controlled_acceptance  # noqa: E402
 import merge_upstream  # noqa: E402
 import update_upstream  # noqa: E402
 import verify_upstream  # noqa: E402
@@ -58,18 +60,31 @@ def repository_file(data: bytes) -> dict[str, Any]:
 
 
 class FixtureApi:
-    def __init__(self) -> None:
-        title = "chore(deps): upgrade OpenCC to 1.5.0"
+    def __init__(
+        self,
+        *,
+        branch: str = BRANCH,
+        base_lock: dict[str, str] = BASE_LOCK,
+        head_lock: dict[str, str] = HEAD_LOCK,
+        archive: bytes = ARCHIVE,
+        title: str = "chore(deps): upgrade OpenCC to 1.5.0",
+        draft: bool = False,
+        include_controlled_step: bool = False,
+    ) -> None:
+        self.branch = branch
+        self.base_lock = dict(base_lock)
+        self.head_lock = dict(head_lock)
+        self.archive = archive
         self.pull = {
             "number": 7,
             "state": "open",
             "merged": False,
-            "draft": False,
+            "draft": draft,
             "title": title,
             "html_url": f"https://github.com/{REPOSITORY}/pull/7",
             "user": {"login": "github-actions[bot]", "type": "Bot"},
             "base": {"ref": "master", "sha": BASE_SHA, "repo": {"full_name": REPOSITORY}},
-            "head": {"ref": BRANCH, "sha": HEAD_SHA, "repo": {"full_name": REPOSITORY}},
+            "head": {"ref": self.branch, "sha": HEAD_SHA, "repo": {"full_name": REPOSITORY}},
             "commits": 1,
             "changed_files": 4,
             "labels": [],
@@ -94,11 +109,11 @@ class FixtureApi:
             {"filename": verify_upstream.LOCK_FILE, "status": "modified"},
             {"filename": verify_upstream.SOURCE_DIRECTORY.as_posix(), "status": "modified"},
             {
-                "filename": (verify_upstream.ASSET_DIRECTORY / BASE_LOCK["OPENCC_RESOURCE_ASSET"]).as_posix(),
+                "filename": (verify_upstream.ASSET_DIRECTORY / self.base_lock["OPENCC_RESOURCE_ASSET"]).as_posix(),
                 "status": "removed",
             },
             {
-                "filename": (verify_upstream.ASSET_DIRECTORY / HEAD_LOCK["OPENCC_RESOURCE_ASSET"]).as_posix(),
+                "filename": (verify_upstream.ASSET_DIRECTORY / self.head_lock["OPENCC_RESOURCE_ASSET"]).as_posix(),
                 "status": "added",
             },
         ]
@@ -107,27 +122,39 @@ class FixtureApi:
             "build.yml": [self.workflow_run("build.yml", "Build integrity", 100)],
             "markdown.yml": [self.workflow_run("markdown.yml", "Markdown integrity", 200)],
         }
+        build_jobs = [self.job(name) for name in sorted(merge_upstream.EXPECTED_WORKFLOWS["build.yml"][1])]
+        if include_controlled_step:
+            for job in build_jobs:
+                job["steps"] = []
+                if job["name"] == "Unit tests and debug/release APKs":
+                    job["steps"] = [
+                        {
+                            "name": merge_upstream.CONTROLLED_BUILD_STEP,
+                            "status": "completed",
+                            "conclusion": "success",
+                        },
+                    ]
         self.jobs = {
-            100: [self.job(name) for name in sorted(merge_upstream.EXPECTED_WORKFLOWS["build.yml"][1])],
+            100: build_jobs,
             200: [self.job(name) for name in sorted(merge_upstream.EXPECTED_WORKFLOWS["markdown.yml"][1])],
         }
         self.calls: list[tuple[str, str, Any]] = []
         self.merge_body: dict[str, Any] | None = None
         self.deleted_path = ""
         self.license_changed = False
+        self.controlled_parent = controlled_acceptance.BASE_PROPERTIES["OPENCC_COMMIT"]
 
     @staticmethod
     def job(name: str) -> dict[str, Any]:
         return {"name": name, "status": "completed", "conclusion": "success"}
 
-    @staticmethod
-    def workflow_run(workflow_file: str, name: str, run_id: int) -> dict[str, Any]:
+    def workflow_run(self, workflow_file: str, name: str, run_id: int) -> dict[str, Any]:
         return {
             "id": run_id,
             "name": name,
-            "path": f".github/workflows/{workflow_file}@{BRANCH}",
+            "path": f".github/workflows/{workflow_file}@{self.branch}",
             "event": "workflow_dispatch",
-            "head_branch": BRANCH,
+            "head_branch": self.branch,
             "head_sha": HEAD_SHA,
             "status": "completed",
             "conclusion": "success",
@@ -142,7 +169,7 @@ class FixtureApi:
             return self.pull
         if path == f"/repos/{REPOSITORY}/git/ref/heads/master":
             return {"object": {"sha": BASE_SHA, "type": "commit"}}
-        encoded_branch = urllib.parse.quote(BRANCH, safe="/")
+        encoded_branch = urllib.parse.quote(self.branch, safe="/")
         if path == f"/repos/{REPOSITORY}/git/ref/heads/{encoded_branch}":
             return {"object": {"sha": HEAD_SHA, "type": "commit"}}
         prefix = f"/repos/{REPOSITORY}/contents/"
@@ -150,22 +177,28 @@ class FixtureApi:
             file_path = urllib.parse.unquote(path.removeprefix(prefix))
             ref = str((query or {}).get("ref", ""))
             if file_path == verify_upstream.LOCK_FILE:
-                properties = BASE_LOCK if ref == BASE_SHA else HEAD_LOCK
+                properties = self.base_lock if ref == BASE_SHA else self.head_lock
                 return repository_file(update_upstream.render_lock(properties))
             if file_path == verify_upstream.SOURCE_DIRECTORY.as_posix():
-                properties = BASE_LOCK if ref == BASE_SHA else HEAD_LOCK
+                properties = self.base_lock if ref == BASE_SHA else self.head_lock
                 return {
                     "type": "file",
                     "sha": properties["OPENCC_COMMIT"],
                     "submodule_git_url": properties["OPENCC_SOURCE_URL"],
                     "size": 0,
                 }
-            base_resource = (verify_upstream.ASSET_DIRECTORY / BASE_LOCK["OPENCC_RESOURCE_ASSET"]).as_posix()
-            head_resource = (verify_upstream.ASSET_DIRECTORY / HEAD_LOCK["OPENCC_RESOURCE_ASSET"]).as_posix()
+            base_resource = (verify_upstream.ASSET_DIRECTORY / self.base_lock["OPENCC_RESOURCE_ASSET"]).as_posix()
+            head_resource = (verify_upstream.ASSET_DIRECTORY / self.head_lock["OPENCC_RESOURCE_ASSET"]).as_posix()
             if file_path == base_resource and ref == BASE_SHA:
-                return {"type": "file", "size": int(BASE_LOCK["OPENCC_RESOURCE_SIZE"]), "sha": "4" * 40}
+                return {"type": "file", "size": int(self.base_lock["OPENCC_RESOURCE_SIZE"]), "sha": "4" * 40}
             if file_path == head_resource and ref == HEAD_SHA:
-                return {"type": "file", "size": len(ARCHIVE), "sha": "5" * 40}
+                return {"type": "file", "size": len(self.archive), "sha": "5" * 40}
+        if path == f"/repos/BYVoid/OpenCC/commits/{controlled_acceptance.FIXTURE_COMMIT}":
+            return {
+                "sha": controlled_acceptance.FIXTURE_COMMIT,
+                "parents": [{"sha": self.controlled_parent}],
+                "html_url": f"https://github.com/BYVoid/OpenCC/commit/{controlled_acceptance.FIXTURE_COMMIT}",
+            }
         raise AssertionError(f"unexpected get_json call: {path}, {query}")
 
     def get_bytes(
@@ -178,17 +211,16 @@ class FixtureApi:
         self.calls.append(("GET_BYTES", path, query))
         if path.startswith("/repos/BYVoid/OpenCC/contents/"):
             ref = str((query or {}).get("ref", ""))
-            data = b"changed license" if self.license_changed and ref == HEAD_LOCK["OPENCC_COMMIT"] else b"stable license"
+            data = b"changed license" if self.license_changed and ref == self.head_lock["OPENCC_COMMIT"] else b"stable license"
         else:
             self.assert_head_resource_call(path, query)
-            data = ARCHIVE
+            data = self.archive
         if len(data) > maximum_bytes:
             raise AssertionError("fixture bytes exceed requested maximum")
         return data
 
-    @staticmethod
-    def assert_head_resource_call(path: str, query: dict[str, str | int] | None) -> None:
-        resource = (verify_upstream.ASSET_DIRECTORY / HEAD_LOCK["OPENCC_RESOURCE_ASSET"]).as_posix()
+    def assert_head_resource_call(self, path: str, query: dict[str, str | int] | None) -> None:
+        resource = (verify_upstream.ASSET_DIRECTORY / self.head_lock["OPENCC_RESOURCE_ASSET"]).as_posix()
         expected = merge_upstream.encoded_contents_path(REPOSITORY, resource)
         if path != expected or query != {"ref": HEAD_SHA}:
             raise AssertionError(f"unexpected resource call: {path}, {query}")
@@ -255,6 +287,55 @@ def evaluate(api: FixtureApi, mode: str = "pr-only") -> merge_upstream.Evaluatio
     )
 
 
+CONTROLLED_ARCHIVE = b"deterministic controlled resource fixture"
+CONTROLLED_LOCK = {
+    **controlled_acceptance.FIXTURE_PROPERTIES,
+    "OPENCC_RESOURCE_SHA256": hashlib.sha256(CONTROLLED_ARCHIVE).hexdigest(),
+    "OPENCC_RESOURCE_SIZE": str(len(CONTROLLED_ARCHIVE)),
+}
+
+
+def controlled_api(*, include_step: bool = True) -> FixtureApi:
+    return FixtureApi(
+        branch=controlled_acceptance.FIXTURE_BRANCH,
+        base_lock=controlled_acceptance.BASE_PROPERTIES,
+        head_lock=CONTROLLED_LOCK,
+        archive=CONTROLLED_ARCHIVE,
+        title=controlled_acceptance.FIXTURE_TITLE,
+        draft=True,
+        include_controlled_step=include_step,
+    )
+
+
+def controlled_release(_api_base: str, source_url: str) -> check_upstream.ValidatedRelease:
+    if source_url != controlled_acceptance.BASE_PROPERTIES["OPENCC_SOURCE_URL"]:
+        raise AssertionError(f"unexpected source URL: {source_url}")
+    return check_upstream.ValidatedRelease(
+        properties=dict(controlled_acceptance.BASE_PROPERTIES),
+        archive_data=b"formal base resource",
+        release_url="https://github.com/BYVoid/OpenCC/releases/tag/ver.1.4.2",
+        release_name="OpenCC 1.4.2",
+        release_body="fixture",
+        published_at="2026-08-22T00:00:00Z",
+    )
+
+
+def evaluate_controlled(api: FixtureApi, mode: str = "pr-only") -> merge_upstream.Evaluation:
+    with (
+        mock.patch.object(controlled_acceptance, "FIXTURE_PROPERTIES", CONTROLLED_LOCK),
+        mock.patch.object(controlled_acceptance, "build_fixture_archive", return_value=CONTROLLED_ARCHIVE),
+    ):
+        return merge_upstream.evaluate_candidate(
+            api,  # type: ignore[arg-type]
+            REPOSITORY,
+            controlled_acceptance.FIXTURE_BRANCH,
+            HEAD_SHA,
+            mode,
+            release_loader=controlled_release,
+            candidate_kind="controlled",
+        )
+
+
 class MergeUpstreamTest(unittest.TestCase):
     def test_build_workflow_contract_includes_every_current_runtime_gate(self) -> None:
         self.assertEqual(
@@ -276,6 +357,55 @@ class MergeUpstreamTest(unittest.TestCase):
         self.assertEqual(BASE_SHA, result.base_sha)
         self.assertEqual({"build.yml", "markdown.yml"}, {item.workflow_file for item in result.evidence})
         self.assertFalse(result.merged)
+
+    def test_controlled_candidate_is_eligible_only_as_draft_in_pr_only(self) -> None:
+        api = controlled_api()
+        result = evaluate_controlled(api)
+        self.assertTrue(result.eligible, result.reason)
+        self.assertEqual("controlled", result.candidate_kind)
+        self.assertIn("without write authority", result.reason)
+        self.assertFalse(result.merged)
+
+        api = controlled_api()
+        api.pull["draft"] = False
+        result = evaluate_controlled(api)
+        self.assertFalse(result.eligible)
+        self.assertIn("must remain a draft", result.reason)
+
+        with self.assertRaisesRegex(merge_upstream.AutomationError, "hard-limited to pr-only"):
+            evaluate_controlled(controlled_api(), mode="merge")
+
+    def test_production_evaluator_rejects_controlled_candidate(self) -> None:
+        api = controlled_api()
+        result = merge_upstream.evaluate_candidate(
+            api,  # type: ignore[arg-type]
+            REPOSITORY,
+            controlled_acceptance.FIXTURE_BRANCH,
+            HEAD_SHA,
+            "pr-only",
+            release_loader=controlled_release,
+        )
+        self.assertFalse(result.eligible)
+        self.assertIn("pull request is a draft", result.reason)
+        self.assertEqual("official", result.candidate_kind)
+
+    def test_controlled_candidate_requires_explicit_successful_build_step(self) -> None:
+        result = evaluate_controlled(controlled_api(include_step=False))
+        self.assertFalse(result.eligible)
+        self.assertIn(merge_upstream.CONTROLLED_BUILD_STEP, result.reason)
+
+        api = controlled_api()
+        unit_job = next(job for job in api.jobs[100] if job["name"] == "Unit tests and debug/release APKs")
+        unit_job["steps"][0]["conclusion"] = "failure"
+        result = evaluate_controlled(api)
+        self.assertFalse(result.eligible)
+        self.assertIn("did not complete successfully", result.reason)
+
+    def test_controlled_candidate_revalidates_fixture_parent(self) -> None:
+        api = controlled_api()
+        api.controlled_parent = "0" * 40
+        with self.assertRaisesRegex(merge_upstream.AutomationError, "direct child"):
+            evaluate_controlled(api)
 
     def test_stale_base_sha_is_rejected(self) -> None:
         api = FixtureApi()
