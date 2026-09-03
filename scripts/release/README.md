@@ -71,19 +71,60 @@ release APK with one ephemeral non-production key, and runs both UI and Binder c
 API 24 minimum-SDK emulator. This release-target gate exists in addition to the full debug suite so
 resource or code optimizations that only fail on older Android releases cannot pass unnoticed.
 
-## Isolated release-environment preflight
+## Trusted release controller
 
-`.github/workflows/opencc-release.yml` is the fail-closed entry point for M4-D-4. Its initial
-`workflow_dispatch` path has no publication side effects: it may run only from `master` through the
-`opencc-release` Environment, reconstructs the Android keystore in an ephemeral runner directory,
-checks the pinned keystore and signer-certificate SHA-256 values, and signs a disposable JAR to prove
-that the alias and both passwords are usable. The temporary keystore, certificate, and probe JAR are
-deleted before the job exits and are never cached or uploaded as artifacts.
+`.github/workflows/opencc-release.yml` is the fail-closed entry point for M4-D-4. It currently exposes
+two manual-only operations, `preflight` (the default) and `candidate`. Both may run only from `master`
+through the `opencc-release` Environment and have no tag, GitHub Release, index-dispatch, pull-request,
+or repository-write capability.
 
-The same preflight pins `actions/create-github-app-token` v3.2.0 by commit and uses its recommended
-Client ID input. It requests only `Actions: write`, scopes the installation token to
+The `preflight` operation reconstructs the Android keystore in an ephemeral runner directory, checks
+the pinned keystore and signer-certificate SHA-256 values, and signs a disposable JAR to prove that the
+alias and both passwords are usable. The temporary keystore, certificate, and probe JAR are deleted
+before the job exits and are never cached or uploaded as artifacts.
+
+The same `preflight` operation pins `actions/create-github-app-token` v3.2.0 by commit and uses its
+recommended Client ID input. It requests only `Actions: write`, scopes the installation token to
 `SuperMonster003/AutoJs6-Official-Plugins-Index`, confirms that `plugin-index.yml` is active, performs
 no dispatch, and lets the action revoke the short-lived token in its post-step.
+
+The `candidate` operation requires an explicit 40-character source SHA. Before any secret is exposed,
+the controller requires that SHA to equal the workflow event SHA, the checked-out commit, and a fresh
+GitHub API read of `master`; it also requires `OPENCC_AUTOMATION_MODE=pr-only`, a clean recursive
+submodule checkout, and the pinned OpenCC source/resource verification. Its checkout, Java, Python,
+and artifact actions are pinned to exact commits and checkout credentials are not persisted.
+
+The signing step reconstructs the keystore outside the workspace, writes an ignored temporary
+`sign.properties` with mode `0600`, checks the keystore and exported-certificate digests, and performs
+a minified five-APK build without a Gradle daemon or Actions cache. A trap removes both signing files
+before the content-verification step starts; an unconditional final cleanup remains as a second line
+of defense. The later steps have no signing secrets and enforce:
+
+1. The exact four single-ABI packages plus one universal package.
+2. The reviewed application ID, sole plugin permission, component/export surface, and locale config.
+3. The pinned API AAR, required R8/JNI markers, sole `libopencc_jni.so`, and absence of the retired backend.
+4. The exact OpenCC resource size/SHA-256, uncompressed native libraries, GNU RELRO, 16 KB ELF load
+   alignment, and `zipalign -P 16` verification.
+5. One signer certificate across all packages, equal to the Environment value and the last published
+   release baseline.
+6. Per-ABI size growth no greater than either 512 KiB or 25% over the checked-in v1.3.0 baseline.
+7. Exact generated checksums/release notes and absence of keystore/private-key material in every APK
+   and in the final bundle.
+
+`prepare_candidate.py` then emits deterministic provenance in `CANDIDATE.json`: the exact source SHA,
+version/build, OpenCC lock, signer certificate digest, package names/sizes/CRC32/SHA-256 values, and
+the enforced size baseline. The only uploaded path is the exact eight-file public bundle (five APKs,
+`SHA256SUMS.txt`, `RELEASE_NOTES.md`, and `CANDIDATE.json`), retained for 14 days. The GitHub App private
+key is deliberately unavailable to this operation.
+
+Run the candidate operation only against the current remote `master` SHA, for example:
+
+```text
+gh workflow run opencc-release.yml \
+  --ref master \
+  -f operation=candidate \
+  -f source_sha=<exact-40-character-origin-master-SHA>
+```
 
 The `opencc-release` Environment contains these encrypted secrets:
 
@@ -99,7 +140,7 @@ It also contains these non-secret variables:
 - `OPENCC_RELEASE_EXPECTED_CERT_SHA256`
 - `OPENCC_INDEX_APP_CLIENT_ID`
 
-This preflight deliberately cannot create a tag, GitHub Release, pull request, index dispatch, or
-commit. Candidate construction and publication are enabled only after the M4-D-2/M4-D-3 online
-upgrade-PR exercises have passed and the repository automation policy is explicitly promoted beyond
-`pr-only`.
+Neither current operation can publish or modify repository state. A signed candidate is an auditable
+workflow artifact, not a Release asset and not permission to publish it. Draft/final Release creation,
+device promotion gates, and index dispatch remain disabled until their own failure-closed phases are
+implemented and the M4-D-2/M4-D-3 online upgrade-PR exercises have passed.

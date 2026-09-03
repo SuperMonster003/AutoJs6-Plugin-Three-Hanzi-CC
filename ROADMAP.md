@@ -113,7 +113,9 @@ M4-D-2 的原子更新器、升级 PR 正文、最小权限双阶段工作流、
 保护；待首个真实或受控更新 PR 完成在线 dry-run 后，才将策略提升为 `merge`。M4-D-4 已建立只允许
 `master` 的 `opencc-release` Environment 与无副作用可信预检；[run 33709691193](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33709691193)
 实际验证现有 Android 签名身份、全部口令以及仅限官方索引仓库的短期 GitHub App token，且 token
-吊销后置步骤成功。候选构建、正式 Release 与索引写入仍未启用，M4-D-4 不阻塞 M4-E。
+吊销后置步骤成功。现已在 `pr-only` 内补充绑定精确远端 `master` SHA 的无发布副作用签名候选路径，
+可生成五 APK、校验和、说明与机器可读来源清单；代码和离线故障测试已完成，仍待首次远端候选实跑。
+正式 tag/Release、设备提升门禁与索引写入继续保持禁用，M4-D-4 不阻塞 M4-E。
 
 M5-A 至 M5-E 已全部完成。`v1.3.0` / build 20 在同一 APK 中正式加入独立 Launcher 和 14 类型离线
 编辑器，同时保持原 Binder 契约、applicationId 与签名证书。签名 minified release 已从 v1.2.0 在
@@ -192,7 +194,10 @@ M4-D-3 验收条件: 在不保护 `master` 的治理选择下，受控成功样�
 
 - [x] (发布/安全/预检) 建立与合并控制器隔离的 `.github/workflows/opencc-release.yml` 和 `opencc-release` GitHub Environment；仅允许 `master`、不设人工审批或等待时间。真实 Actions 预检在临时目录恢复 keystore，核对固定 keystore/证书 SHA-256，并以别名、store password 与 key password 签署一次性 JAR；不缓存或上传任何签名材料，退出时删除临时文件。
 - [x] (发布/索引/预检) GitHub App 私钥仅存于 Environment secret，Client ID 存于 Environment variable；控制器固定 `actions/create-github-app-token` v3.2.0 commit，以推荐的 `client-id` 输入申请只含 `Actions: write`、只覆盖 `SuperMonster003/AutoJs6-Official-Plugins-Index` 的短期 token，确认 `plugin-index.yml` active 后由 action 自动吊销。在线 run 33709691193 全绿且未 dispatch 索引、未创建 tag/Release/commit。
-- [ ] (发布/安全) 将已验证的无副作用入口扩展为候选构建与发布控制器；签名材料继续仅来自加密 secrets，日志、缓存和 artifact 均不得包含 keystore/口令。没有完整签名配置时只生成可审计候选，不降级为未签名发布。
+- [x] (发布/安全/候选) 将已验证的无副作用入口扩展为签名候选控制器；仅接受显式 40 位 SHA 与 event/local/远端 `master` 四方一致且仓库模式仍为 `pr-only` 的手动调用。签名材料只进入单个构建步骤并在后续校验前清除；候选 artifact 精确限制为五 APK、校验和、说明与 `CANDIDATE.json`，不缓存/上传 keystore 或口令，也不创建 tag/Release/索引 dispatch。
+- [x] (发布/候选门禁) 复用正式 APK 深度门禁核对精确 ABI、Manifest/applicationId/唯一权限与组件面、API AAR、R8/JNI、官方资源、唯一静态 native、ELF 16 KB/RELRO，并追加 `zipalign -P 16`、签名证书与 v1.3.0 发布基线连续性、逐 ABI 512 KiB/25% 双重体积上限、包内签名材料禁入和八文件清单；28 个 release 工具离线测试与 `actionlint` 已通过。
+- [ ] (CI/在线验收) 从精确远端 `master` 手动执行一次 `candidate`，回读 Actions artifact 的八文件清单、`CANDIDATE.json` source/version/build/signer、五 APK 大小与 SHA-256；确认 job 无发布权限、GitHub App 私钥未进入候选 job、临时签名材料清理且 tag/Release/索引均无变化。
+- [ ] (发布/安全) 在候选在线验收后继续实现 draft/final 发布控制器；签名材料仍仅来自加密 secrets。没有完整签名配置或任一候选门禁失败时不得降级为未签名发布。
 - [ ] (发布) 为纯 OpenCC 依赖升级定义确定性的版本/build 递增、十语言 changelog/迁移记录生成和兼容性分类；API、权限、applicationId、签名或许可证发生非白名单变化时自动停止并退回 `pr-only`。
 - [ ] (发布/测试) 从刚合并且精确固定的 `master` commit 重建 5 个签名 APK，复跑签名连续性、四 ABI、R8、ELF/ZIP 16 KB、Binder 4 KB/16 KB、资源摘要与 APK 体积门禁；原子创建 tag、GitHub Release、`SHA256SUMS.txt` 和 release notes，并从 GitHub 回读全部资产名称/大小/SHA-256。
 - [ ] (发布/索引) Release 回读一致后才显式 dispatch 插件索引更新并回读线上条目；tag/Release/索引任一步已有冲突、版本倒退或内容不一致时停止，不覆盖既有正式版本。合并由 `GITHUB_TOKEN` 产生时显式 dispatch 发布工作流，不依赖不会触发的递归 push 事件。

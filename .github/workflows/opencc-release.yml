@@ -2,6 +2,19 @@ name: OpenCC trusted release
 
 on:
   workflow_dispatch:
+    inputs:
+      operation:
+        description: Trusted release-controller operation
+        required: true
+        default: preflight
+        type: choice
+        options:
+          - preflight
+          - candidate
+      source_sha:
+        description: Exact master commit to build (required for candidate)
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -13,6 +26,7 @@ concurrency:
 jobs:
   verify-release-environment:
     name: Verify isolated signing and index credentials
+    if: ${{ inputs.operation == 'preflight' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment:
@@ -30,7 +44,7 @@ jobs:
           test "${{ github.event.repository.default_branch }}" = master
 
       - name: Set up Java for isolated signer verification
-        uses: actions/setup-java@v6
+        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6
         with:
           distribution: temurin
           java-version: "21"
@@ -132,3 +146,241 @@ jobs:
             echo '- Target workflow: `Plugin Index` (`plugin-index.yml`, active)'
             echo '- Side effects: none; the short-lived token is revoked by the action post-step'
           } >> "${GITHUB_STEP_SUMMARY}"
+
+  build-signed-candidate:
+    name: Build signed candidate from exact master SHA
+    if: ${{ inputs.operation == 'candidate' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment:
+      name: opencc-release
+
+    steps:
+      - name: Require the trusted candidate deployment context
+        shell: bash
+        env:
+          EXPECTED_REPOSITORY: SuperMonster003/AutoJs6-Plugin-OpenCC
+          AUTOMATION_MODE: ${{ vars.OPENCC_AUTOMATION_MODE }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REPOSITORY}" = "${EXPECTED_REPOSITORY}"
+          test "${GITHUB_EVENT_NAME}" = workflow_dispatch
+          test "${GITHUB_REF}" = refs/heads/master
+          test "${{ github.event.repository.default_branch }}" = master
+          test "${AUTOMATION_MODE}" = pr-only
+          [[ "${SOURCE_SHA}" =~ ^[0-9a-f]{40}$ ]]
+          test "${SOURCE_SHA}" = "${GITHUB_SHA}"
+
+      - name: Check out the exact candidate source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ inputs.source_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+          submodules: recursive
+
+      - name: Set up Java
+        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.13"
+
+      - name: Bind the checkout to the current remote master
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          set -euo pipefail
+          remote_master_sha="$(
+            gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/master" --jq '.object.sha'
+          )"
+          test "${remote_master_sha}" = "${SOURCE_SHA}"
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          test "$(git status --porcelain=v1 --untracked-files=no)" = ""
+          if git submodule status --recursive | grep -Eq '^[+-U]'; then
+            echo 'A submodule is missing, conflicted, or differs from the pinned commit.' >&2
+            exit 1
+          fi
+
+      - name: Test release tooling and pinned OpenCC inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s scripts/release/tests -p "test_*.py"
+          python scripts/opencc/verify_upstream.py --root .
+
+      - name: Build signed APKs with ephemeral credentials
+        shell: bash
+        env:
+          KEYSTORE_BASE64: ${{ secrets.OPENCC_RELEASE_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.OPENCC_RELEASE_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.OPENCC_RELEASE_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.OPENCC_RELEASE_KEY_PASSWORD }}
+          EXPECTED_KEYSTORE_SHA256: ${{ vars.OPENCC_RELEASE_EXPECTED_KEYSTORE_SHA256 }}
+          EXPECTED_CERT_SHA256: ${{ vars.OPENCC_RELEASE_EXPECTED_CERT_SHA256 }}
+        run: |
+          set -euo pipefail
+          set +x
+          : "${KEYSTORE_BASE64:?Missing release keystore secret}"
+          : "${STORE_PASSWORD:?Missing release store-password secret}"
+          : "${KEY_ALIAS:?Missing release key-alias secret}"
+          : "${KEY_PASSWORD:?Missing release key-password secret}"
+          : "${EXPECTED_KEYSTORE_SHA256:?Missing expected keystore digest variable}"
+          : "${EXPECTED_CERT_SHA256:?Missing expected certificate digest variable}"
+
+          signing_directory="${RUNNER_TEMP}/opencc-candidate-signing"
+          signing_properties="${GITHUB_WORKSPACE}/sign.properties"
+          test ! -e "${signing_directory}"
+          test ! -e "${signing_properties}"
+          mkdir -m 700 "${signing_directory}"
+          umask 077
+
+          cleanup_signing_material() {
+            rm -f -- "${signing_properties}"
+            rm -rf -- "${signing_directory}"
+          }
+          trap cleanup_signing_material EXIT HUP INT TERM
+
+          keystore="${signing_directory}/release.jks"
+          certificate="${signing_directory}/release-certificate.der"
+          printf '%s' "${KEYSTORE_BASE64}" | base64 --decode > "${keystore}"
+          actual_keystore_sha256="$(sha256sum "${keystore}" | awk '{print toupper($1)}')"
+          test "${actual_keystore_sha256}" = "${EXPECTED_KEYSTORE_SHA256}"
+
+          keytool -exportcert \
+            -keystore "${keystore}" \
+            -alias "${KEY_ALIAS}" \
+            -storepass:env STORE_PASSWORD \
+            > "${certificate}"
+          actual_certificate_sha256="$(sha256sum "${certificate}" | awk '{print toupper($1)}')"
+          test "${actual_certificate_sha256}" = "${EXPECTED_CERT_SHA256}"
+
+          python - "${signing_properties}" "${keystore}" <<'PY'
+          import os
+          import pathlib
+          import sys
+
+          def escape_property(value: str) -> str:
+              if not value or "\0" in value:
+                  raise SystemExit("Signing properties must be non-empty and contain no NUL")
+              escaped = []
+              replacements = {"\\": "\\\\", "\t": "\\t", "\n": "\\n", "\r": "\\r", "\f": "\\f"}
+              for character in value:
+                  if character in replacements:
+                      escaped.append(replacements[character])
+                  elif character in " =:#!":
+                      escaped.append("\\" + character)
+                  elif 0x20 <= ord(character) <= 0x7E:
+                      escaped.append(character)
+                  else:
+                      encoded = character.encode("utf-16-be")
+                      escaped.extend(
+                          f"\\u{int.from_bytes(encoded[offset:offset + 2], 'big'):04x}"
+                          for offset in range(0, len(encoded), 2)
+                      )
+              return "".join(escaped)
+
+          destination = pathlib.Path(sys.argv[1])
+          values = {
+              "storeFile": sys.argv[2],
+              "storePassword": os.environ["STORE_PASSWORD"],
+              "keyAlias": os.environ["KEY_ALIAS"],
+              "keyPassword": os.environ["KEY_PASSWORD"],
+          }
+          flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+          descriptor = os.open(destination, flags, 0o600)
+          with os.fdopen(descriptor, "w", encoding="ascii", newline="\n") as stream:
+              for key, value in values.items():
+                  stream.write(f"{key}={escape_property(value)}\n")
+          PY
+
+          unset KEYSTORE_BASE64 STORE_PASSWORD KEY_ALIAS KEY_PASSWORD
+          bash ./gradlew :app:assembleRelease --no-daemon --stacktrace
+
+          cleanup_signing_material
+          trap - EXIT HUP INT TERM
+          test ! -e "${signing_properties}"
+          test ! -e "${signing_directory}"
+
+      - name: Verify and package the public candidate bundle
+        id: candidate
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          EXPECTED_CERT_SHA256: ${{ vars.OPENCC_RELEASE_EXPECTED_CERT_SHA256 }}
+        run: |
+          set -euo pipefail
+          test ! -e "${GITHUB_WORKSPACE}/sign.properties"
+          test ! -e "${RUNNER_TEMP}/opencc-candidate-signing"
+          test "$(git status --porcelain=v1 --untracked-files=no)" = ""
+
+          python scripts/ci/verify_apk_variants.py \
+            app/build/outputs/apk/release \
+            --build-type release
+
+          apksigner="$(
+            python -c 'from scripts.release.prepare_release import find_apksigner; print(find_apksigner())'
+          )"
+          zipalign="$(dirname "${apksigner}")/zipalign"
+          test -x "${zipalign}"
+          for apk in app/build/outputs/apk/release/*.apk; do
+            "${zipalign}" -c -P 16 -v 4 "${apk}"
+          done
+
+          python scripts/release/prepare_release.py \
+            --skip-build \
+            --apksigner "${apksigner}"
+          python scripts/release/prepare_candidate.py \
+            --source-sha "${SOURCE_SHA}" \
+            --expected-signer-sha256 "${EXPECTED_CERT_SHA256}" \
+            --apksigner "${apksigner}"
+
+          version_name="$(sed -n 's/^VERSION_NAME=//p' version.properties)"
+          version_build="$(sed -n 's/^VERSION_BUILD=//p' version.properties)"
+          [[ "${version_name}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          [[ "${version_build}" =~ ^[1-9][0-9]*$ ]]
+          bundle_path="build/release/v${version_name}"
+          test -f "${bundle_path}/CANDIDATE.json"
+          test "$(find "${bundle_path}" -mindepth 1 -maxdepth 1 -type f | wc -l)" -eq 8
+
+          echo "bundle_path=${bundle_path}" >> "${GITHUB_OUTPUT}"
+          echo "artifact_name=opencc-signed-candidate-v${version_name}-build${version_build}-${SOURCE_SHA:0:12}" \
+            >> "${GITHUB_OUTPUT}"
+
+          {
+            echo '## Signed OpenCC candidate'
+            echo
+            echo "- Source commit: \`${SOURCE_SHA}\`"
+            echo "- Version/build: \`v${version_name}\` / \`${version_build}\`"
+            echo "- Signer certificate SHA-256: \`${EXPECTED_CERT_SHA256}\`"
+            echo '- APKs: five signed, minified variants; ABI/Manifest/R8/OpenCC/ELF/ZIP gates passed'
+            echo '- Bundle: five APKs, `SHA256SUMS.txt`, `RELEASE_NOTES.md`, and `CANDIDATE.json`'
+            echo '- Publication side effects: none; no tag, Release, or index dispatch was created'
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+      - name: Upload the public signed candidate only
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: ${{ steps.candidate.outputs.artifact_name }}
+          path: ${{ steps.candidate.outputs.bundle_path }}
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+          include-hidden-files: false
+
+      - name: Remove residual signing material
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f -- "${GITHUB_WORKSPACE}/sign.properties"
+          rm -rf -- "${RUNNER_TEMP}/opencc-candidate-signing"
+          test ! -e "${GITHUB_WORKSPACE}/sign.properties"
+          test ! -e "${RUNNER_TEMP}/opencc-candidate-signing"
