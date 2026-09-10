@@ -105,6 +105,9 @@ dependencies {
     implementation(files("$rootDir/libs/opencc-api.aar"))
     implementation(project(":opencc-native"))
 
+    implementation(libs.appcompat)
+    implementation(libs.material)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.test.ext.junit)
     androidTestImplementation(libs.test.runner)

@@ -111,13 +111,23 @@ class OpenccDualEntryTest {
                 PackageManager.GET_PERMISSIONS,
         )
         assertEquals(
-            "The final APK must request only the existing AutoJs6 plugin permission",
-            setOf(PLUGIN_PERMISSION),
+            "The final APK must request exactly the plugin and update-check permissions",
+            setOf(
+                PLUGIN_PERMISSION,
+                android.Manifest.permission.INTERNET,
+                "${context.packageName}$DYNAMIC_RECEIVER_PERMISSION_SUFFIX",
+            ),
             packageInfo.requestedPermissions.orEmpty().toSet(),
         )
         assertEquals(
             "The final APK activity inventory changed",
-            setOf(OpenccActivity::class.java.name, WakeActivity::class.java.name),
+            setOf(
+                OpenccActivity::class.java.name,
+                WakeActivity::class.java.name,
+                AppSettingsActivity::class.java.name,
+                AboutActivity::class.java.name,
+                ReleaseHistoryActivity::class.java.name,
+            ),
             packageInfo.activities.orEmpty().map { it.name }.toSet(),
         )
         assertEquals(
@@ -203,11 +213,27 @@ class OpenccDualEntryTest {
             0,
             packageInfo.applicationInfo!!.flags and android.content.pm.ApplicationInfo.FLAG_USES_CLEARTEXT_TRAFFIC,
         )
-        assertFalse(
-            "The standalone APK must remain offline",
-            packageManager.checkPermission(android.Manifest.permission.INTERNET, context.packageName) ==
-                PackageManager.PERMISSION_GRANTED,
+        assertEquals(
+            "The APK must hold INTERNET for update checks",
+            PackageManager.PERMISSION_GRANTED,
+            packageManager.checkPermission(android.Manifest.permission.INTERNET, context.packageName),
         )
+
+        for (internalActivity in listOf(
+            AppSettingsActivity::class.java,
+            AboutActivity::class.java,
+            ReleaseHistoryActivity::class.java,
+        )) {
+            val internalInfo = packageManager.getActivityInfo(
+                ComponentName(context, internalActivity),
+                0,
+            )
+            assertFalse("${internalActivity.simpleName} must stay unexported", internalInfo.exported)
+            assertNull(
+                "${internalActivity.simpleName} must not require a permission",
+                internalInfo.permission,
+            )
+        }
     }
 
     private fun assertLegacyV1Transactions(rawBinder: IBinder) {
@@ -316,6 +342,12 @@ class OpenccDualEntryTest {
 
     private companion object {
         const val PLUGIN_PERMISSION = "org.autojs.permission.PLUGIN"
+
+        /**
+         * Self-owned signature permission injected by androidx.core (targetSdk >= 33) to
+         * back-port RECEIVER_NOT_EXPORTED semantics; grants nothing to other applications.
+         */
+        const val DYNAMIC_RECEIVER_PERMISSION_SUFFIX = ".DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
         const val WAKE_ACTION = "org.autojs.plugin.action.WAKE"
         const val LEGACY_GET_INFO_TRANSACTION = 1
         const val LEGACY_CONVERT_TRANSACTION = 2

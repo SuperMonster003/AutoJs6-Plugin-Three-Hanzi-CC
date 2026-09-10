@@ -1,6 +1,12 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="org.autojs.permission.PLUGIN" />
+
+    <queries>
+        <package android:name="org.autojs.autojs6" />
+    </queries>
 
     <application
         android:allowBackup="false"
@@ -44,6 +50,24 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".AppSettingsActivity"
+            android:exported="false"
+            android:parentActivityName=".OpenccActivity"
+            android:theme="@style/Theme.Opencc" />
+
+        <activity
+            android:name=".AboutActivity"
+            android:exported="false"
+            android:parentActivityName=".AppSettingsActivity"
+            android:theme="@style/Theme.Opencc" />
+
+        <activity
+            android:name=".ReleaseHistoryActivity"
+            android:exported="false"
+            android:parentActivityName=".AppSettingsActivity"
+            android:theme="@style/Theme.Opencc" />
+
         <service
             android:name=".OpenccPluginService"
             android:exported="true"
@@ -53,6 +77,19 @@
                 <category android:name="opencc" />
             </intent-filter>
         </service>
+
+        <!-- Both libraries below ship auto-start components; this plugin must expose zero
+             providers and receivers (enforced by CI and instrumentation tests). -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            tools:ignore="MissingClass"
+            tools:node="remove" />
+
+        <receiver
+            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+            tools:ignore="MissingClass"
+            tools:node="remove" />
 
     </application>
 

@@ -51,6 +51,13 @@ class VerifyApkVariantsTest(unittest.TestCase):
                 ),
             ],
         )
+        internal_activities = [
+            element(
+                "activity",
+                {"name": f"{package_name}.{short_name}", "exported": False},
+            )
+            for short_name in verify_apk_variants.INTERNAL_ACTIVITY_NAMES
+        ]
         service = element(
             "service",
             {
@@ -74,6 +81,11 @@ class VerifyApkVariantsTest(unittest.TestCase):
             {"package": package_name},
             [
                 element("uses-permission", {"name": permission}),
+                element("uses-permission", {"name": verify_apk_variants.INTERNET_PERMISSION}),
+                element(
+                    "uses-permission",
+                    {"name": verify_apk_variants.DYNAMIC_RECEIVER_PERMISSION},
+                ),
                 element(
                     "application",
                     {
@@ -81,7 +93,7 @@ class VerifyApkVariantsTest(unittest.TestCase):
                         "usesCleartextTraffic": False,
                         "localeConfig": 0x7F110001,
                     },
-                    [launcher, wake, service],
+                    [launcher, wake, *internal_activities, service],
                 ),
             ],
         )
@@ -113,16 +125,64 @@ class VerifyApkVariantsTest(unittest.TestCase):
     def test_expected_manifest_surface_passes(self) -> None:
         verify_apk_variants.verify_manifest_tree(self.expected_manifest(), "fixture.apk")
 
-    def test_internet_permission_is_rejected(self) -> None:
+    def test_missing_internet_permission_is_rejected(self) -> None:
+        manifest = self.expected_manifest()
+        manifest.children = [
+            child
+            for child in manifest.children
+            if child.attributes.get("name") != verify_apk_variants.INTERNET_PERMISSION
+        ]
+        with self.assertRaisesRegex(verify_apk_variants.VerificationError, "permissions mismatch"):
+            verify_apk_variants.verify_manifest_tree(manifest, "fixture.apk")
+
+    def test_unexpected_permission_is_rejected(self) -> None:
         manifest = self.expected_manifest()
         manifest.children.insert(
             0,
             verify_apk_variants.ManifestElement(
                 "uses-permission",
-                {"name": "android.permission.INTERNET"},
+                {"name": "android.permission.ACCESS_NETWORK_STATE"},
             ),
         )
         with self.assertRaisesRegex(verify_apk_variants.VerificationError, "permissions mismatch"):
+            verify_apk_variants.verify_manifest_tree(manifest, "fixture.apk")
+
+    def test_exported_settings_activity_is_rejected(self) -> None:
+        manifest = deepcopy(self.expected_manifest())
+        application = next(child for child in manifest.children if child.name == "application")
+        settings = next(
+            child
+            for child in application.children
+            if child.attributes.get("name", "").endswith(".AppSettingsActivity")
+        )
+        settings.attributes["exported"] = True
+        with self.assertRaisesRegex(verify_apk_variants.VerificationError, "'exported' mismatch"):
+            verify_apk_variants.verify_manifest_tree(manifest, "fixture.apk")
+
+    def test_settings_activity_intent_filter_is_rejected(self) -> None:
+        manifest = deepcopy(self.expected_manifest())
+        application = next(child for child in manifest.children if child.name == "application")
+        settings = next(
+            child
+            for child in application.children
+            if child.attributes.get("name", "").endswith(".AppSettingsActivity")
+        )
+        settings.children.append(
+            verify_apk_variants.ManifestElement(
+                "intent-filter",
+                {},
+                [
+                    verify_apk_variants.ManifestElement(
+                        "action",
+                        {"name": "android.intent.action.VIEW"},
+                    ),
+                ],
+            ),
+        )
+        with self.assertRaisesRegex(
+            verify_apk_variants.VerificationError,
+            "must not declare intent filters",
+        ):
             verify_apk_variants.verify_manifest_tree(manifest, "fixture.apk")
 
     def test_manifest_receiver_is_rejected(self) -> None:

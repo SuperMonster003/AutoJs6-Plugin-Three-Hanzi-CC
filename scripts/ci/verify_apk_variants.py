@@ -46,6 +46,12 @@ MINIMUM_ELF_ALIGNMENT = 16 * 1024
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 APPLICATION_ID = "io.github.supermonster003.autojs6.plugin.opencc"
 PLUGIN_PERMISSION = "org.autojs.permission.PLUGIN"
+INTERNET_PERMISSION = "android.permission.INTERNET"
+# Self-owned signature permission injected by androidx.core (targetSdk >= 33) to back-port
+# the RECEIVER_NOT_EXPORTED semantics; it grants no capability to other applications.
+DYNAMIC_RECEIVER_PERMISSION = f"{APPLICATION_ID}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+EXPECTED_PERMISSIONS = {PLUGIN_PERMISSION, INTERNET_PERMISSION, DYNAMIC_RECEIVER_PERMISSION}
+INTERNAL_ACTIVITY_NAMES = ("AppSettingsActivity", "AboutActivity", "ReleaseHistoryActivity")
 OPENCC_API_SHA256 = "5f3001e28fb4c4967b0a4faeb4547a41a679b35cbd209d272a6a79f7ba00ab45"
 NO_STRING_INDEX = 0xFFFFFFFF
 RES_XML_TYPE = 0x0003
@@ -345,10 +351,10 @@ def verify_manifest_tree(root: ManifestElement, label: str) -> None:
         child for child in root.children if child.name.startswith("uses-permission")
     ]
     requested_permissions = {element.attributes.get("name") for element in permission_elements}
-    if requested_permissions != {PLUGIN_PERMISSION}:
+    if requested_permissions != EXPECTED_PERMISSIONS:
         raise VerificationError(
             f"{label} requested permissions mismatch: "
-            f"expected={[PLUGIN_PERMISSION]}, actual={sorted(map(str, requested_permissions))}",
+            f"expected={sorted(EXPECTED_PERMISSIONS)}, actual={sorted(map(str, requested_permissions))}",
         )
 
     applications = _children(root, "application")
@@ -379,7 +385,7 @@ def verify_manifest_tree(root: ManifestElement, label: str) -> None:
     expected_activity_names = {
         f"{APPLICATION_ID}.OpenccActivity",
         f"{APPLICATION_ID}.WakeActivity",
-    }
+    } | {f"{APPLICATION_ID}.{short_name}" for short_name in INTERNAL_ACTIVITY_NAMES}
     if set(activities) != expected_activity_names:
         raise VerificationError(
             f"{label} activity inventory mismatch: expected={sorted(expected_activity_names)}, "
@@ -431,6 +437,27 @@ def verify_manifest_tree(root: ManifestElement, label: str) -> None:
     ]
     if _intent_filters(wake) != expected_wake_filter:
         raise VerificationError(f"{label} WakeActivity intent filters changed")
+
+    for short_name in INTERNAL_ACTIVITY_NAMES:
+        internal = activities[f"{APPLICATION_ID}.{short_name}"]
+        _require_attributes(
+            internal,
+            short_name,
+            {"exported": False},
+            {
+                "permission",
+                "process",
+                "taskAffinity",
+                "allowTaskReparenting",
+                "documentLaunchMode",
+                "excludeFromRecents",
+                "finishOnTaskLaunch",
+                "launchMode",
+                "noHistory",
+            },
+        )
+        if _intent_filters(internal):
+            raise VerificationError(f"{label} {short_name} must not declare intent filters")
 
     services = _component_map(application, "service")
     expected_service_name = f"{APPLICATION_ID}.OpenccPluginService"

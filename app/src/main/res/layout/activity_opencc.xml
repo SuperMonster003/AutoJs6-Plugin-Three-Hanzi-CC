@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/standalone_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -15,21 +16,46 @@
         android:paddingEnd="@dimen/opencc_page_horizontal_padding"
         android:paddingBottom="32dp">
 
-        <TextView
-            android:id="@+id/standalone_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:accessibilityHeading="true"
-            android:text="@string/app_name"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textStyle="bold" />
-
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/standalone_subtitle"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/standalone_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:accessibilityHeading="true"
+                    android:text="@string/app_name"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/standalone_subtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/standalone_subtitle"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/overflow_menu_button"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/standalone_more_options"
+                android:scaleType="center"
+                android:src="@drawable/ic_more_vert_24" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/source_text_label"
@@ -56,17 +82,16 @@
             android:nextFocusForward="@id/paste_button"
             android:overScrollMode="ifContentScrolls"
             android:padding="12dp"
-            android:scrollbars="vertical" />
+            android:scrollbars="vertical"
+            tools:ignore="LabelFor" />
 
         <LinearLayout
-            style="?android:attr/buttonBarStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:orientation="horizontal">
 
             <Button
-                style="?android:attr/buttonBarButtonStyle"
                 android:id="@+id/paste_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -77,7 +102,6 @@
                 android:textAllCaps="false" />
 
             <Button
-                style="?android:attr/buttonBarButtonStyle"
                 android:id="@+id/clear_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -90,15 +114,34 @@
                 android:textAllCaps="false" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/conversion_type_label"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:labelFor="@id/conversion_type"
-            android:text="@string/standalone_conversion_type_label"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textStyle="bold" />
+            android:layout_marginTop="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/conversion_type_label"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:labelFor="@id/conversion_type"
+                android:text="@string/standalone_conversion_type_label"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/invert_type_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:minHeight="48dp"
+                android:minWidth="48dp"
+                android:nextFocusForward="@id/convert_button"
+                android:text="@string/standalone_invert_conversion"
+                android:textAllCaps="false" />
+        </LinearLayout>
 
         <Spinner
             android:id="@+id/conversion_type"
@@ -186,14 +229,12 @@
             android:textIsSelectable="true" />
 
         <LinearLayout
-            style="?android:attr/buttonBarStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:orientation="horizontal">
 
             <Button
-                style="?android:attr/buttonBarButtonStyle"
                 android:id="@+id/copy_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -205,7 +246,6 @@
                 android:textAllCaps="false" />
 
             <Button
-                style="?android:attr/buttonBarButtonStyle"
                 android:id="@+id/swap_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -218,7 +258,6 @@
                 android:textAllCaps="false" />
 
             <Button
-                style="?android:attr/buttonBarButtonStyle"
                 android:id="@+id/share_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

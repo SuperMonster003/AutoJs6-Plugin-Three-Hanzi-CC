@@ -1,10 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.Opencc" parent="@android:style/Theme.Material.Light.NoActionBar">
+    <style name="Theme.Opencc" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/opencc_brand_primary</item>
+        <item name="colorAccent">@color/opencc_accent</item>
+        <item name="colorSurface">@color/opencc_surface</item>
+        <item name="colorSurfaceVariant">@color/opencc_surface_variant</item>
+        <item name="colorOutline">@color/opencc_outline</item>
+        <item name="colorError">@color/opencc_error</item>
+        <item name="colorOnSurface">@color/opencc_text_primary</item>
+        <item name="colorOnSurfaceVariant">@color/opencc_text_secondary</item>
+        <item name="android:textColorPrimary">@color/opencc_text_primary</item>
+        <item name="android:textColorSecondary">@color/opencc_text_secondary</item>
         <item name="android:colorAccent">@color/opencc_accent</item>
         <item name="android:navigationBarColor">@color/opencc_system_bar</item>
         <item name="android:statusBarColor">@color/opencc_system_bar</item>
         <item name="android:windowBackground">@color/opencc_window_background</item>
         <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <style name="AppToolbarTitle" parent="TextAppearance.AppCompat.Title">
+        <item name="android:textSize">20sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="AppToolbarSubtitle" parent="TextAppearance.AppCompat.Subhead">
+        <item name="android:textSize">13sp</item>
     </style>
 </resources>

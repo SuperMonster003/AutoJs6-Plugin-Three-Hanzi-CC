@@ -1,30 +1,39 @@
 package io.github.supermonster003.autojs6.plugin.opencc
 
-import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.text.BidiFormatter
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.KeyEvent
+import android.view.Menu
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.PopupMenu
 import android.widget.ProgressBar
 import android.widget.Spinner
 import android.widget.TextView
+import com.google.android.material.button.MaterialButton
 import io.github.supermonster003.autojs6.plugin.opencc.nativebridge.OpenccConversionType
+import io.github.supermonster003.autojs6.plugin.opencc.ui.Ui
+import io.github.supermonster003.autojs6.plugin.opencc.ui.accentRipple
+import io.github.supermonster003.autojs6.plugin.opencc.ui.accentTone
+import io.github.supermonster003.autojs6.plugin.opencc.ui.applySystemBarInsets
+import io.github.supermonster003.autojs6.plugin.opencc.ui.roundedFill
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 
 /** Launcher entry point for the standalone, fully offline OpenCC experience. */
-class OpenccActivity : Activity() {
+class OpenccActivity : ConfiguredActivity() {
 
     private val coordinator by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
         OpenccConversionCoordinator.get(applicationContext)
@@ -33,6 +42,8 @@ class OpenccActivity : Activity() {
     private val conversionExecutor: ExecutorService = Executors.newSingleThreadExecutor { command ->
         Thread(command, "opencc-ui-conversion").apply { isDaemon = true }
     }
+    private val uiPreferences by lazy { OpenccUiPreferences(this) }
+    private val updateController by lazy { AppUpdateController(this, AppUpdateSettingsStore(this)) }
 
     private lateinit var sourceText: EditText
     private lateinit var conversionType: Spinner
@@ -40,6 +51,8 @@ class OpenccActivity : Activity() {
     private lateinit var clearButton: Button
     private lateinit var convertButton: Button
     private lateinit var cancelButton: Button
+    private lateinit var invertButton: Button
+    private lateinit var overflowButton: ImageButton
     private lateinit var progress: ProgressBar
     private lateinit var resultText: TextView
     private lateinit var copyButton: Button
@@ -60,6 +73,8 @@ class OpenccActivity : Activity() {
         clearButton = findViewById(R.id.clear_button)
         convertButton = findViewById(R.id.convert_button)
         cancelButton = findViewById(R.id.cancel_button)
+        invertButton = findViewById(R.id.invert_type_button)
+        overflowButton = findViewById(R.id.overflow_menu_button)
         progress = findViewById(R.id.conversion_progress)
         resultText = findViewById(R.id.result_text)
         copyButton = findViewById(R.id.copy_button)
@@ -95,7 +110,7 @@ class OpenccActivity : Activity() {
             resultText.text = restoredState.result
             conversionType.setSelection(restoredState.typeIndex)
         } else {
-            conversionType.setSelection(DEFAULT_TYPE_INDEX)
+            conversionType.setSelection(initialConversionTypeIndex())
         }
 
         sourceText.addTextChangedListener(object : TextWatcher {
@@ -126,6 +141,9 @@ class OpenccActivity : Activity() {
                 id: Long,
             ) {
                 if (activeConversion != null) cancelConversion(announce = true)
+                if (uiPreferences.rememberConversionType && position in conversionTypes.indices) {
+                    uiPreferences.lastConversionTypeIndex = position
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) = Unit
@@ -135,10 +153,15 @@ class OpenccActivity : Activity() {
         clearButton.setOnClickListener { clearText() }
         convertButton.setOnClickListener { startConversion() }
         cancelButton.setOnClickListener { cancelConversion(announce = true) }
+        invertButton.setOnClickListener { invertConversionType() }
+        overflowButton.setOnClickListener { showOverflowMenu(it) }
         copyButton.setOnClickListener { copyResult() }
         swapButton.setOnClickListener { swapText() }
         shareButton.setOnClickListener { shareResult() }
+
+        applyPageStyling(root)
         updateActionAvailability()
+        window.decorView.post { updateController.checkAutomaticallyIfDue() }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -151,6 +174,7 @@ class OpenccActivity : Activity() {
     }
 
     override fun onDestroy() {
+        updateController.cancel()
         cancelConversion(announce = false)
         conversionExecutor.shutdownNow()
         super.onDestroy()
@@ -167,6 +191,162 @@ class OpenccActivity : Activity() {
             if (cancelConversion(announce = true)) return true
         }
         return super.dispatchKeyEvent(event)
+    }
+
+    private fun applyPageStyling(root: View) {
+        applyThemeToControls(root)
+        val palette = appPalette
+
+        findViewById<TextView>(R.id.standalone_title).apply {
+            setTextColor(palette.primaryText)
+            typeface = Ui.mediumTypeface
+            textSize = Ui.TEXT_DISPLAY
+        }
+        findViewById<TextView>(R.id.standalone_subtitle).apply {
+            setTextColor(palette.secondaryText)
+            textSize = Ui.TEXT_BODY
+            setLineSpacing(0f, Ui.LINE_SPACING_BODY)
+        }
+        listOf(R.id.source_text_label, R.id.conversion_type_label, R.id.result_text_label).forEach { labelId ->
+            findViewById<TextView>(labelId).apply {
+                setTextColor(palette.secondaryText)
+                typeface = Ui.mediumTypeface
+                textSize = Ui.TEXT_SECTION
+                letterSpacing = 0.05f
+            }
+        }
+        statusText.setTextColor(palette.secondaryText)
+        statusText.textSize = Ui.TEXT_BODY
+        findViewById<TextView>(R.id.runtime_identity).apply {
+            setTextColor(AppColorPolicy.withAlpha(palette.secondaryText, 0xCC))
+            textSize = Ui.TEXT_CAPTION
+        }
+
+        styleEditorSurface(sourceText)
+        styleEditorSurface(resultText)
+        listOf<TextView>(sourceText, resultText).forEach { editor ->
+            editor.setTextColor(palette.primaryText)
+            editor.setHintTextColor(AppColorPolicy.withAlpha(palette.secondaryText, 0xA6))
+        }
+
+        conversionType.backgroundTintList = ColorStateList.valueOf(palette.secondaryText)
+        conversionType.setPopupBackgroundDrawable(
+            roundedFill(palette.surface, Ui.RADIUS_CONTROL, palette.outline),
+        )
+
+        overflowButton.imageTintList = ColorStateList.valueOf(palette.secondaryText)
+
+        styleFilledButton(convertButton)
+        listOf(pasteButton, clearButton, cancelButton, copyButton, swapButton, shareButton)
+            .forEach(::styleTonalButton)
+        styleTextButton(invertButton)
+    }
+
+    private fun styleEditorSurface(editor: TextView) {
+        fun refresh() {
+            editor.background = roundedFill(
+                appPalette.surface,
+                Ui.RADIUS_CARD,
+                if (editor.isFocused) appPalette.accent else appPalette.outline,
+            )
+            editor.backgroundTintList = null
+        }
+        refresh()
+        editor.setOnFocusChangeListener { _, _ -> refresh() }
+    }
+
+    private fun styleFilledButton(button: Button) {
+        val palette = appPalette
+        styleActionButton(
+            button,
+            fill = enabledStateColors(palette.primary, AppColorPolicy.withAlpha(palette.secondaryText, 0x1F)),
+            text = enabledStateColors(palette.onPrimary, AppColorPolicy.withAlpha(palette.secondaryText, 0x99)),
+            rippleColor = accentRipple(palette.onPrimary),
+        )
+    }
+
+    private fun styleTonalButton(button: Button) {
+        val palette = appPalette
+        styleActionButton(
+            button,
+            fill = enabledStateColors(accentTone(palette.accent), AppColorPolicy.withAlpha(palette.secondaryText, 0x14)),
+            text = enabledStateColors(palette.accent, AppColorPolicy.withAlpha(palette.secondaryText, 0x77)),
+            rippleColor = accentRipple(palette.accent),
+        )
+    }
+
+    private fun styleTextButton(button: Button) {
+        val palette = appPalette
+        styleActionButton(
+            button,
+            fill = ColorStateList.valueOf(0x00000000),
+            text = enabledStateColors(palette.accent, AppColorPolicy.withAlpha(palette.secondaryText, 0x77)),
+            rippleColor = accentRipple(palette.accent),
+        )
+    }
+
+    private fun styleActionButton(button: Button, fill: ColorStateList, text: ColorStateList, rippleColor: Int) {
+        button.setTextColor(text)
+        button.typeface = Ui.mediumTypeface
+        button.textSize = Ui.TEXT_BODY
+        button.backgroundTintList = fill
+        if (button is MaterialButton) {
+            button.cornerRadius = uiDp(Ui.RADIUS_CONTROL)
+            button.rippleColor = ColorStateList.valueOf(rippleColor)
+            button.strokeWidth = 0
+        }
+    }
+
+    private fun enabledStateColors(enabled: Int, disabled: Int) = ColorStateList(
+        arrayOf(intArrayOf(-android.R.attr.state_enabled), intArrayOf()),
+        intArrayOf(disabled, enabled),
+    )
+
+    private fun initialConversionTypeIndex(): Int {
+        if (!uiPreferences.rememberConversionType) return DEFAULT_TYPE_INDEX
+        return uiPreferences.lastConversionTypeIndex.takeIf { it in conversionTypes.indices } ?: DEFAULT_TYPE_INDEX
+    }
+
+    private fun invertConversionType() {
+        cancelConversion(announce = false)
+        val currentIndex = conversionType.selectedItemPosition
+            .takeIf { it in conversionTypes.indices }
+            ?: DEFAULT_TYPE_INDEX
+        val inverted = inverseConversionType(conversionTypes[currentIndex])
+        conversionType.setSelection(conversionTypes.indexOf(inverted))
+    }
+
+    private fun inverseConversionType(type: OpenccConversionType): OpenccConversionType = when (type) {
+        OpenccConversionType.S2T -> OpenccConversionType.T2S
+        OpenccConversionType.T2S -> OpenccConversionType.S2T
+        OpenccConversionType.S2TW -> OpenccConversionType.TW2S
+        OpenccConversionType.TW2S -> OpenccConversionType.S2TW
+        OpenccConversionType.S2TWP -> OpenccConversionType.TW2SP
+        OpenccConversionType.TW2SP -> OpenccConversionType.S2TWP
+        OpenccConversionType.S2HK -> OpenccConversionType.HK2S
+        OpenccConversionType.HK2S -> OpenccConversionType.S2HK
+        OpenccConversionType.T2TW -> OpenccConversionType.TW2T
+        OpenccConversionType.TW2T -> OpenccConversionType.T2TW
+        OpenccConversionType.T2HK -> OpenccConversionType.HK2T
+        OpenccConversionType.HK2T -> OpenccConversionType.T2HK
+        OpenccConversionType.T2JP -> OpenccConversionType.JP2T
+        OpenccConversionType.JP2T -> OpenccConversionType.T2JP
+    }
+
+    private fun showOverflowMenu(anchor: View) {
+        PopupMenu(this, anchor).apply {
+            menu.add(Menu.NONE, MENU_ITEM_SETTINGS, Menu.NONE, R.string.standalone_menu_settings)
+            setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    MENU_ITEM_SETTINGS -> {
+                        startActivity(Intent(this@OpenccActivity, AppSettingsActivity::class.java))
+                        true
+                    }
+                    else -> false
+                }
+            }
+            show()
+        }
     }
 
     private fun startConversion() {
@@ -362,26 +542,9 @@ class OpenccActivity : Activity() {
         }
     }
 
-    @Suppress("DEPRECATION")
-    private fun applySystemBarInsets(root: View) {
-        val initialLeft = root.paddingLeft
-        val initialTop = root.paddingTop
-        val initialRight = root.paddingRight
-        val initialBottom = root.paddingBottom
-        root.setOnApplyWindowInsetsListener { view, insets ->
-            view.setPadding(
-                initialLeft + insets.systemWindowInsetLeft,
-                initialTop + insets.systemWindowInsetTop,
-                initialRight + insets.systemWindowInsetRight,
-                initialBottom + insets.systemWindowInsetBottom,
-            )
-            insets
-        }
-        root.requestApplyInsets()
-    }
-
     private companion object {
         const val MIME_TYPE_PLAIN_TEXT = "text/plain"
+        const val MENU_ITEM_SETTINGS = 1
         val DEFAULT_TYPE_INDEX = OpenccConversionType.values().indexOf(OpenccConversionType.S2T)
     }
 }

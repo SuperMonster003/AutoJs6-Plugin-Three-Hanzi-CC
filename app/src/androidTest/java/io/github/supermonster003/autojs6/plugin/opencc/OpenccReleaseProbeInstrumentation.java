@@ -24,6 +24,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
@@ -95,18 +96,23 @@ public final class OpenccReleaseProbeInstrumentation extends Instrumentation {
             "Release target is debuggable"
         );
         requireEquals(
-            Collections.singletonList(PLUGIN_PERMISSION),
+            new HashSet<>(Arrays.asList(
+                PLUGIN_PERMISSION,
+                android.Manifest.permission.INTERNET,
+                // Self-owned signature permission injected by androidx.core (targetSdk >= 33).
+                context.getPackageName() + ".DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+            )),
             packageInfo.requestedPermissions == null
-                ? Collections.emptyList()
-                : Arrays.asList(packageInfo.requestedPermissions),
+                ? Collections.emptySet()
+                : new HashSet<>(Arrays.asList(packageInfo.requestedPermissions)),
             "Unexpected requested permissions"
         );
         require(
             packageManager.checkPermission(
                 android.Manifest.permission.INTERNET,
                 context.getPackageName()
-            ) != PackageManager.PERMISSION_GRANTED,
-            "Release target unexpectedly has INTERNET"
+            ) == PackageManager.PERMISSION_GRANTED,
+            "Release target must hold INTERNET for update checks"
         );
 
         Activity activity = launchStandalone(packageManager);

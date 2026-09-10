@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="opencc_accent">#9CCAFF</color>
+    <color name="opencc_brand_primary">#9CCAFF</color>
     <color name="opencc_window_background">#121316</color>
-    <color name="opencc_system_bar">#1B1C20</color>
+    <color name="opencc_system_bar">#121316</color>
+    <color name="opencc_surface">#1B1D21</color>
+    <color name="opencc_surface_variant">#24262C</color>
+    <color name="opencc_text_primary">#E8EAEE</color>
+    <color name="opencc_text_secondary">#9CA1AA</color>
+    <color name="opencc_divider">#282B31</color>
+    <color name="opencc_outline">#3A3E46</color>
+    <color name="opencc_error">#EF9A9A</color>
 </resources>
