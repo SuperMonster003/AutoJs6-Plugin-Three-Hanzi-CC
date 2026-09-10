@@ -3,6 +3,10 @@
 记录日期: 2026-09-03
 状态: Accepted（M5-A 至 M5-E 已完成；v1.3.0 于 2026-09-03 正式发布）
 
+> 注意: 文末的 M6 记录（2026-09-04）部分取代了本文件中“不引入 AppCompat / Material
+> Components / 网络依赖”“Manifest 仍没有 `INTERNET`”以及“恰好两个 Activity”的旧结论；
+> M5 段落按当时事实保留，不再回改。
+
 ## 结论
 
 同一个 APK 新增普通 `MAIN` / `LAUNCHER` Activity，同时原样保留 AutoJs6 的受权限保护
@@ -276,3 +280,126 @@ release 启动失败”，`verify_minified_release_runtime.sh` 已成为 Actions
 随后更新 `plugins.official.generated.json` 至提交 `3b9b47cf4acd306ab2de63638e1aa761c82c28ad`；线上
 OpenCC 条目为 v1.3.0 / build 20，包含精确五资产 URL/摘要，图标与 10 语言插件说明全部固定到同一标签。
 至此 M5-A 至 M5-E 的实现、设备、签名、发布与分发索引验收全部完成。
+
+## M6 独立 App UI 重设计与设置体系
+
+记录日期: 2026-09-04
+状态: Accepted（部分取代 M5-A 结论中的依赖与权限边界表述）
+
+### 动机与范围
+
+独立 App 的主页面此前是功能性的但视觉割裂，且缺少设置能力。M6 以 AutoJs6-Plugin-Three-Stone-AI
+的设置体系为参照，统一整个 App 的视觉语言，并新增设置 / 关于 / 版本历史三个页面，覆盖语言、
+暗色模式、主题色、检查更新（手动 + 自动 + 忽略管理）等继承自宿主生态的配置项。插件 Binder 契约、
+事务号、`OpenccConversionCoordinator` 共享架构与惰性资源安装完全不变。
+
+### 被取代的旧结论
+
+- M5-A「结论」中“不引入 Compose、AppCompat、Material Components、网络或分析依赖”改为:
+  仍不引入 Compose 与分析依赖；现引入 AppCompat 1.7.1 与 Material Components 1.13.0 作为
+  Material 3 主题与控件基础；网络仅使用平台 `HttpURLConnection` + `org.json`，不引入第三方网络框架。
+- 「Manifest、隐私与权限边界」中“Manifest 仍没有 `INTERNET`”改为: Manifest 现声明 `INTERNET`，
+  仅用于用户显式触发或按 12 小时节流的 GitHub Releases 更新检查；转换全流程仍完全离线。
+- 组件表由“两个 Activity + 一个 Service”扩展为下表；receiver/provider 仍为零
+  （androidx.startup `InitializationProvider` 与 `ProfileInstallReceiver` 经 `tools:node="remove"`
+  移除，合并清单已验证为 0 provider / 0 receiver，CI 门禁继续强制）。
+
+| 组件/能力 | exported | 权限 | 行为 |
+|---|---:|---|---|
+| `OpenccActivity` | `true` | 无 | `MAIN`/`LAUNCHER`；页内标题区 + 右上角三点菜单进入设置 |
+| `OpenccPluginService` | `true` | `org.autojs.permission.PLUGIN` | 既有 OpenCC Binder 契约，未改动 |
+| `WakeActivity` | `true` | `org.autojs.permission.PLUGIN` | 既有无界面唤醒协议，未改动 |
+| `AppSettingsActivity` | `false` | 无 | 设置页；仅应用内显式启动，无 intent-filter |
+| `AboutActivity` | `false` | 无 | 关于应用与开发者；仅应用内显式启动 |
+| `ReleaseHistoryActivity` | `false` | 无 | 版本历史（读取内置 CHANGELOG 资产）；仅应用内显式启动 |
+
+requested permissions 精确为三项: `org.autojs.permission.PLUGIN`、`android.permission.INTERNET`、
+以及 androidx.core 在 targetSdk 33+ 下注入的自持签名权限
+`<applicationId>.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`（回移植 `RECEIVER_NOT_EXPORTED`
+语义，不向任何其他应用授予能力）。`verify_apk_variants.py`、`OpenccDualEntryTest` 与
+`OpenccReleaseProbeInstrumentation` 均按该精确集合断言，缺失或多出任一权限都会失败。
+
+### 主要设计决策
+
+- **主题与品牌**: `Theme.Opencc` 继承 `Theme.Material3.DayNight.NoActionBar`；品牌主题色
+  `#005EA8`（夜间映射 `#9CCAFF`），另提供青/蓝/绿/紫四种可选主题色、自定义 RGB 与“跟随 AutoJs6”选项。
+  暗色模式支持 跟随 AutoJs6 / 跟随系统 / 始终关闭 / 始终开启。语言支持 跟随 AutoJs6 / 跟随系统 / 10 个内置 locale。
+  三项外观设置默认均跟随 AutoJs6；宿主契约不可用时，主题色回退 `#FFDEAD`，语言与日夜模式回退系统。
+- **程序化 UI 套件**: 设置/关于/版本历史页面由 `ui` 包（UiKit、AppScaffold、Rows、Cards、
+  Buttons、Dialogs、Feedback、SystemBarInsets）以代码构建，统一间距、圆角、涟漪、系统栏
+  内边距与日夜配色；主页面保留 XML（测试钉死其结构），二者共享同一调色板与度量。
+- **设置应用机制**: `ApplicationSettingsStore.save()` 递增单调 revision；`ConfiguredActivity.onResume`
+  比对 revision 与宿主外观签名后请求一次 `recreate()`，以实例标志抑制重复重建。“跟随 AutoJs6”通过
+  `ContentResolver.call(content://org.autojs.autojs6.plugin.settings, getSettings)` 读取版本化只读
+  ContentProvider 契约（内联常量，不依赖宿主类）；宿主未安装、被禁用或契约不可用时使用回退值并在
+  选择对话框说明，同时保留跟随意图，以便宿主恢复可用后重新跟随。设置仅保存在本应用的 SharedPreferences。
+- **更新检查**: `AppUpdateController` 手动检查即时执行；自动检查按 12 小时节流且在发起前记录
+  时间戳，网络失败静默（仅手动检查弹出错误）。忽略的版本可在“管理已忽略更新”中逐项恢复。
+  全部请求仅访问 GitHub Releases API，无任何遥测。
+- **主页面增强**: 标题区 + 副标题 + 三点溢出菜单；类型行新增 48 dp“反转方向”按钮
+  （14 种类型的双向映射穷举）；可配置“记住上次转换类型”。既有焦点链、48 dp 目标、
+  RTL、live region 与全部钉死的测试 ID/结构保持不变。
+
+### 验证证据（2026-09-04, 本地 Windows 工具链）
+
+- `:app:assembleDebug`、`:app:assembleDebugAndroidTest`、`:app:testDebugUnitTest`、
+  `:app:lintDebug`（0 error; 余下警告为版本建议/UseKtx/既有插件契约资源误报）、
+  `:app:assembleRelease`（R8 + `lintVitalRelease`）全部通过。
+- `verify_apk_variants.py` 对 debug 与 release 各五个真实 APK 全部输出 `APK_OK`
+  （组件全集、精确三权限、intent-filter、native/ELF/资源门禁）；CI 工具的 18 项 Python
+  单元测试（13 项 APK 检查 + 5 项多语言产物检查）通过，含新增的缺权限/多权限/内部 Activity 导出/intent-filter 四个负向用例。
+- `.readme/android_strings.json` 现为 113 key x 10 locale；`generate_markdown.py --check`
+  输出 `MARKDOWN_OK languages=10 artifacts=47`。
+- 设备端 instrumentation（`OpenccDualEntryTest`、`OpenccReleaseProbeInstrumentation`）已按
+  新权限集与五 Activity 清单适配并通过编译；本轮未在真机/模拟器重放，留待下一次
+  设备矩阵运行（含 `verify_minified_release_runtime.sh` API 24 门禁）。
+
+### 推进条件复核（2026-09-10）
+
+M6 的本地构建基线可用，可以继续专项测试与设备验收；当前候选发布控制器会被体积门禁阻断，
+正式发布还需补齐新功能测试、权限说明与递增版本。此次复核没有放宽任何自动化策略或发布门禁。
+
+复核命令与结果:
+
+- `py .python/generate_markdown.py --check`: `MARKDOWN_OK languages=10 artifacts=47`。
+- `py -m unittest discover -s <suite> -p "test_*.py"`: `scripts/ci/tests` 18 项、
+  `scripts/release/tests` 43 项、`scripts/opencc/tests` 51 项、`scripts/benchmark/tests` 8 项，全通过。
+- `gradlew.bat :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest :app:lintDebug :app:assembleRelease --console=plain`:
+  `BUILD SUCCESSFUL`，225 个任务（99 executed / 126 up-to-date）；JVM 测试任务复用已有结果，
+  三个既有用例零失败；Lint 零错误、57 个警告；仪器测试包仅完成构建。
+- `py scripts/ci/verify_apk_variants.py app/build/outputs/apk/debug --instrumentation-apk app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk`
+  与 release 目录的 `--build-type release` 检查均通过：十个 APK 的 Manifest、ABI、资源、
+  native/ELF 对齐等门禁无失败。此检查不包含候选发布的 APK 体积增长限制。
+- `py scripts/opencc/verify_upstream.py --root .` 与在线 `check_upstream.py --root .` 通过；
+  正式上游仍是 `ver.1.4.2` / `025f371dc76b598d77384fbdab90c937471844d8`，资源摘要未漂移。
+
+按 `scripts/release/candidate-baseline.json` 的真实 v1.3.0 资产大小与
+`prepare_candidate.maximum_candidate_size()` 的规则计算，五个 release APK 均不满足候选门禁。
+下表单位均为字节，上限为 `min(基线 + 524288, floor(基线 * 1.25))`；数据对应本地构建，
+不代表已生成或上传远端签名候选。
+
+| ABI | v1.3.0 基线 | M6 本地 release | 允许上限 | 增长 | 结果 |
+|---|---:|---:|---:|---:|---|
+| arm64-v8a | 1,553,948 | 3,786,389 | 1,942,435 | 143.66% | 超限 |
+| armeabi-v7a | 1,215,154 | 3,447,643 | 1,518,942 | 183.72% | 超限 |
+| x86_64 | 1,562,729 | 3,795,186 | 1,953,411 | 142.86% | 超限 |
+| x86 | 1,516,110 | 3,748,599 | 1,895,137 | 147.25% | 超限 |
+| universal | 3,889,481 | 6,121,938 | 4,413,769 | 57.40% | 超限 |
+
+此增量发生于引入 Material/AppCompat 与新页面之后，尚需用 DEX/资源清单细分归因。
+应先审阅并确定功能版本的发布方案；若接受该增量，待功能版本正式发布、资产回读一致后，
+再将其作为后续纯依赖升级的真实基线。不能用未发布的本地 APK 改写基线来制造通过结果。
+
+另外两项验收缺口:
+
+- 当前 JVM 用例只覆盖转换类型/API/插件元数据；release 探针实际运行主页面与 Binder，
+  三个新 Activity 仅检查组件属性。需补充设置持久化与重建、宿主跟随/回退、类型反转与记忆、
+  版本历史、本地化/RTL 和更新检查（比较、取消、失败、节流、忽略管理）的专项用例，
+  并验证 API 24 minified release 中各新页面实际可达。
+- `.readme/lang_*.json` 与生成的 README 仍保留 M5 的“仅插件权限/不申请网络权限”表述，
+  `version.properties` 仍是 `1.3.0` / build 20。发布前需同步十语言权限/更新检查说明、
+  递增版本/build、CHANGELOG 与截图评估；生成器无漂移只证明源与产物一致，不证明文案符合 M6。
+
+设备盘点发现 5 台 API 28/31/33/35 真机及已配置的 API 24、16 KB AVD；本轮没有启动 AVD、
+安装 APK 或运行仪器测试。远端最新 Build/Markdown 成功仍绑定 M6 前的
+`b0d0aa25701e2be1c3972c801787b16e72d85e39`，本次本地结果不能代替 M6 的设备矩阵证据。

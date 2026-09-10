@@ -1,6 +1,6 @@
 # AutoJs6 OpenCC 插件 Roadmap
 
-更新日期: 2026-09-03
+更新日期: 2026-09-10
 
 本文档是 OpenCC 插件从"单一转换服务"逐步演进为"文档完善, 工程可靠, 能力可扩展"的中文转换方案的执行清单. 每个条目只有在代码/文档与可验证的验收条件同时满足后才可勾选.
 
@@ -20,12 +20,14 @@
 | M3 转换能力增强 | 开发完成, 待宿主发布 | 类型枚举, 批量与链式转换, 本地化说明, 自定义词典评估 | API/插件/宿主 |
 | M4 运行时与生态演进 | 已启动 | 官方 OpenCC 原生后端, 上游自动跟进, 16 KB 适配与词典生态 | 依赖/插件/测试/宿主/发布 |
 | M5 插件与独立 App 双形态 | 已完成 | v1.3.0 以同一 APK 正式提供共用官方后端的桌面文本转换 UI、原插件入口与十语言无障碍体验 | App/插件/测试/发布 |
+| M6 独立 App UI 重设计与设置体系 | 开发完成, 待设备矩阵与发布 | Material 3 统一视觉, 完整设置/关于/版本历史页面, 受控 GitHub 更新检查 | App/测试/发布 |
 
 依赖顺序:
 
 ```text
 M0 ──> M1 ──> M2 ──> M3 (契约条目需宿主先行)
         └──────────> M4 (依赖/宿主演进项可与 M2/M3 并行)
+M4-D-2 ──> M5 ──> M6 (不要求 M4-D-3/M4-D-4 完成)
 ```
 
 ## M0: 基线插件 (v1.0.0 / v1.0.1, 已完成)
@@ -288,9 +290,46 @@ M5-D 验收条件: 10 语言及 47 个生成物无漂移，LTR/RTL、TalkBack、
 
 M5 总体验收条件: 用户安装同一个正式 APK 后，既可从桌面使用完整离线转换 UI，也可由 AutoJs6 通过原协议调用；两种模式共享官方固定后端且互不破坏，升级、签名、隐私、权限、可访问性、四 ABI 与 16 KB 兼容均有自动化和设备证据。 (已满足；正式产物与完整证据见 `docs/engineering/standalone-app-architecture.md`)
 
+## M6: 独立 App UI 重设计与设置体系 (2026-09-04, 开发完成, 待设备矩阵与发布)
+
+目标是消除 M5 首版 UI 的割裂感, 以统一的 Material 3 设计语言重塑独立 App 全部页面, 并补齐完整的设置体系. 本节的权限与组件结论部分取代 M5-A/M5-C 中 "无 `INTERNET`" 与组件清单的历史记录; M5 段落按当时事实保留, 不再回改. 设计决策与验证证据详见 `docs/engineering/standalone-app-architecture.md` 的 M6 章节.
+
+- [x] (App/UI) 引入 AppCompat 1.7.1 + Material Components 1.13.0, 全局 `Theme.Opencc` (Material3 DayNight, NoActionBar) 与品牌主题色 #005EA8 (日) / #9CCAFF (夜); 新页面由程序化 UI 组件库 (`ui/` 包: UiKit, SystemBarInsets, Rows, AppScaffold, Cards, Buttons, Dialogs, Feedback) 统一构建, 主页面保留 XML 布局并接入同一调色板与系统栏处理.
+- [x] (App/UI) 主页面重设计: 页内标题区 + 右上角三点菜单进入设置; 新增反向转换按钮 (14 种类型完整双向映射) 与 "记住上次转换类型" (默认开启, 可在设置关闭); 根节点结构, 无障碍语义 (labelFor/标题/live status), 键盘流与既有仪器契约全部保持.
+- [x] (App) 新增 `AppSettingsActivity` / `AboutActivity` / `ReleaseHistoryActivity` 三个内部页面, 全部 `exported=false`, 零 intent-filter, 以 `parentActivityName` 构成返回链; 设置项含 语言 (跟随 AutoJs6 / 跟随系统 / 10 语言) / 暗色模式 (跟随 AutoJs6 / 跟随系统 / 亮 / 暗) / 主题色 (跟随 AutoJs6 / 品牌色 / 4 备选 / 自定义 RGB) / 记住转换类型 / 检查更新 / 自动检查更新 / 管理已忽略更新 / 版本历史 / 关于应用与开发者. 外观三项默认跟随 AutoJs6, 通过只读 ContentProvider 契约读取宿主设置; 宿主不可用时保留跟随意图, 主题色回退 `#FFDEAD`, 语言/日夜回退系统. 设置保存采用单调 revision, 前台 Activity 在 `onResume` 侦测变化后请求一次 `recreate`.
+- [x] (App/网络) 更新检查基于 `HttpURLConnection` + `org.json` 访问 GitHub Releases 公开接口: 手动检查显式反馈, 自动检查 12 小时节流且网络失败静默; 支持忽略指定版本与忽略管理; 无遥测, 无统计, 转换文本永不上传. Manifest 权限面固定为恰好 3 项: `org.autojs.permission.PLUGIN`, `android.permission.INTERNET` 与 androidx.core 在 targetSdk >= 33 自动注入的自有 signature 权限 `<applicationId>.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` (不向任何外部应用授予能力); receiver/provider 保持为零 (androidx.startup 与 profileinstaller 组件经 `tools:node="remove"` 移除).
+- [x] (发布/多语言) `.readme/android_strings.json` 扩展至 113 键 x 10 语言, 覆盖全部新页面文案; 生成器 `--check` 全绿, 47 个受控产物无漂移, `localeConfig` 与应用内语言选择器的内置语言列表一致.
+- [x] (测试) 门禁重塑: `verify_apk_variants.py` 升级为 5 Activity 清单, 3 权限精确集合与内部 Activity 属性白名单 (拒绝 exported/intent-filter/权限/任务属性漂移), 13 个 APK 脚本测试与 5 个多语言产物测试通过; `OpenccDualEntryTest` 与 API 24 release 探针同步适配并编译通过. 本地验证: `assembleDebug` / `assembleDebugAndroidTest` / `testDebugUnitTest` / `lintDebug` (0 error) / `assembleRelease` (R8) 全绿, debug 与 release 各 5 个真实 APK 全部通过 `verify_apk_variants.py` (APK_OK x10, opencc=1.4.2, ELF 对齐 0x4000).
+- [ ] (测试) 补充 M6 专项回归: 三个内部页面的启动/返回与 minified release 可达性, 语言/日夜/自定义主题切换和重建后状态, 宿主缺失/禁用/旧契约的回退及恢复跟随, 14 类型反向映射与记忆开关, 更新比较/取消/失败/12 小时节流/忽略管理. 当前三个 JVM 用例仍只覆盖既有 API/运行时元数据, release 探针只实际打开主页面; 权限/组件检查通过不能替代新功能验收.
+- [ ] (测试) 在设备矩阵 (含 API 24 minified-release 运行时门禁, arm32/arm64/x86/x86_64, 双入口/无障碍/生命周期仪器与 16 KB 环境) 复跑全部仪器测试, 留存本次 M6 源码对应的运行证据.
+- [ ] (发布/工程) 处理候选发布体积门禁: 2026-09-10 本地五个 release APK 相比 v1.3.0 各增加约 2.23 MB, 全部超过 `prepare_candidate.py` 的 512 KiB / 25% 双上限. 先审阅依赖/DEX/资源增量并决定功能版本发布方案; 若保留增量, 完成功能版本验收与正式发布后再以真实发布资产更新自动依赖升级基线, 不把未发布产物冒充基线或直接放宽门禁. 逐 ABI 数据见架构文档复核记录.
+- [ ] (发布/文档) 更新 `.readme/lang_*.json` 中“不申请网络权限/仅插件权限”的旧说明并再生成十语言 README; 明确更新检查默认开启、可关闭、12 小时节流及转换文本不上传. 提升版本号/build, 更新十语言 CHANGELOG, 评估 README 截图更新; 当前仍为 v1.3.0 / build 20, 不满足 draft 严格递增条件.
+- [ ] (发布) 上述验收完成后发布下一个正式版本, 回读五 APK、签名/摘要、Release 与官方插件索引的一致性, 再完成 M6 收尾.
+
+M6 验收条件: 独立 App 全部页面共享同一设计语言与主题系统; 设置体系完整可用且生效机制可预期; 权限/组件面精确受控并有脚本与设备双重门禁; 设备矩阵复跑与正式发布完成后勾选收尾项.
+
+### 当前推进判断 (2026-09-10)
+
+结论: 具备继续开发和验证的条件, 优先推进 M6 专项测试与设备验收; 当前不具备直接发布 M6 或开启无人值守发布的条件.
+
+| 工作线 | 当前可推进内容 | 尚需满足的条件 |
+|---|---|---|
+| M6 | 专项回归、设备矩阵、体积归因与文档/版本收尾 | 候选体积门禁、M6 设备证据和正式发布物料尚未闭环 |
+| M4-D-3 | 保持 `pr-only` 监视与可信判定 | 本次在线检查仍为正式 `ver.1.4.2`; 等真实新 Release 后才能按既定计划完成一次 `merge` 实跑 |
+| M4-D-4 | 继续实现确定性版本/changelog 规则、正式发布与索引事务、回滚手册及离线测试 | 实际 draft/latest 放权仍依赖真实升级 merge 验收、递增版本和全部候选门禁; 不因本地构建通过而升阶 |
+| M4-E | 可开始 `HK2SP` / `S2HKP` 契约评估和旧实现回退设计 | 必须先协调 opencc-api 与宿主; 自定义词典和 Node.js 支持保留各自边界设计/宿主先行条件 |
+| M3 | 核对宿主扩展合入与发布版本 | 本插件仓库的测试不能单独证明宿主用户侧已获得 v2 优化, 继续保留待宿主发布状态 |
+
+本次本地复核通过 120 项 Python 测试、JVM 测试任务 (3 个既有用例, 复用通过结果)、debug/test/release 构建、Lint (0 error / 57 warnings)、
+10 个 APK 内容门禁及 47 个文档产物检查. `check_upstream.py` 在线返回 `OPENCC_UPSTREAM_CURRENT`;
+远端策略仍为 `pr-only`. 远端最新 [Build integrity](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33762234396)
+与 [Markdown integrity](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33762234389)
+均对应 M6 之前的 `b0d0aa25701e2be1c3972c801787b16e72d85e39`, 不能充当本次 M6 的远端设备证据.
+本机可发现 5 台 API 28/31/33/35 真机及 API 24/16 KB AVD 配置; 本轮只读盘点, 未执行设备安装或仪器测试.
+
 ## 边界 (非目标)
 
 - 不做中文与日文之间的翻译: JP 相关转换仅处理汉字字形 (繁体旧字体与日文新字体), 不涉及语言翻译.
 - M5 的独立界面只提供本地文本转换，不扩展为云同步、账号系统、在线翻译、富文本编辑器或任意第三方无权限调用接口；Binder 服务仍只接受 AutoJs6 插件权限保护的调用。
 - 不自定义宿主 API 形态: `opencc` 全局对象的方法集与组合逻辑由 AutoJs6 宿主定义, 插件侧忠实提供 14 种核心转换.
-- 不引入网络能力: 转换始终基于内置词典在设备本地完成.
+- 转换不依赖网络: 转换始终基于内置词典在设备本地完成, 输入与输出文本永不上传. 自 M6 起, 独立 App 仅为 "检查更新" 访问 GitHub Releases 公开接口 (自动检查可关闭且 12 小时节流), 不引入遥测, 统计或其他任何网络行为; Binder 插件路径不使用网络.
