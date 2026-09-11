@@ -316,6 +316,12 @@ OpenCC resources SHA-256: 9ea0d303219b34d014d5c116677b5d325043beafb2c8a62ee889ca
 
 ******
 
+#### v1.3.1
+
+_2026/09/11_
+
+- `تحسين` التحقق أثناء البناء من محاذاة صفحات 16 KB للمكتبات الأصلية ذات 64 بت, مع فحص عقد manifest وتقارير JSON
+
 #### v1.3.0
 
 _2026/09/03_
@@ -337,17 +343,6 @@ _2026/09/01_
 - `تحسين` تثبيت ZIP الموارد المثبت ذريًا مع التحقق من الحجم وSHA-256 والاسترداد التلقائي عند التلف وتحويل JNI آمن لـ Unicode وتخزين المحولات الساخنة مؤقتا
 - `تبعية` إزالة الغلاف غير المصان `com.github.brooklet:android-opencc:1.2.2` وتثبيت OpenCC الرسمي `ver.1.4.2` عند الالتزام `025f371dc76b598d77384fbdab90c937471844d8`
 - `تبعية` توثيق مصادر وتراخيص OpenCC وMarisa Trie وDarts Clone وRapidJSON المضمنة في `THIRD_PARTY_NOTICES.md`
-
-#### v1.1.0
-
-_2026/09/01_
-
-- `ميزة` ترقية عقد مكون OpenCC الإضافي إلى الإصدار 2 مع `getSupportedConversionTypes()`, مما يتيح للمضيفات الحديثة اكتشاف أنواع التحويل الأربعة عشر التي يدعمها المكون فعليا
-- `ميزة` إضافة `convertBatch(texts, conversionType)` لتحويل ما يصل إلى 1024 مقطعا نصيا في رحلة Binder واحدة مع الإبقاء على مسار الاستدعاء لكل عنصر للمضيفات القديمة
-- `ميزة` إضافة `convertChain(text, conversionTypes)` لتنفيذ ما يصل إلى 32 مرحلة بالترتيب في استدعاء واحد, مما يخفض طرق التحويل المركبة في المضيفات الحديثة من 3 رحلات Binder كحد أقصى إلى رحلة واحدة
-- `تحسين` تقديم تعليمات مترجمة عبر `PluginInfo.instruction` والإبلاغ عن إصدار العقد وأنواع التحويل المدعومة عبر capabilities
-- `تحسين` الحفاظ على طرق AIDL الأصلية وأرقام المعاملات, مع اختبارات وحدات واختبارات Binder حقيقية للاستدعاءات الموسعة والتراجع إلى العقد القديم وحدود الحجم ومسارات الخطأ
-- `تحسين` توحيد تخطيط README وطريقة إدارة إصدارات منصة Gradle
 
 ##### لمزيد من سجل الإصدارات
 
@@ -443,3 +438,6 @@ app/src/main/res/raw-*/plugin_instruction.md
 - مشروع AutoJs6: https://github.com/SuperMonster003/AutoJs6
 - مشروع OpenCC الرسمي: https://github.com/BYVoid/OpenCC
 - إشعارات الجهات الخارجية: https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/THIRD_PARTY_NOTICES.md
+
+
+[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/16kb.md)

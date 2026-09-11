@@ -316,6 +316,12 @@ The plugin's plans and progress are maintained as a checkable list in ROADMAP.md
 
 ******
 
+#### v1.3.1
+
+_2026/09/11_
+
+- `Improvement` Build verification of 16 KB page alignment for 64-bit native libraries, including manifest contract checks and JSON reports
+
 #### v1.3.0
 
 _2026/09/03_
@@ -337,17 +343,6 @@ _2026/09/01_
 - `Improvement` Install the pinned resource ZIP atomically with size and SHA-256 validation, automatic corruption recovery, Unicode-safe JNI conversion, and cached hot-path converters
 - `Dependency` Remove the unmaintained `com.github.brooklet:android-opencc:1.2.2` wrapper and pin official OpenCC `ver.1.4.2` at commit `025f371dc76b598d77384fbdab90c937471844d8`
 - `Dependency` Document bundled OpenCC, Marisa Trie, Darts Clone, and RapidJSON sources and licenses in `THIRD_PARTY_NOTICES.md`
-
-#### v1.1.0
-
-_2026/09/01_
-
-- `Feature` Upgrade to OpenCC plugin contract version 2 with `getSupportedConversionTypes()`, allowing newer hosts to discover the 14 conversion types actually supported by the plugin
-- `Feature` Add `convertBatch(texts, conversionType)` to convert up to 1024 text segments in one Binder round trip while retaining the per-item path for older hosts
-- `Feature` Add `convertChain(text, conversionTypes)` to run up to 32 stages in one call, reducing composed methods on newer hosts from as many as 3 Binder round trips to 1
-- `Improvement` Deliver localized plugin instructions through `PluginInfo.instruction` and report the contract version and supported conversion types through capabilities
-- `Improvement` Preserve the original AIDL methods and transaction numbers, with unit and real Binder tests covering extended calls, legacy fallback, size limits, and error paths
-- `Improvement` Standardize the README layout and Gradle platform version management
 
 ##### For more release history
 
@@ -443,3 +438,6 @@ The project code is licensed under the [Mozilla Public License 2.0](https://gith
 - AutoJs6 project: https://github.com/SuperMonster003/AutoJs6
 - OpenCC official project: https://github.com/BYVoid/OpenCC
 - Third-party notices: https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/THIRD_PARTY_NOTICES.md
+
+
+[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/16kb.md)

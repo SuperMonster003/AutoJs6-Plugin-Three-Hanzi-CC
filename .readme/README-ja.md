@@ -316,6 +316,12 @@ OpenCC resources SHA-256: 9ea0d303219b34d014d5c116677b5d325043beafb2c8a62ee889ca
 
 ******
 
+#### v1.3.1
+
+_2026/09/11_
+
+- `改善` 64 ビットのネイティブライブラリの 16 KB ページアラインメントをビルド時に検証, manifest 契約の検査と JSON レポートに対応
+
 #### v1.3.0
 
 _2026/09/03_
@@ -337,17 +343,6 @@ _2026/09/01_
 - `改善` 固定されたリソース ZIP をサイズと SHA-256 の検証付きでアトミックにインストールし, 破損時の自動復旧, Unicode 安全な JNI 変換, ホットパスのコンバーターキャッシュを実装
 - `依存関係` 保守されていない `com.github.brooklet:android-opencc:1.2.2` ラッパーを削除し, 公式 OpenCC `ver.1.4.2` をコミット `025f371dc76b598d77384fbdab90c937471844d8` に固定
 - `依存関係` 同梱する OpenCC, Marisa Trie, Darts Clone, RapidJSON の出典とライセンスを `THIRD_PARTY_NOTICES.md` に記載
-
-#### v1.1.0
-
-_2026/09/01_
-
-- `機能` OpenCC プラグイン契約をバージョン 2 に更新し, `getSupportedConversionTypes()` を追加しました. 新しいホストはプラグインが実際に対応する 14 種類の変換タイプを動的に検出できます
-- `機能` `convertBatch(texts, conversionType)` を追加し, 1 回の Binder 往復で最大 1024 個のテキストを変換できるようにしました. 古いホスト向けの項目別呼び出しも維持します
-- `機能` `convertChain(text, conversionTypes)` を追加し, 1 回の呼び出しで最大 32 ステージを順に実行できるようにしました. 新しいホストの組み合わせメソッドは最大 3 回の Binder 往復から 1 回に減ります
-- `改善` `PluginInfo.instruction` で呼び出し側の言語に合った説明を提供し, capabilities で契約バージョンと対応変換タイプを報告します
-- `改善` 既存の AIDL メソッドとトランザクション番号を維持し, 拡張呼び出し, 旧契約へのフォールバック, サイズ上限, エラー経路を単体テストと実 Binder テストで検証します
-- `改善` README のレイアウトと Gradle プラットフォームのバージョン管理方式を統一
 
 ##### その他のリリース履歴
 
@@ -443,3 +438,6 @@ app/src/main/res/raw-*/plugin_instruction.md
 - AutoJs6 プロジェクト: https://github.com/SuperMonster003/AutoJs6
 - OpenCC 公式プロジェクト: https://github.com/BYVoid/OpenCC
 - サードパーティー通知: https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/THIRD_PARTY_NOTICES.md
+
+
+[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/16kb.md)

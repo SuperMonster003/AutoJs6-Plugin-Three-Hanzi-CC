@@ -316,6 +316,12 @@ OpenCC resources SHA-256: 9ea0d303219b34d014d5c116677b5d325043beafb2c8a62ee889ca
 
 ******
 
+#### v1.3.1
+
+_2026/09/11_
+
+- `개선` 64비트 네이티브 라이브러리의 16 KB 페이지 정렬을 빌드 시 검증, manifest 계약 검사 및 JSON 보고서 지원
+
 #### v1.3.0
 
 _2026/09/03_
@@ -337,17 +343,6 @@ _2026/09/01_
 - `개선` 고정된 리소스 ZIP을 크기 및 SHA-256 검증과 함께 원자적으로 설치하고 손상 자동 복구, Unicode 안전 JNI 변환, 핫 패스 변환기 캐시 구현
 - `의존성` 유지 관리가 중단된 `com.github.brooklet:android-opencc:1.2.2` 래퍼를 제거하고 공식 OpenCC `ver.1.4.2`를 커밋 `025f371dc76b598d77384fbdab90c937471844d8`에 고정
 - `의존성` 포함된 OpenCC, Marisa Trie, Darts Clone, RapidJSON의 출처와 라이선스를 `THIRD_PARTY_NOTICES.md`에 문서화
-
-#### v1.1.0
-
-_2026/09/01_
-
-- `기능` OpenCC 플러그인 계약을 버전 2로 업그레이드하고 `getSupportedConversionTypes()`를 추가하여 새 호스트가 플러그인이 실제 지원하는 14개 변환 유형을 동적으로 검색할 수 있습니다
-- `기능` `convertBatch(texts, conversionType)`를 추가하여 한 번의 Binder 왕복으로 최대 1024개 텍스트를 변환하며 이전 호스트의 항목별 호출 경로도 유지합니다
-- `기능` `convertChain(text, conversionTypes)`를 추가하여 한 번의 호출로 최대 32개 단계를 순서대로 실행하며 새 호스트의 조합 메서드는 최대 3회이던 Binder 왕복이 1회로 줄어듭니다
-- `개선` `PluginInfo.instruction`으로 호출자 언어에 맞는 플러그인 설명을 제공하고 capabilities를 통해 계약 버전과 지원 변환 유형을 보고합니다
-- `개선` 기존 AIDL 메서드와 트랜잭션 번호를 유지하고 확장 호출, 이전 계약 폴백, 크기 제한, 오류 경로를 단위 테스트와 실제 Binder 테스트로 검증합니다
-- `개선` README 레이아웃과 Gradle 플랫폼 버전 관리 방식을 통일
 
 ##### 더 많은 릴리스 기록
 
@@ -443,3 +438,6 @@ app/src/main/res/raw-*/plugin_instruction.md
 - AutoJs6 프로젝트: https://github.com/SuperMonster003/AutoJs6
 - OpenCC 공식 프로젝트: https://github.com/BYVoid/OpenCC
 - 서드 파티 고지: https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/THIRD_PARTY_NOTICES.md
+
+
+[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/16kb.md)

@@ -316,6 +316,12 @@ OpenCC resources SHA-256: 9ea0d303219b34d014d5c116677b5d325043beafb2c8a62ee889ca
 
 ******
 
+#### v1.3.1
+
+_2026/09/11_
+
+- `優化` 建置階段校驗 64 位原生函式庫的 16 KB 頁面大小對齊, 檢查 manifest 契約並輸出 JSON 報告
+
 #### v1.3.0
 
 _2026/09/03_
@@ -337,17 +343,6 @@ _2026/09/01_
 - `優化` 以大小和 SHA-256 驗證原子安裝固定資源 ZIP, 支援損壞自動復原, Unicode 安全 JNI 轉換及熱路徑轉換器快取
 - `相依性` 移除已停止維護的 `com.github.brooklet:android-opencc:1.2.2` 封裝程式庫, 並將官方 OpenCC `ver.1.4.2` 固定至提交 `025f371dc76b598d77384fbdab90c937471844d8`
 - `相依性` 在 `THIRD_PARTY_NOTICES.md` 中記錄內建 OpenCC, Marisa Trie, Darts Clone 與 RapidJSON 的來源和授權
-
-#### v1.1.0
-
-_2026/09/01_
-
-- `新增` 升級至 OpenCC 外掛契約版本 2, 新增 `getSupportedConversionTypes()`, 供新版主程式動態探索目前實際支援的 14 種轉換類型
-- `新增` 新增 `convertBatch(texts, conversionType)`, 單次 Binder 往返最多轉換 1024 段文字, 同時保留舊版主程式逐項呼叫的相容路徑
-- `新增` 新增 `convertChain(text, conversionTypes)`, 單次呼叫最多依序執行 32 個階段, 讓新版主程式的組合方法從最多 3 次 Binder 往返降至 1 次
-- `優化` 透過 `PluginInfo.instruction` 提供呼叫方語言的外掛說明, 並透過 capabilities 回報契約版本與支援的轉換類型
-- `優化` 保持原有 AIDL 方法及交易編號不變, 並為擴充呼叫, 舊契約回退, 大小上限與例外路徑補充單元測試和真實 Binder 測試
-- `優化` 統一 README 版式與 Gradle 平台版本管理方式
 
 ##### 更多發行歷史可參閱
 
@@ -443,3 +438,6 @@ app/src/main/res/raw-*/plugin_instruction.md
 - AutoJs6 專案: https://github.com/SuperMonster003/AutoJs6
 - OpenCC 官方專案: https://github.com/BYVoid/OpenCC
 - 第三方聲明: https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/THIRD_PARTY_NOTICES.md
+
+
+[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/16kb.md)

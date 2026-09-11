@@ -364,3 +364,6 @@ app/src/main/res/raw-*/plugin_instruction.md
 - {{ text_link_autojs6 }}: {{ autojs6_url }}
 - {{ text_link_opencc_official }}: {{ opencc_official_url }}
 - {{ text_link_third_party_notices }}: {{ third_party_notices_url }}
+
+
+[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/16kb.md)

@@ -316,6 +316,12 @@ Los planes del complemento y su grado de avance se mantienen como una lista marc
 
 ******
 
+#### v1.3.1
+
+_2026/09/11_
+
+- `Mejora` Verificación de compilación de la alineación de páginas de 16 KB en bibliotecas nativas de 64 bits, con controles del contrato manifest e informes JSON
+
 #### v1.3.0
 
 _2026/09/03_
@@ -337,17 +343,6 @@ _2026/09/01_
 - `Mejora` Instalar atómicamente el ZIP de recursos fijado con validación de tamaño y SHA-256, recuperación automática ante daños, conversión JNI segura para Unicode y caché de convertidores de uso frecuente
 - `Dependencia` Eliminar el envoltorio sin mantenimiento `com.github.brooklet:android-opencc:1.2.2` y fijar OpenCC oficial `ver.1.4.2` en el commit `025f371dc76b598d77384fbdab90c937471844d8`
 - `Dependencia` Documentar las fuentes y licencias incluidas de OpenCC, Marisa Trie, Darts Clone y RapidJSON en `THIRD_PARTY_NOTICES.md`
-
-#### v1.1.0
-
-_2026/09/01_
-
-- `Función` Actualización al contrato de complemento OpenCC versión 2 con `getSupportedConversionTypes()`, para que los hosts recientes descubran los 14 tipos de conversión que admite realmente el complemento
-- `Función` Incorporación de `convertBatch(texts, conversionType)` para convertir hasta 1024 segmentos de texto en una sola ida y vuelta de Binder, manteniendo la ruta por elemento para hosts antiguos
-- `Función` Incorporación de `convertChain(text, conversionTypes)` para ejecutar hasta 32 etapas en una llamada, reduciendo los métodos compuestos en hosts recientes de hasta 3 idas y vueltas de Binder a 1
-- `Mejora` Entrega de instrucciones localizadas mediante `PluginInfo.instruction` y publicación de la versión del contrato y los tipos de conversión admitidos mediante capabilities
-- `Mejora` Conservación de los métodos AIDL y números de transacción originales, con pruebas unitarias y Binder reales para llamadas ampliadas, compatibilidad heredada, límites de tamaño y rutas de error
-- `Mejora` Unificar el diseño del README y la gestión de versiones de la plataforma Gradle
 
 ##### Para ver más historial de versiones
 
@@ -443,3 +438,6 @@ El código del proyecto se distribuye bajo la [Mozilla Public License 2.0](https
 - Proyecto AutoJs6: https://github.com/SuperMonster003/AutoJs6
 - Proyecto oficial OpenCC: https://github.com/BYVoid/OpenCC
 - Avisos de terceros: https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/THIRD_PARTY_NOTICES.md
+
+
+[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/16kb.md)
