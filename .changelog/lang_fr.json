@@ -8,7 +8,8 @@
     "v1.3.2": {
       "released_date": "2026/09/13",
       "fix": [
-        "Utiliser des dates de compilation en anglais indépendamment de la langue de la machine"
+        "Utiliser des dates de compilation en anglais indépendamment de la langue de la machine",
+        "Indiquer uniquement les ABI natives présentes dans l’APK installé"
       ]
     },
     "v1.3.1": {

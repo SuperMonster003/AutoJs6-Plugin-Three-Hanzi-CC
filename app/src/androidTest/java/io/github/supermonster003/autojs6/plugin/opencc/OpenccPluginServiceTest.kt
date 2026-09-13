@@ -238,10 +238,13 @@ class OpenccPluginServiceTest {
         assertEquals(packageInfo.versionName.orEmpty(), info.versionName)
         assertEquals(packageInfo.versionCodeCompat(), info.versionCode)
         assertTrue(info.versionDate?.isNotBlank() == true)
-        assertEquals(
-            setOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86"),
-            info.supportedAbis.orEmpty().toSet(),
-        )
+        assertTrue(info.supportedAbis.orEmpty().isNotEmpty())
+        val installedApks = listOf(context.applicationInfo.sourceDir) + context.applicationInfo.splitSourceDirs.orEmpty()
+        info.supportedAbis.orEmpty().forEach { abi ->
+            assertTrue("Advertised ABI $abi is not packaged", installedApks.any { path ->
+                java.util.zip.ZipFile(path).use { it.getEntry("lib/$abi/libopencc_jni.so") != null }
+            })
+        }
 
         val processAbis = if (android.os.Process.is64Bit()) {
             Build.SUPPORTED_64_BIT_ABIS

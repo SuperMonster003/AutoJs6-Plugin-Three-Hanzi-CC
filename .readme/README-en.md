@@ -321,6 +321,7 @@ The plugin's plans and progress are maintained as a checkable list in ROADMAP.md
 _2026/09/13_
 
 - `Fix` Use English build dates in plugin metadata regardless of the build machine locale
+- `Fix` Report only the native ABIs present in the installed APK
 
 #### v1.3.1
 

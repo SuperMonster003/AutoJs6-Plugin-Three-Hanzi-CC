@@ -21,6 +21,7 @@ class PluginRuntimeInfoTest {
             versionName = "1.2.0",
             versionCode = 19,
             versionDate = "Sep 1, 2026",
+            supportedAbis = listOf("x86_64"),
         )
 
         assertEquals("OpenCC", fields.name)
@@ -34,7 +35,7 @@ class PluginRuntimeInfoTest {
         assertEquals(19, fields.versionCode)
         assertEquals("Sep 1, 2026", fields.versionDate)
         assertEquals(
-            listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86"),
+            listOf("x86_64"),
             fields.supportedAbis,
         )
         assertEquals(3923, fields.requiredHostVersion)

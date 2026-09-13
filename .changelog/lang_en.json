@@ -8,7 +8,8 @@
     "v1.3.2": {
       "released_date": "2026/09/13",
       "fix": [
-        "Use English build dates in plugin metadata regardless of the build machine locale"
+        "Use English build dates in plugin metadata regardless of the build machine locale",
+        "Report only the native ABIs present in the installed APK"
       ]
     },
     "v1.3.1": {

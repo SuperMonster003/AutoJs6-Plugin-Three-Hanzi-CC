@@ -9,6 +9,7 @@
 ###### 2026/09/13
 
 * `Fix` Use English build dates in plugin metadata regardless of the build machine locale
+* `Fix` Report only the native ABIs present in the installed APK
 
 # v1.3.1
 

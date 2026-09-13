@@ -56,6 +56,7 @@ internal fun pluginRuntimeFields(
     versionName: String,
     versionCode: Long,
     versionDate: String,
+    supportedAbis: List<String>,
 ): PluginRuntimeFields = PluginRuntimeFields(
     name = name,
     description = description,
@@ -67,7 +68,7 @@ internal fun pluginRuntimeFields(
     versionName = versionName,
     versionCode = versionCode,
     versionDate = versionDate,
-    supportedAbis = SUPPORTED_ABIS,
+    supportedAbis = supportedAbis,
     requiredHostVersion = REQUIRED_HOST_VERSION,
     contractVersion = OpenccPluginContract.VERSION_CURRENT,
     supportedConversionTypes = OpenccConversionTypes.ALL,
@@ -86,9 +87,12 @@ internal fun Context.pluginInfo(name: String, description: String): PluginInfo {
         id = appContext.stringResource("plugin_id", OpenccPluginIds.ID),
         engine = appContext.stringResource("plugin_engine", OpenccPluginIds.ENGINE),
         variant = appContext.stringResource("plugin_variant", OpenccPluginIds.VARIANT_DEFAULT),
-        versionName = packageInfo.versionName ?: "",
+        versionName = requireNotNull(packageInfo.versionName) { "Installed plugin version is missing" },
         versionCode = packageInfo.versionCodeCompat(),
         versionDate = appContext.stringResource("plugin_version_date", ""),
+        supportedAbis = NativeLibraryInventory.supportedAbis(appContext).toList().also {
+            check(it.isNotEmpty()) { "Installed OpenCC runtime libraries are missing" }
+        },
     )
     return PluginInfo().apply {
         this.name = fields.name

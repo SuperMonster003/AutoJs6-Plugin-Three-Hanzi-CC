@@ -321,6 +321,7 @@ Los planes del complemento y su grado de avance se mantienen como una lista marc
 _2026/09/13_
 
 - `Corrección` Usar fechas de compilación en inglés independientemente del idioma de la máquina
+- `Corrección` Informar solo de las ABI nativas presentes en el APK instalado
 
 #### v1.3.1
 
