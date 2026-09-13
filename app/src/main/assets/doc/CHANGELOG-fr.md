@@ -4,18 +4,16 @@
 
 ******
 
-# v1.3.2
+# v1.4.0
 
 ###### 2026/09/13
 
+* `Fonctionnalité` Unifier l'interface autonome avec Material 3 et ajouter les pages de paramètres, de présentation et d'historique, avec le choix de la langue et du thème
+* `Fonctionnalité` Ajouter les recherches manuelles et automatiques facultatives de mises à jour GitHub, un intervalle de 12 heures et la gestion des versions ignorées; le texte converti reste sur l'appareil
 * `Correctif` Utiliser des dates de compilation en anglais indépendamment de la langue de la machine
 * `Correctif` Indiquer uniquement les ABI natives présentes dans l’APK installé
+* `Correctif` Comparer correctement les identifiants numériques des préversions lors de la recherche de mises à jour
 * `Amélioration` Ponctuation cohérente dans les textes de l'interface
-
-# v1.3.1
-
-###### 2026/09/13
-
 * `Amélioration` Vérification à la compilation de l'alignement des pages de 16 KB des bibliothèques natives 64 bits, avec contrôle du contrat manifest et rapports JSON
 * `Amélioration` Harmonisation de l'activation, des métadonnées, de la documentation traduite et de la collecte des APK signés
 

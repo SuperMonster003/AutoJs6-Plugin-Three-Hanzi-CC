@@ -41,18 +41,46 @@ internal object UpdateVersionPolicy {
             candidate.preRelease == installed.preRelease -> false
             candidate.preRelease == null -> true
             installed.preRelease == null -> false
-            else -> candidate.preRelease > installed.preRelease
+            else -> comparePreRelease(candidate.preRelease, installed.preRelease) > 0
         }
     }
 
     private data class ParsedVersion(val numbers: List<Int>, val preRelease: String?)
+
+    private fun comparePreRelease(candidate: String, installed: String): Int {
+        val left = candidate.split('.')
+        val right = installed.split('.')
+        for (index in 0 until minOf(left.size, right.size)) {
+            val candidatePart = left[index]
+            val installedPart = right[index]
+            if (candidatePart == installedPart) continue
+            val candidateNumeric = candidatePart.all(Char::isDigit)
+            val installedNumeric = installedPart.all(Char::isDigit)
+            return when {
+                candidateNumeric && installedNumeric -> {
+                    // Length comparison also supports numeric identifiers larger than Long.
+                    val byLength = candidatePart.length.compareTo(installedPart.length)
+                    if (byLength != 0) byLength else candidatePart.compareTo(installedPart)
+                }
+                candidateNumeric -> -1
+                installedNumeric -> 1
+                else -> candidatePart.compareTo(installedPart)
+            }
+        }
+        return left.size.compareTo(right.size)
+    }
 
     private fun parse(value: String): ParsedVersion? {
         val match = VERSION_PATTERN.matchEntire(value.trim()) ?: return null
         val numbers = match.groupValues[1]
             .split('.')
             .map { part -> part.toIntOrNull() ?: return null }
-        return ParsedVersion(numbers, match.groups[2]?.value)
+        val preRelease = match.groups[2]?.value
+        if (preRelease != null && preRelease.split('.').any { identifier ->
+                identifier.isEmpty() ||
+                    (identifier.length > 1 && identifier.all(Char::isDigit) && identifier.startsWith('0'))
+            }) return null
+        return ParsedVersion(numbers, preRelease)
     }
 }
 

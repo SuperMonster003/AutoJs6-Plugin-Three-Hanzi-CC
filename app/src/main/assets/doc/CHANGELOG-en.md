@@ -4,18 +4,16 @@
 
 ******
 
-# v1.3.2
+# v1.4.0
 
 ###### 2026/09/13
 
+* `Feature` Redesign the standalone interface with Material 3 and add settings, about and release history pages, with language and theme preferences
+* `Feature` Add manual and optional automatic GitHub update checks, a 12-hour retry interval and ignored-version management; conversion text remains on the device
 * `Fix` Use English build dates in plugin metadata regardless of the build machine locale
 * `Fix` Report only the native ABIs present in the installed APK
+* `Fix` Compare numeric pre-release identifiers correctly when checking for updates
 * `Improvement` Consistent punctuation across interface strings
-
-# v1.3.1
-
-###### 2026/09/13
-
 * `Improvement` Build verification of 16 KB page alignment for 64-bit native libraries, including manifest contract checks and JSON reports
 * `Improvement` Host activation, plugin metadata, localized documentation and signed release collection follow the common plugin conventions
 
