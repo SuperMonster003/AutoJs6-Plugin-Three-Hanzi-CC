@@ -5,6 +5,12 @@
   "changelog_label_improvement": "Mejora",
   "changelog_label_dependency": "Dependencia",
   "$data": {
+    "v1.3.2": {
+      "released_date": "2026/09/13",
+      "fix": [
+        "Usar fechas de compilación en inglés independientemente del idioma de la máquina"
+      ]
+    },
     "v1.3.1": {
       "released_date": "2026/09/13",
       "improvement": [

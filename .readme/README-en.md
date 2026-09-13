@@ -316,6 +316,12 @@ The plugin's plans and progress are maintained as a checkable list in ROADMAP.md
 
 ******
 
+#### v1.3.2
+
+_2026/09/13_
+
+- `Fix` Use English build dates in plugin metadata regardless of the build machine locale
+
 #### v1.3.1
 
 _2026/09/13_
@@ -333,17 +339,6 @@ _2026/09/03_
 - `Improvement` Keep standalone and Binder entry points on one process-wide official OpenCC backend while preserving the application ID, signing identity, plugin permission boundary, AIDL transaction numbers, and offline/no-history defaults
 - `Improvement` Expand verification to minSdk 24, 32-bit ARM, arm64, x86, x86_64, and real 16 KB pages; audit final APK locale, manifest, R8, ELF, and ZIP properties and pin reproducible unedited UI screenshots
 - `Improvement` Verify in-place upgrades from v1.2.0 retain the package UID and plugin service while adding exactly one Launcher, then run UI and raw legacy Binder conversions against the signed minified release
-
-#### v1.2.0
-
-_2026/09/01_
-
-- `Hint` OpenCC 1.4.2 dictionary updates intentionally change a small number of results, including `复盘` -> `復盤`, `内卷` -> `內捲`, preserving `什么怎么这么`, and `内存条` -> `記憶體模組`; the full reviewed list is in the migration report
-- `Improvement` Build official OpenCC 1.4.2 and same-release dictionaries directly into one statically linked JNI library per ABI while keeping all conversion fully offline
-- `Improvement` Support 16 KB page-size devices with NDK 28.2, 16 KB ELF and ZIP alignment, and real 16 KB emulator Binder verification
-- `Improvement` Install the pinned resource ZIP atomically with size and SHA-256 validation, automatic corruption recovery, Unicode-safe JNI conversion, and cached hot-path converters
-- `Dependency` Remove the unmaintained `com.github.brooklet:android-opencc:1.2.2` wrapper and pin official OpenCC `ver.1.4.2` at commit `025f371dc76b598d77384fbdab90c937471844d8`
-- `Dependency` Document bundled OpenCC, Marisa Trie, Darts Clone, and RapidJSON sources and licenses in `THIRD_PARTY_NOTICES.md`
 
 ##### For more release history
 

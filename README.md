@@ -316,6 +316,12 @@ OpenCC resources SHA-256: 9ea0d303219b34d014d5c116677b5d325043beafb2c8a62ee889ca
 
 ******
 
+#### v1.3.2
+
+_2026/09/13_
+
+- `修复` 插件元数据的构建日期固定使用英文, 不受构建机器语言影响
+
 #### v1.3.1
 
 _2026/09/13_
@@ -333,17 +339,6 @@ _2026/09/03_
 - `优化` 独立入口和 Binder 入口共用唯一的进程级官方 OpenCC 后端, 同时保持 applicationId, 签名身份, 插件权限边界, AIDL 事务号及离线/无历史默认值不变
 - `优化` 将验收矩阵扩展到 minSdk 24, 32 位 ARM, arm64, x86, x86_64 和真实 16 KB 页环境; 审计最终 APK 的 locale, manifest, R8, ELF 与 ZIP 属性, 并固定可复现的未编辑 UI 截图
 - `优化` 验证从 v1.2.0 原地升级后保留包 UID 和插件服务并只新增一个 Launcher, 再针对已签名 minified release 实际执行 UI 与旧版原始 Binder 转换
-
-#### v1.2.0
-
-_2026/09/01_
-
-- `提示` OpenCC 1.4.2 的词典更新会有意改变少量结果, 包括 `复盘` -> `復盤`, `内卷` -> `內捲`, 保留 `什么怎么这么` 及 `内存条` -> `記憶體模組`; 完整审阅清单见迁移报告
-- `优化` 将官方 OpenCC 1.4.2 及同版本词典直接构建为每个 ABI 一个静态链接的 JNI 库, 所有转换继续完全离线
-- `优化` 使用 NDK 28.2, 16 KB ELF 与 ZIP 对齐及真实 16 KB 模拟器 Binder 验证, 支持 16 KB 页大小设备
-- `优化` 以大小和 SHA-256 校验原子安装固定资源 ZIP, 支持损坏自动恢复, Unicode 安全 JNI 转换及热路径转换器缓存
-- `依赖` 移除已停止维护的 `com.github.brooklet:android-opencc:1.2.2` 包装库, 并固定官方 OpenCC `ver.1.4.2` 到提交 `025f371dc76b598d77384fbdab90c937471844d8`
-- `依赖` 在 `THIRD_PARTY_NOTICES.md` 中记录内置 OpenCC, Marisa Trie, Darts Clone 与 RapidJSON 的来源和许可
 
 ##### 更多发行历史可参阅
 
