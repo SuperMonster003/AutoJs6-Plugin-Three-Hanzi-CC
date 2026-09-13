@@ -6,9 +6,10 @@
 
 # v1.3.1
 
-###### 2026/09/11
+###### 2026/09/13
 
 * `Improvement` Build verification of 16 KB page alignment for 64-bit native libraries, including manifest contract checks and JSON reports
+* `Improvement` Host activation, plugin metadata, localized documentation and signed release collection follow the common plugin conventions
 
 # v1.3.0
 

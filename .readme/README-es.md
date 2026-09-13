@@ -55,7 +55,7 @@ El editor independiente y el servicio Binder de AutoJs6 protegido por permiso co
 - Un APK, dos usos: abra el icono del lanzador para convertir texto visualmente sin AutoJs6, o use la misma instalación mediante la API de scripts `opencc` de AutoJs6.
 - 14 conversiones estándar: cubre la conversión entre simplificado y tradicional de OpenCC, las variantes de Hong Kong y Taiwán y el shinjitai japonés, incluida la conversión al vocabulario habitual de Taiwán (como el intercambio entre `软件` y `軟體`).
 - 33 métodos de script: además del método general `opencc.convert(text, type)`, cada tipo de conversión tiene un método abreviado con el mismo nombre, más 18 métodos de alias y métodos compuestos como `s2jp` y `tw2hk`.
-- Totalmente sin conexión: la conversión se realiza localmente sobre los diccionarios integrados del complemento; el complemento no solicita permiso de red y no recopila ningún dato.
+- La conversión usa diccionarios locales y nunca sube el texto. La aplicación solicita Internet para consultar actualizaciones en GitHub. Las consultas automáticas están activadas por defecto, como máximo cada 12 horas, también con datos medidos; pueden desactivarse en Ajustes.
 - Paquetes a medida: 4 paquetes de una sola ABI y un paquete `universal` con todas las ABI, de modo que cada dispositivo instala solo lo que necesita.
 - Multilingüe: la interfaz independiente, los metadatos, las instrucciones, el README y el changelog cubren 10 idiomas.
 - Un backend compartido: el editor y el servicio ligero reutilizan los mismos recursos verificados y el mismo motor nativo; las conexiones inactivas del complemento se liberan automáticamente.
@@ -254,7 +254,7 @@ No se necesita red; toda la conversión se realiza localmente sobre los dicciona
 
 #### ¿Qué permisos solicita el complemento? ¿Están seguros mis datos?
 
-El complemento solo declara el permiso de complemento usado para comunicarse con AutoJs6 y no solicita permisos sensibles del sistema como red o almacenamiento; su servicio está protegido por el mismo permiso, por lo que otras aplicaciones no pueden llamarlo. El texto que se convierte permanece en la memoria del dispositivo y nunca se almacena ni se sube.
+La conversión usa diccionarios locales y nunca sube el texto. La aplicación solicita Internet para consultar actualizaciones en GitHub. Las consultas automáticas están activadas por defecto, como máximo cada 12 horas, también con datos medidos; pueden desactivarse en Ajustes.
 
 ******
 
@@ -264,7 +264,7 @@ El complemento solo declara el permiso de complemento usado para comunicarse con
 
 La aplicación independiente y la entrada de complemento AutoJs6 tienen límites separados y explícitos:
 
-- Permisos mínimos: el manifiesto solo declara `org.autojs.permission.PLUGIN` para la integración, sin permisos sensibles de red, almacenamiento o cámara; el usuario independiente no concede ese permiso.
+- La conversión usa diccionarios locales y nunca sube el texto. La aplicación solicita Internet para consultar actualizaciones en GitHub. Las consultas automáticas están activadas por defecto, como máximo cada 12 horas, también con datos medidos; pueden desactivarse en Ajustes.
 - Acciones explícitas: el Launcher no acepta texto compartido ni URI, solo lee el portapapeles tras `Pegar` y abre la hoja del sistema únicamente tras `Compartir`.
 - Servicio protegido: solo los hosts con el permiso, como AutoJs6, pueden enlazarse y llamarlo. AutoJs6 también verifica la firma del paquete; otras aplicaciones no pueden invocar el servicio.
 - Procesamiento local: ambas entradas usan los diccionarios integrados totalmente sin conexión. Entrada y resultado no se registran, conservan, respaldan, suben ni recopilan.
@@ -318,9 +318,10 @@ Los planes del complemento y su grado de avance se mantienen como una lista marc
 
 #### v1.3.1
 
-_2026/09/11_
+_2026/09/13_
 
 - `Mejora` Verificación de compilación de la alineación de páginas de 16 KB en bibliotecas nativas de 64 bits, con controles del contrato manifest e informes JSON
+- `Mejora` Activación del host, metadatos, documentación traducida y recopilación de APK firmados conforme a las convenciones comunes
 
 #### v1.3.0
 

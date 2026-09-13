@@ -12,7 +12,7 @@
     "One APK, two uses: open the launcher icon for visual text conversion without AutoJs6, or use the same installation through the AutoJs6 `opencc` script API.",
     "14 standard conversions: covers OpenCC Simplified-Traditional conversion, Hong Kong and Taiwan variants, and Japanese Shinjitai, including Taiwan idiom conversion (such as swapping `软件` and `軟體`).",
     "33 script methods: besides the general `opencc.convert(text, type)`, every conversion type has a shortcut method of the same name, plus 18 alias and composed methods such as `s2jp` and `tw2hk`.",
-    "Fully offline: conversion runs locally on the plugin's built-in dictionaries; the plugin requests no network permission and collects no data.",
+    "Text conversion uses local dictionaries and never uploads the text. The app has Internet permission for GitHub update checks. Automatic checks are enabled by default, at most once every 12 hours, including metered connections; disable them in Settings when needed.",
     "Right-sized packages: 4 single-ABI packages and a `universal` package containing all ABIs, so each device installs only what it needs.",
     "Multilingual: the standalone UI, plugin metadata, usage instructions, README, and changelog cover 10 languages.",
     "One shared backend: the editor and lightweight plugin service reuse the same verified resources and native engine; idle plugin connections are released automatically."
@@ -102,13 +102,13 @@
     },
     {
       "q": "Which permissions does the plugin request? Is my data safe?",
-      "a": "The plugin only declares the plugin permission used to communicate with AutoJs6 and requests no sensitive system permissions such as network or storage; its service is protected by the same permission, so other apps cannot call it. Text being converted stays in device memory and is never stored or uploaded."
+      "a": "Text conversion uses local dictionaries and never uploads the text. The app has Internet permission for GitHub update checks. Automatic checks are enabled by default, at most once every 12 hours, including metered connections; disable them in Settings when needed."
     }
   ],
   "h3_security": "Permissions and Security",
   "p_security_intro": "The standalone App and AutoJs6 plugin entry have separate, explicit boundaries:",
   "security_points": [
-    "Minimal permissions: the manifest declares only the `org.autojs.permission.PLUGIN` integration permission and no sensitive system permissions such as network, storage, or camera; standalone users do not grant the plugin permission.",
+    "Text conversion uses local dictionaries and never uploads the text. The app has Internet permission for GitHub update checks. Automatic checks are enabled by default, at most once every 12 hours, including metered connections; disable them in Settings when needed.",
     "Explicit editor actions: the Launcher accepts no shared text or URI, reads the clipboard only after `Paste`, and opens the system share sheet only after `Share`.",
     "Protected plugin service: only hosts holding the plugin permission, such as AutoJs6, can bind and call it. AutoJs6 also verifies the package signature; unrelated apps cannot invoke the service.",
     "Local processing: both entry points use bundled dictionaries completely offline. Input and output are not logged, persisted, backed up, uploaded, or collected."

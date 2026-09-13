@@ -6,9 +6,10 @@
 
 # v1.3.1
 
-###### 2026/09/11
+###### 2026/09/13
 
 * `Amélioration` Vérification à la compilation de l'alignement des pages de 16 KB des bibliothèques natives 64 bits, avec contrôle du contrat manifest et rapports JSON
+* `Amélioration` Harmonisation de l'activation, des métadonnées, de la documentation traduite et de la collecte des APK signés
 
 # v1.3.0
 
