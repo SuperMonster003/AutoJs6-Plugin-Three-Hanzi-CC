@@ -4,6 +4,12 @@
 
 ******
 
+# v1.3.2
+
+###### 2026/09/13
+
+* `Fix` Use English build dates in plugin metadata regardless of the build machine locale
+
 # v1.3.1
 
 ###### 2026/09/13

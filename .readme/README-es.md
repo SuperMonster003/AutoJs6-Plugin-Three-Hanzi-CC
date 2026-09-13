@@ -316,6 +316,12 @@ Los planes del complemento y su grado de avance se mantienen como una lista marc
 
 ******
 
+#### v1.3.2
+
+_2026/09/13_
+
+- `Corrección` Usar fechas de compilación en inglés independientemente del idioma de la máquina
+
 #### v1.3.1
 
 _2026/09/13_
@@ -333,17 +339,6 @@ _2026/09/03_
 - `Mejora` Comparte un único motor oficial OpenCC para todo el proceso entre las entradas autónoma y Binder, conservando el applicationId, la identidad de firma, el límite de permisos del complemento, los números de transacción AIDL y los valores predeterminados sin conexión/sin historial
 - `Mejora` Amplía la verificación a minSdk 24, ARM de 32 bits, arm64, x86, x86_64 y páginas reales de 16 KB; audita las propiedades locale, manifest, R8, ELF y ZIP de los APK finales y fija capturas de interfaz reproducibles sin editar
 - `Mejora` Verifica que la actualización directa desde v1.2.0 conserve el UID del paquete y el servicio del complemento mientras añade exactamente un lanzador, y ejecuta conversiones de UI y Binder heredado sin procesar sobre la release firmada y minificada
-
-#### v1.2.0
-
-_2026/09/01_
-
-- `Aviso` Los diccionarios de OpenCC 1.4.2 cambian intencionadamente algunos resultados, como `复盘` -> `復盤`, `内卷` -> `內捲`, conservar `什么怎么这么` y `内存条` -> `記憶體模組`; la lista completa está en el informe de migración
-- `Mejora` Compilar directamente OpenCC 1.4.2 oficial y los diccionarios de la misma versión en una biblioteca JNI enlazada estáticamente por ABI, manteniendo toda la conversión sin conexión
-- `Mejora` Admitir dispositivos con páginas de 16 KB mediante NDK 28.2, alineación ELF y ZIP de 16 KB y verificación Binder en un emulador real de 16 KB
-- `Mejora` Instalar atómicamente el ZIP de recursos fijado con validación de tamaño y SHA-256, recuperación automática ante daños, conversión JNI segura para Unicode y caché de convertidores de uso frecuente
-- `Dependencia` Eliminar el envoltorio sin mantenimiento `com.github.brooklet:android-opencc:1.2.2` y fijar OpenCC oficial `ver.1.4.2` en el commit `025f371dc76b598d77384fbdab90c937471844d8`
-- `Dependencia` Documentar las fuentes y licencias incluidas de OpenCC, Marisa Trie, Darts Clone y RapidJSON en `THIRD_PARTY_NOTICES.md`
 
 ##### Para ver más historial de versiones
 

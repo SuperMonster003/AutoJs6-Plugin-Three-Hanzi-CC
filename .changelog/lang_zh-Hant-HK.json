@@ -5,6 +5,12 @@
   "changelog_label_improvement": "優化",
   "changelog_label_dependency": "依賴",
   "$data": {
+    "v1.3.2": {
+      "released_date": "2026/09/13",
+      "fix": [
+        "插件中繼資料的建置日期固定使用英文, 不受建置機器語言影響"
+      ]
+    },
     "v1.3.1": {
       "released_date": "2026/09/13",
       "improvement": [
