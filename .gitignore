@@ -52,3 +52,9 @@ app/build/
 opencc-native/build/
 build-logic/build/
 build-logic/*/build/
+
+*.keystore
+
+*.pre-platform-versions.bak
+
+/app/releases/

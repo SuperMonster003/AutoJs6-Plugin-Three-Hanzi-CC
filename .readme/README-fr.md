@@ -55,7 +55,7 @@ L'éditeur autonome et le service Binder AutoJs6 protégé par autorisation part
 - Un APK, deux usages: ouvrez l'icône de lancement pour convertir visuellement du texte sans AutoJs6, ou utilisez la même installation via l'API de script `opencc` d'AutoJs6.
 - 14 conversions standard: couvre la conversion simplifié-traditionnel d'OpenCC, les variantes de Hong Kong et de Taïwan ainsi que le shinjitai japonais, y compris la conversion du vocabulaire courant de Taïwan (comme l'échange entre `软件` et `軟體`).
 - 33 méthodes de script: outre la méthode générale `opencc.convert(text, type)`, chaque type de conversion dispose d'une méthode raccourcie du même nom, plus 18 méthodes d'alias et méthodes composées telles que `s2jp` et `tw2hk`.
-- Entièrement hors ligne: la conversion s'effectue localement sur les dictionnaires intégrés du plugin; le plugin ne demande aucune autorisation réseau et ne collecte aucune donnée.
+- La conversion utilise des dictionnaires locaux sans envoyer le texte. L'application accède à Internet pour vérifier les mises à jour GitHub. Les vérifications automatiques sont activées par défaut, au plus toutes les 12 heures, y compris sur les connexions limitées; elles peuvent être désactivées dans les paramètres.
 - Paquets au plus juste: 4 paquets à ABI unique et un paquet `universal` regroupant toutes les ABI, afin que chaque appareil n'installe que le nécessaire.
 - Multilingue: l'interface autonome, les métadonnées du plugin, les instructions, le README et le changelog couvrent 10 langues.
 - Un backend partagé: l'éditeur et le service léger réutilisent les mêmes ressources vérifiées et le même moteur natif; les connexions inactives du plugin sont libérées automatiquement.
@@ -254,7 +254,7 @@ Aucun réseau n'est nécessaire; toute la conversion s'effectue localement sur l
 
 #### Quelles autorisations le plugin demande-t-il? Mes données sont-elles en sécurité?
 
-Le plugin déclare uniquement l'autorisation de plugin servant à communiquer avec AutoJs6 et ne demande aucune autorisation système sensible telle que le réseau ou le stockage; son service est protégé par la même autorisation, de sorte que les autres applications ne peuvent pas l'appeler. Le texte en cours de conversion reste dans la mémoire de l'appareil et n'est jamais stocké ni téléversé.
+La conversion utilise des dictionnaires locaux sans envoyer le texte. L'application accède à Internet pour vérifier les mises à jour GitHub. Les vérifications automatiques sont activées par défaut, au plus toutes les 12 heures, y compris sur les connexions limitées; elles peuvent être désactivées dans les paramètres.
 
 ******
 
@@ -264,7 +264,7 @@ Le plugin déclare uniquement l'autorisation de plugin servant à communiquer av
 
 L'application autonome et l'entrée plugin AutoJs6 ont des limites distinctes et explicites:
 
-- Autorisations minimales: le manifeste ne déclare que `org.autojs.permission.PLUGIN` pour l'intégration, sans autorisation sensible de réseau, stockage ou caméra; l'utilisateur autonome n'accorde pas cette autorisation.
+- La conversion utilise des dictionnaires locaux sans envoyer le texte. L'application accède à Internet pour vérifier les mises à jour GitHub. Les vérifications automatiques sont activées par défaut, au plus toutes les 12 heures, y compris sur les connexions limitées; elles peuvent être désactivées dans les paramètres.
 - Actions explicites: le Launcher n'accepte ni texte partagé ni URI, ne lit le presse-papiers qu'après `Coller` et n'ouvre la feuille de partage qu'après `Partager`.
 - Service protégé: seuls les hôtes possédant l'autorisation, comme AutoJs6, peuvent s'y lier et l'appeler. AutoJs6 vérifie aussi la signature du paquet; les autres applications ne peuvent pas invoquer le service.
 - Traitement local: les deux entrées utilisent les dictionnaires intégrés entièrement hors ligne. Entrées et résultats ne sont ni journalisés, ni conservés, ni sauvegardés, ni envoyés, ni collectés.
@@ -318,9 +318,10 @@ Les plans du plugin et leur avancement sont tenus à jour sous forme de liste co
 
 #### v1.3.1
 
-_2026/09/11_
+_2026/09/13_
 
 - `Amélioration` Vérification à la compilation de l'alignement des pages de 16 KB des bibliothèques natives 64 bits, avec contrôle du contrat manifest et rapports JSON
+- `Amélioration` Harmonisation de l'activation, des métadonnées, de la documentation traduite et de la collecte des APK signés
 
 #### v1.3.0
 
