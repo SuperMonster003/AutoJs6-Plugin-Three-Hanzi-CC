@@ -10,6 +10,7 @@
 
 * `Corrección` Usar fechas de compilación en inglés independientemente del idioma de la máquina
 * `Corrección` Informar solo de las ABI nativas presentes en el APK instalado
+* `Mejora` Puntuación uniforme en los textos de la interfaz
 
 # v1.3.1
 

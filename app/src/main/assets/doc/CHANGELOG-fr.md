@@ -10,6 +10,7 @@
 
 * `Correctif` Utiliser des dates de compilation en anglais indépendamment de la langue de la machine
 * `Correctif` Indiquer uniquement les ABI natives présentes dans l’APK installé
+* `Amélioration` Ponctuation cohérente dans les textes de l'interface
 
 # v1.3.1
 

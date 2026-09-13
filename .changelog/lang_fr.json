@@ -10,6 +10,9 @@
       "fix": [
         "Utiliser des dates de compilation en anglais indépendamment de la langue de la machine",
         "Indiquer uniquement les ABI natives présentes dans l’APK installé"
+      ],
+      "improvement": [
+        "Ponctuation cohérente dans les textes de l'interface"
       ]
     },
     "v1.3.1": {

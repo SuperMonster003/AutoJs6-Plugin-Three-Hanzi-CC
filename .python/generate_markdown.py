@@ -425,16 +425,18 @@ def render_android_strings(language: dict[str, Any]) -> str:
         not description.endswith((".", "!", "?")),
         "plugin_description must not end with terminal punctuation",
     )
-    localized = language["android_strings"]
-    lines = ['<?xml version="1.0" encoding="utf-8"?>', "<resources>"]
-    for name, value in localized.items():
-        if name == "error_unsupported_conversion_type":
-            lines.append(
-                f'    <string name="plugin_description">{escape_android_string(description)}</string>',
-            )
-        lines.append(f'    <string name="{name}">{escape_android_string(value)}</string>')
+    localized = {**language["android_strings"], "plugin_description": description}
+    lines = ['<?xml version="1.0" encoding="utf-8"?>', '<resources xmlns:tools="http://schemas.android.com/tools">']
+    for name, value in sorted(localized.items()):
+        require(
+            not any(ord(character) > 127 and unicodedata.category(character).startswith("P") for character in value),
+            f"Android string {name} must use ASCII punctuation",
+        )
+        attributes = ' tools:ignore="TypographyEllipsis"' if "..." in value else ""
+        lines.append(f'    <string name="{name}"{attributes}>{escape_android_string(value)}</string>')
     lines.append("</resources>")
     return "\n".join(lines) + "\n"
+
 
 # ---------------------------------------------------------------------------
 # Rendering helpers
