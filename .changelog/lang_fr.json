@@ -5,19 +5,19 @@
   "changelog_label_improvement": "Amélioration",
   "changelog_label_dependency": "Dépendance",
   "$data": {
-    "v1.3.2": {
+    "v1.4.0": {
       "released_date": "2026/09/13",
+      "feature": [
+        "Unifier l'interface autonome avec Material 3 et ajouter les pages de paramètres, de présentation et d'historique, avec le choix de la langue et du thème",
+        "Ajouter les recherches manuelles et automatiques facultatives de mises à jour GitHub, un intervalle de 12 heures et la gestion des versions ignorées; le texte converti reste sur l'appareil"
+      ],
       "fix": [
         "Utiliser des dates de compilation en anglais indépendamment de la langue de la machine",
-        "Indiquer uniquement les ABI natives présentes dans l’APK installé"
+        "Indiquer uniquement les ABI natives présentes dans l’APK installé",
+        "Comparer correctement les identifiants numériques des préversions lors de la recherche de mises à jour"
       ],
       "improvement": [
-        "Ponctuation cohérente dans les textes de l'interface"
-      ]
-    },
-    "v1.3.1": {
-      "released_date": "2026/09/13",
-      "improvement": [
+        "Ponctuation cohérente dans les textes de l'interface",
         "Vérification à la compilation de l'alignement des pages de 16 KB des bibliothèques natives 64 bits, avec contrôle du contrat manifest et rapports JSON",
         "Harmonisation de l'activation, des métadonnées, de la documentation traduite et de la collecte des APK signés"
       ]

@@ -5,19 +5,19 @@
   "changelog_label_improvement": "Improvement",
   "changelog_label_dependency": "Dependency",
   "$data": {
-    "v1.3.2": {
+    "v1.4.0": {
       "released_date": "2026/09/13",
+      "feature": [
+        "Redesign the standalone interface with Material 3 and add settings, about and release history pages, with language and theme preferences",
+        "Add manual and optional automatic GitHub update checks, a 12-hour retry interval and ignored-version management; conversion text remains on the device"
+      ],
       "fix": [
         "Use English build dates in plugin metadata regardless of the build machine locale",
-        "Report only the native ABIs present in the installed APK"
+        "Report only the native ABIs present in the installed APK",
+        "Compare numeric pre-release identifiers correctly when checking for updates"
       ],
       "improvement": [
-        "Consistent punctuation across interface strings"
-      ]
-    },
-    "v1.3.1": {
-      "released_date": "2026/09/13",
-      "improvement": [
+        "Consistent punctuation across interface strings",
         "Build verification of 16 KB page alignment for 64-bit native libraries, including manifest contract checks and JSON reports",
         "Host activation, plugin metadata, localized documentation and signed release collection follow the common plugin conventions"
       ]
