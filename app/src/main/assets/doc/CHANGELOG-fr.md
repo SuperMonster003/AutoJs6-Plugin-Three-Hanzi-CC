@@ -9,6 +9,7 @@
 ###### 2026/09/13
 
 * `Correctif` Utiliser des dates de compilation en anglais indépendamment de la langue de la machine
+* `Correctif` Indiquer uniquement les ABI natives présentes dans l’APK installé
 
 # v1.3.1
 

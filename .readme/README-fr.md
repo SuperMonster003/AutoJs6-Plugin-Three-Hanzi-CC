@@ -321,6 +321,7 @@ Les plans du plugin et leur avancement sont tenus à jour sous forme de liste co
 _2026/09/13_
 
 - `Correctif` Utiliser des dates de compilation en anglais indépendamment de la langue de la machine
+- `Correctif` Indiquer uniquement les ABI natives présentes dans l’APK installé
 
 #### v1.3.1
 
