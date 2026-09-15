@@ -316,6 +316,12 @@ Les plans du plugin et leur avancement sont tenus à jour sous forme de liste co
 
 ******
 
+#### v1.4.2
+
+_2026/09/16_
+
+- `Amélioration` Après compileSdk, targetSdk passe à 37 (Android 17) ; le comportement du plugin ne dépend pas de la nouvelle cible
+
 #### v1.4.1
 
 _2026/09/15_
@@ -334,17 +340,6 @@ _2026/09/13_
 - `Amélioration` Ponctuation cohérente dans les textes de l'interface
 - `Amélioration` Vérification à la compilation de l'alignement des pages de 16 KB des bibliothèques natives 64 bits, avec contrôle du contrat manifest et rapports JSON
 - `Amélioration` Harmonisation de l'activation, des métadonnées, de la documentation traduite et de la collecte des APK signés
-
-#### v1.3.0
-
-_2026/09/03_
-
-- `Note` Le même APK fonctionne désormais à la fois comme application autonome entièrement hors ligne sur Android 7.0+ et comme plugin AutoJs6 existant; seul le mode plugin nécessite AutoJs6
-- `Fonctionnalité` Ajout d'un lanceur et d'un éditeur entièrement hors ligne pour les 14 types de conversion OpenCC, avec conversion, annulation, effacement, collage, permutation, copie et partage, traitement des textes longs en arrière-plan et restauration après rotation ou recréation du processus
-- `Fonctionnalité` Ajout d'une interface autonome en 10 langues avec thèmes clair/sombre, RTL, grandes polices, sémantique TalkBack et ordre de navigation, raccourcis clavier, zones indépendamment défilables et sélectionnables, et dispositions adaptatives pour téléphone, tablette et écran partagé
-- `Amélioration` Partage d'un unique moteur officiel OpenCC à l'échelle du processus entre les entrées autonome et Binder, tout en conservant l'applicationId, l'identité de signature, la limite de permission du plugin, les numéros de transaction AIDL et les valeurs par défaut hors ligne/sans historique
-- `Amélioration` Extension de la validation à minSdk 24, ARM 32 bits, arm64, x86, x86_64 et aux vraies pages de 16 Ko; audit des propriétés locale, manifest, R8, ELF et ZIP des APK finaux, avec captures d'interface brutes et reproductibles
-- `Amélioration` Vérification que la mise à niveau sur place depuis v1.2.0 conserve l'UID du paquet et le service du plugin tout en ajoutant exactement un lanceur, puis exécution de conversions UI et Binder brut historique sur la release signée et minifiée
 
 ##### Pour plus d'historique des versions
 

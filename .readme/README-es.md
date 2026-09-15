@@ -316,6 +316,12 @@ Los planes del complemento y su grado de avance se mantienen como una lista marc
 
 ******
 
+#### v1.4.2
+
+_2026/09/16_
+
+- `Mejora` Tras compileSdk, targetSdk sube a 37 (Android 17); el comportamiento del plugin no depende del nuevo objetivo
+
 #### v1.4.1
 
 _2026/09/15_
@@ -334,17 +340,6 @@ _2026/09/13_
 - `Mejora` Puntuación uniforme en los textos de la interfaz
 - `Mejora` Verificación de compilación de la alineación de páginas de 16 KB en bibliotecas nativas de 64 bits, con controles del contrato manifest e informes JSON
 - `Mejora` Activación del host, metadatos, documentación traducida y recopilación de APK firmados conforme a las convenciones comunes
-
-#### v1.3.0
-
-_2026/09/03_
-
-- `Aviso` El mismo APK funciona ahora tanto como aplicación autónoma totalmente sin conexión en Android 7.0+ como en su función existente de complemento para AutoJs6; AutoJs6 solo es necesario para la ruta del complemento
-- `Función` Añade un lanzador de escritorio y un editor totalmente sin conexión para los 14 tipos de conversión OpenCC, con acciones para convertir, cancelar, borrar, pegar, intercambiar, copiar y compartir, procesamiento de textos largos en segundo plano y restauración tras rotación o recreación del proceso
-- `Función` Añade una interfaz autónoma en 10 idiomas con temas claro/oscuro, RTL, fuentes grandes, semántica y orden de foco para TalkBack, atajos de teclado, áreas desplazables y seleccionables por separado, y diseños adaptables para teléfono, tableta y pantalla dividida
-- `Mejora` Comparte un único motor oficial OpenCC para todo el proceso entre las entradas autónoma y Binder, conservando el applicationId, la identidad de firma, el límite de permisos del complemento, los números de transacción AIDL y los valores predeterminados sin conexión/sin historial
-- `Mejora` Amplía la verificación a minSdk 24, ARM de 32 bits, arm64, x86, x86_64 y páginas reales de 16 KB; audita las propiedades locale, manifest, R8, ELF y ZIP de los APK finales y fija capturas de interfaz reproducibles sin editar
-- `Mejora` Verifica que la actualización directa desde v1.2.0 conserve el UID del paquete y el servicio del complemento mientras añade exactamente un lanzador, y ejecuta conversiones de UI y Binder heredado sin procesar sobre la release firmada y minificada
 
 ##### Para ver más historial de versiones
 
