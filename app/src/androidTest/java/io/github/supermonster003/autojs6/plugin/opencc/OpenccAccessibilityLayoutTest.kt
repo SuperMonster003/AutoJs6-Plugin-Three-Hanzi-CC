@@ -24,6 +24,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import io.github.supermonster003.autojs6.plugin.opencc.nativebridge.OpenccConversionType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
@@ -138,12 +139,18 @@ class OpenccAccessibilityLayoutTest {
 
     private fun assertHardwareKeyboardConversion(activity: OpenccActivity) {
         val source = activity.findViewById<EditText>(R.id.source_text)
+        val types = activity.findViewById<Spinner>(R.id.conversion_type)
         val result = activity.findViewById<TextView>(R.id.result_text)
         val status = activity.findViewById<TextView>(R.id.conversion_status)
         onMain {
             source.requestFocus()
             source.setText(KEYBOARD_INPUT)
             source.setSelection(source.text.length)
+            types.setSelection(OpenccConversionType.S2T.ordinal)
+        }
+        // The expected text must not depend on a type remembered by a previous test run.
+        await("keyboard conversion type layout") {
+            onMain { types.selectedItemPosition == OpenccConversionType.S2T.ordinal && !types.isLayoutRequested }
         }
         val now = SystemClock.uptimeMillis()
         val keyDown = KeyEvent(now, now, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER, 0, KeyEvent.META_CTRL_ON)

@@ -8,9 +8,11 @@ import android.os.IBinder
 import android.os.SystemClock
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import io.github.supermonster003.autojs6.plugin.opencc.nativebridge.OpenccConversionType
 import io.github.supermonster003.autojs6.plugin.opencc.nativebridge.OpenccUpstream
 import org.autojs.plugin.opencc.api.IOpenccPlugin
 import org.autojs.plugin.opencc.api.OpenccConversionTypes
@@ -20,6 +22,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Assume.assumeTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
@@ -42,7 +45,10 @@ class OpenccEntryResourceTest {
 
     @Test
     fun firstEntryConversionUsesOnlyTheVerifiedEmbeddedResource() {
-        when (InstrumentationRegistry.getArguments().getString(PHASE_ARGUMENT)) {
+        val phase = InstrumentationRegistry.getArguments().getString(PHASE_ARGUMENT)
+        // This fixture must start in a fresh process for each entry point.
+        assumeTrue("Run scripts/ci/run_phased_device_tests.py or pass -e $PHASE_ARGUMENT", phase != null)
+        when (phase) {
             PHASE_STANDALONE -> verifyStandaloneFirstConversion()
             PHASE_BINDER -> verifyBinderFirstConversion()
             else -> error("Pass -e $PHASE_ARGUMENT {$PHASE_STANDALONE|$PHASE_BINDER}")
@@ -67,10 +73,23 @@ class OpenccEntryResourceTest {
             )
 
             val source = activity.findViewById<EditText>(R.id.source_text)
+            val types = activity.findViewById<Spinner>(R.id.conversion_type)
             val convert = activity.findViewById<Button>(R.id.convert_button)
             val result = activity.findViewById<TextView>(R.id.result_text)
             instrumentation.runOnMainSync {
                 source.setText(SMOKE_INPUT)
+                types.setSelection(OpenccConversionType.S2T.ordinal)
+            }
+            // Other UI tests and previous launches can leave a different remembered type.
+            // Its selection callback must also finish before it can cancel this conversion.
+            await("standalone conversion type layout") {
+                val ready = AtomicReference(false)
+                instrumentation.runOnMainSync {
+                    ready.set(types.selectedItemPosition == OpenccConversionType.S2T.ordinal && !types.isLayoutRequested)
+                }
+                ready.get()
+            }
+            instrumentation.runOnMainSync {
                 check(convert.performClick()) { "Standalone conversion click was not accepted" }
             }
             await("standalone conversion and resource recovery") {

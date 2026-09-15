@@ -17,6 +17,7 @@ import io.github.supermonster003.autojs6.plugin.opencc.nativebridge.OpenccUpstre
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
+import org.junit.Assume.assumeTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
@@ -31,7 +32,10 @@ class OpenccResourceRestartTest {
 
     @Test
     fun verifiedArchiveIsReusedAcrossARealProcessRestart() {
-        when (InstrumentationRegistry.getArguments().getString(PHASE_ARGUMENT)) {
+        val phase = InstrumentationRegistry.getArguments().getString(PHASE_ARGUMENT)
+        // Preparation and verification are separate instrumentation processes, in that order.
+        assumeTrue("Run scripts/ci/run_phased_device_tests.py or pass -e $PHASE_ARGUMENT", phase != null)
+        when (phase) {
             PHASE_PREPARE -> prepareRestartEvidence()
             PHASE_VERIFY -> verifyRestartEvidence()
             else -> error("Pass -e $PHASE_ARGUMENT {$PHASE_PREPARE|$PHASE_VERIFY}")

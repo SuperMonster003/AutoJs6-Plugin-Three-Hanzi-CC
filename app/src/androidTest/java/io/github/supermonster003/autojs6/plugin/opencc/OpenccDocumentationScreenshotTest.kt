@@ -14,6 +14,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import io.github.supermonster003.autojs6.plugin.opencc.nativebridge.OpenccConversionType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Assume.assumeTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
@@ -31,8 +32,9 @@ class OpenccDocumentationScreenshotTest {
 
     @Test
     fun capturePopulatedStandaloneScreen() {
-        val requestedName = InstrumentationRegistry.getArguments().getString(ARG_FILE_NAME).orEmpty()
-        require(FILE_NAME_PATTERN.matches(requestedName)) {
+        val requestedName = InstrumentationRegistry.getArguments().getString(ARG_FILE_NAME)
+        assumeTrue("Run scripts/ci/run_phased_device_tests.py or pass -e $ARG_FILE_NAME", requestedName != null)
+        require(FILE_NAME_PATTERN.matches(requestedName.orEmpty())) {
             "Pass -e $ARG_FILE_NAME a safe .png file name"
         }
 
@@ -47,6 +49,13 @@ class OpenccDocumentationScreenshotTest {
                 source.setSelection(source.text.length)
                 source.clearFocus()
                 types.setSelection(OpenccConversionType.S2T.ordinal)
+            }
+            // Spinner selection callbacks run during layout and cancel any active conversion.
+            // Settle the restored selection before starting this screenshot's conversion.
+            await("conversion type layout") {
+                onMain { types.selectedItemPosition == OpenccConversionType.S2T.ordinal && !types.isLayoutRequested }
+            }
+            onMain {
                 activity.findViewById<TextView>(R.id.convert_button).performClick()
             }
             await("converted screenshot content") {
