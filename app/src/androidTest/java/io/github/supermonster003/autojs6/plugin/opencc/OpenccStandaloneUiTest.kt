@@ -338,12 +338,16 @@ class OpenccStandaloneUiTest {
 
     private fun tapAsUser(view: View) {
         val visibleBounds = Rect()
+        val locationOnScreen = IntArray(2)
         val center = onMain {
             check(view.isEnabled) { "The clipboard action is disabled" }
-            check(view.getGlobalVisibleRect(visibleBounds) && !visibleBounds.isEmpty) {
+            check(view.getLocalVisibleRect(visibleBounds) && !visibleBounds.isEmpty) {
                 "The clipboard action is not visible"
             }
-            Pair(visibleBounds.centerX(), visibleBounds.centerY())
+            // input tap uses display coordinates; global visible bounds are relative to the
+            // root window and can omit its status-bar/decor offset.
+            view.getLocationOnScreen(locationOnScreen)
+            Pair(locationOnScreen[0] + visibleBounds.centerX(), locationOnScreen[1] + visibleBounds.centerY())
         }
         val tapOutput = runShellCommand("input tap ${center.first} ${center.second}")
         assertShellSucceeded("inject the foreground clipboard action", tapOutput)
