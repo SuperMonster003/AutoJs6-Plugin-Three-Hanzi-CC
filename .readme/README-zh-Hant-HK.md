@@ -316,6 +316,12 @@ OpenCC resources SHA-256: 9ea0d303219b34d014d5c116677b5d325043beafb2c8a62ee889ca
 
 ******
 
+#### v1.4.1
+
+_2026/09/15_
+
+- `優化` 將 compileSdk 提升到 37 (Android 17), targetSdk 保持 36, 待依賴目標版本的行為驗證後再提升
+
 #### v1.4.0
 
 _2026/09/13_
@@ -339,17 +345,6 @@ _2026/09/03_
 - `優化` 獨立入口和 Binder 入口共用唯一的程序級官方 OpenCC 後端, 同時保持 applicationId, 簽名身分, 插件權限邊界, AIDL 交易編號及離線/無記錄預設值不變
 - `優化` 將驗收矩陣擴展至 minSdk 24, 32 位 ARM, arm64, x86, x86_64 和真實 16 KB 頁環境; 審計最終 APK 的 locale, manifest, R8, ELF 與 ZIP 屬性, 並固定可重現的未編輯 UI 螢幕截圖
 - `優化` 驗證從 v1.2.0 原地升級後保留套件 UID 和插件服務並只新增一個 Launcher, 再針對已簽名 minified release 實際執行 UI 與舊版原始 Binder 轉換
-
-#### v1.2.0
-
-_2026/09/01_
-
-- `提示` OpenCC 1.4.2 的詞典更新會有意改變少量結果, 包括 `复盘` -> `復盤`, `内卷` -> `內捲`, 保留 `什么怎么这么` 及 `内存条` -> `記憶體模組`; 完整審閱清單見遷移報告
-- `優化` 將官方 OpenCC 1.4.2 及同版本詞典直接構建為每個 ABI 一個靜態連結的 JNI 程式庫, 所有轉換繼續完全離線
-- `優化` 使用 NDK 28.2, 16 KB ELF 與 ZIP 對齊及真實 16 KB 模擬器 Binder 驗證, 支援 16 KB 頁面大小裝置
-- `優化` 以大小和 SHA-256 校驗原子安裝固定資源 ZIP, 支援損壞自動恢復, Unicode 安全 JNI 轉換及熱路徑轉換器快取
-- `依賴` 移除已停止維護的 `com.github.brooklet:android-opencc:1.2.2` 封裝程式庫, 並固定官方 OpenCC `ver.1.4.2` 到提交 `025f371dc76b598d77384fbdab90c937471844d8`
-- `依賴` 在 `THIRD_PARTY_NOTICES.md` 中記錄內置 OpenCC, Marisa Trie, Darts Clone 與 RapidJSON 的來源和許可
 
 ##### 更多發行歷史可參閱
 
@@ -399,7 +394,7 @@ py scripts\release\prepare_release.py
 py .python\generate_markdown.py --check
 ```
 
-構建需要 JDK 17 及以上與 Android SDK 36; Gradle 與各插件版本由 `version.properties` 及 `io.github.supermonster003.autojs6-platform-versions` 統一管理.
+構建需要 JDK 17 及以上與 Android SDK 37; Gradle 與各插件版本由 `version.properties` 及 `io.github.supermonster003.autojs6-platform-versions` 統一管理.
 
 ******
 

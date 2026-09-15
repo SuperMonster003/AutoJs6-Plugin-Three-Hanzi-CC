@@ -131,7 +131,7 @@
   "p_build_digest": "جمع نواتج الإصدار وإلحاق الإصدار وABI وملخص CRC32 باسم كل ملف",
   "p_build_release_bundle": "بناء ملفات APK للإصدار وتجهيز الملخصات وملاحظات الإصدار",
   "p_build_docs_check": "التحقق من تزامن مصادر الوثائق متعددة اللغات مع النواتج المولدة (يفرضه CI أيضا)",
-  "p_build_requirements": "يتطلب البناء JDK 17 أو أحدث وAndroid SDK 36; وتدار إصدارات Gradle والمكونات الإضافية مركزيا عبر `version.properties` و`io.github.supermonster003.autojs6-platform-versions`.",
+  "p_build_requirements": "يتطلب البناء JDK 17 أو أحدث وAndroid SDK 37; وتدار إصدارات Gradle والمكونات الإضافية مركزيا عبر `version.properties` و`io.github.supermonster003.autojs6-platform-versions`.",
   "h3_resource_layout": "الترجمة وتوليد الوثائق",
   "p_resource_layout": "ملف `.readme/android_strings.json` هو المصدر الوحيد لنصوص الواجهة المستقلة وأخطاء الخدمة, وتوفر ملفات JSON اللغوية نص README ومركز المكونات. عدل مصادر JSON في `.readme/` و`.changelog/` ثم شغل `py .python/generate_markdown.py`; ولا تحرر ملفات `strings.xml` و`plugin_instruction.md` وREADME وسجل التغييرات المولدة يدويا. يتحقق `--check` من النواتج الـ 47.",
   "h3_license": "الترخيص",

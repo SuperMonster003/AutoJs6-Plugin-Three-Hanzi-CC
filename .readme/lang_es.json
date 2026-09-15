@@ -131,7 +131,7 @@
   "p_build_digest": "Recopilar los artefactos de publicación y añadir la versión, la ABI y la suma de comprobación CRC32 al nombre de cada archivo",
   "p_build_release_bundle": "Compilar los APK release y preparar sumas de comprobación y notas de la versión",
   "p_build_docs_check": "Comprobar que las fuentes de la documentación multilingüe y los archivos generados están sincronizados (la integración continua también lo comprueba)",
-  "p_build_requirements": "La compilación requiere JDK 17 o superior y el SDK de Android 36; las versiones de Gradle y de los plugins se gestionan de forma centralizada mediante `version.properties` y `io.github.supermonster003.autojs6-platform-versions`.",
+  "p_build_requirements": "La compilación requiere JDK 17 o superior y el SDK de Android 37; las versiones de Gradle y de los plugins se gestionan de forma centralizada mediante `version.properties` y `io.github.supermonster003.autojs6-platform-versions`.",
   "h3_resource_layout": "Localización y generación de documentos",
   "p_resource_layout": "`.readme/android_strings.json` es la única fuente para la interfaz independiente y los errores del servicio; los JSON de idioma proporcionan el README y el texto del centro de complementos. Edite siempre las fuentes JSON bajo `.readme/` y `.changelog/` y ejecute de nuevo `py .python/generate_markdown.py`; los `strings.xml`, `plugin_instruction.md`, README y changelogs generados no se editan a mano. `--check` verifica los 47 archivos generados.",
   "h3_license": "Licencia",
