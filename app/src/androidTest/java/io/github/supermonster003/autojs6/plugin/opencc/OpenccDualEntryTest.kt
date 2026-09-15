@@ -110,13 +110,21 @@ class OpenccDualEntryTest {
                 PackageManager.GET_PROVIDERS or
                 PackageManager.GET_PERMISSIONS,
         )
+        // API 37 splits ACCESS_LOCAL_NETWORK off INTERNET for packages that target an older SDK,
+        // so the installed package lists a permission the manifest never declares.
+        val splitFromInternet =
+            if (android.os.Build.VERSION.SDK_INT >= 37 && context.applicationInfo.targetSdkVersion < 37) {
+                setOf("android.permission.ACCESS_LOCAL_NETWORK")
+            } else {
+                emptySet()
+            }
         assertEquals(
             "The final APK must request exactly the plugin and update-check permissions",
             setOf(
                 PLUGIN_PERMISSION,
                 android.Manifest.permission.INTERNET,
                 "${context.packageName}$DYNAMIC_RECEIVER_PERMISSION_SUFFIX",
-            ),
+            ) + splitFromInternet,
             packageInfo.requestedPermissions.orEmpty().toSet(),
         )
         assertEquals(
