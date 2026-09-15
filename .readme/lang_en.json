@@ -131,7 +131,7 @@
   "p_build_digest": "Collect release artifacts and append the version, ABI, and CRC32 digest to each file name",
   "p_build_release_bundle": "Build release APKs and prepare checksums and release notes",
   "p_build_docs_check": "Verify that the multilingual documentation sources and generated artifacts are in sync (also enforced by CI)",
-  "p_build_requirements": "Building requires JDK 17 or later and Android SDK 36; Gradle and plugin versions are managed centrally by `version.properties` and `io.github.supermonster003.autojs6-platform-versions`.",
+  "p_build_requirements": "Building requires JDK 17 or later and Android SDK 37; Gradle and plugin versions are managed centrally by `version.properties` and `io.github.supermonster003.autojs6-platform-versions`.",
   "h3_resource_layout": "Localization and Docs Generation",
   "p_resource_layout": "`.readme/android_strings.json` is the single source for the standalone UI and service error strings, while the language JSON files provide README and plugin-center copy. Always edit the JSON sources under `.readme/` and `.changelog/` and rerun `py .python/generate_markdown.py`; generated `strings.xml`, `plugin_instruction.md`, README, and changelog artifacts are never edited by hand. Run `py .python/generate_markdown.py --check` to verify all 47 generated artifacts.",
   "h3_license": "License",

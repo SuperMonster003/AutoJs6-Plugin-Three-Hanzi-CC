@@ -316,6 +316,12 @@ Les plans du plugin et leur avancement sont tenus à jour sous forme de liste co
 
 ******
 
+#### v1.4.1
+
+_2026/09/15_
+
+- `Amélioration` compileSdk passe à 37 (Android 17) ; targetSdk reste à 36 jusqu'à la vérification du comportement dépendant de la cible
+
 #### v1.4.0
 
 _2026/09/13_
@@ -339,17 +345,6 @@ _2026/09/03_
 - `Amélioration` Partage d'un unique moteur officiel OpenCC à l'échelle du processus entre les entrées autonome et Binder, tout en conservant l'applicationId, l'identité de signature, la limite de permission du plugin, les numéros de transaction AIDL et les valeurs par défaut hors ligne/sans historique
 - `Amélioration` Extension de la validation à minSdk 24, ARM 32 bits, arm64, x86, x86_64 et aux vraies pages de 16 Ko; audit des propriétés locale, manifest, R8, ELF et ZIP des APK finaux, avec captures d'interface brutes et reproductibles
 - `Amélioration` Vérification que la mise à niveau sur place depuis v1.2.0 conserve l'UID du paquet et le service du plugin tout en ajoutant exactement un lanceur, puis exécution de conversions UI et Binder brut historique sur la release signée et minifiée
-
-#### v1.2.0
-
-_2026/09/01_
-
-- `Note` Les dictionnaires d'OpenCC 1.4.2 modifient intentionnellement quelques résultats, notamment `复盘` -> `復盤`, `内卷` -> `內捲`, la préservation de `什么怎么这么` et `内存条` -> `記憶體模組`; la liste complète est dans le rapport de migration
-- `Amélioration` Compiler directement OpenCC 1.4.2 officiel et les dictionnaires de la même version dans une bibliothèque JNI liée statiquement par ABI, tout en conservant une conversion entièrement hors ligne
-- `Amélioration` Prendre en charge les appareils à pages de 16 KB avec NDK 28.2, l'alignement ELF et ZIP sur 16 KB et une vérification Binder sur un véritable émulateur 16 KB
-- `Amélioration` Installer atomiquement le ZIP de ressources verrouillé avec contrôle de taille et SHA-256, récupération automatique après corruption, conversion JNI sûre pour Unicode et mise en cache des convertisseurs utilisés à chaud
-- `Dépendance` Supprimer l'encapsulation non maintenue `com.github.brooklet:android-opencc:1.2.2` et verrouiller OpenCC officiel `ver.1.4.2` au commit `025f371dc76b598d77384fbdab90c937471844d8`
-- `Dépendance` Documenter les sources et licences intégrées d'OpenCC, Marisa Trie, Darts Clone et RapidJSON dans `THIRD_PARTY_NOTICES.md`
 
 ##### Pour plus d'historique des versions
 
@@ -399,7 +394,7 @@ Vérifier que les sources de la documentation multilingue et les fichiers géné
 py .python\generate_markdown.py --check
 ```
 
-La compilation nécessite JDK 17 ou ultérieur ainsi que le SDK Android 36; les versions de Gradle et des plugins sont gérées de manière centralisée par `version.properties` et `io.github.supermonster003.autojs6-platform-versions`.
+La compilation nécessite JDK 17 ou ultérieur ainsi que le SDK Android 37; les versions de Gradle et des plugins sont gérées de manière centralisée par `version.properties` et `io.github.supermonster003.autojs6-platform-versions`.
 
 ******
 
