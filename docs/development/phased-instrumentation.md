@@ -36,9 +36,14 @@ test app's cached OpenCC resource and editor-state evidence; use a test installa
   layout, independently of the conversion type remembered by earlier launches or UI tests.
   Its delayed selection callback cancels active conversions, so clicking Convert in the same
   main-thread action could leave the screenshot waiting forever for a canceled result.
-- Clipboard actions now convert visible local button bounds to display coordinates with
-  `getLocationOnScreen` before `input tap`. Root-window coordinates can omit window/decor
-  offsets and send the tap to the wrong control.
+- Clipboard actions convert visible local button bounds to display coordinates with
+  `getLocationOnScreen`. Root-window coordinates can omit window/decor offsets and send the
+  tap to the wrong control. Touch down/up events are injected synchronously through
+  `UiAutomation.injectInputEvent`, which also waits for window animations and input surface
+  transactions. `am start -W`, main-thread idleness and window focus alone do not provide
+  that synchronization after the fixture's Home/Back/foreground sequence.
+- Clipboard timeouts report window focus, button attachment/visibility/enabled state and
+  the current status text, so a missed click can be distinguished from a clipboard outcome.
 
 These corrections do not change the production converter or its public API.
 
@@ -57,3 +62,26 @@ These corrections do not change the production converter or its public API.
 - Host runner result tests passed, including rejected skip/crash/failure outputs.
 
 Local logs are under `build/verification/plugin-test-repair/` and remain ignored.
+
+## Clipboard input investigation, 2026-09-16
+
+Unmodified `1e5bfc9` reproduced the Paste timeout in two full default suites on the API 37
+x86_64 / 16 KB emulator. A debugger run with observations after input injection reproduced it
+again: all four taps used `(296, 1004)`, the button remained attached and window focus was true,
+but the `pastePlainText` logpoint was never reached. The source remained
+`Do not read the clipboard automatically` and the status remained `Conversion complete`.
+No ClipboardService denial appeared. An earlier logpoint before injection made the suite pass,
+showing that additional delay could mask the failure.
+
+This evidence locates the failure before the Paste callback, in the fixture's input delivery.
+It does not establish that an earlier test permanently leaked focus or that a particular SDK
+caused it. Synchronous injection covers the window/input synchronization missing from shell
+`input tap`; production clipboard access and conversion behavior are unchanged.
+
+After the correction, three consecutive default suites without a debugger each passed all
+five ordinary tests, with the four expected opt-in skips and no failures. A fourth full suite
+also passed with `transition_animation_scale=3.0`; the original `1.0` setting was restored.
+The final APKs used build 103. The retry count and outcome timeout were not increased.
+
+Local logs, debugger observations and screenshots are under
+`build/verification/clipboard-focus-20260916/` and remain ignored.
