@@ -13,6 +13,8 @@ import android.os.Build
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
 import android.os.SystemClock
+import android.view.InputDevice
+import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -333,7 +335,12 @@ class OpenccStandaloneUiTest {
                 SystemClock.sleep(POLL_INTERVAL_MILLIS)
             }
         }
-        fail("Timed out waiting for $description after $CLIPBOARD_ACTION_ATTEMPTS foreground user taps")
+        val state = onMain {
+            "windowFocus=${activity.hasWindowFocus()}, attached=${view.isAttachedToWindow}, " +
+                "shown=${view.isShown}, enabled=${view.isEnabled}, " +
+                "status=${activity.findViewById<TextView>(R.id.conversion_status).text}"
+        }
+        fail("Timed out waiting for $description after $CLIPBOARD_ACTION_ATTEMPTS foreground user taps: $state")
     }
 
     private fun tapAsUser(view: View) {
@@ -344,13 +351,34 @@ class OpenccStandaloneUiTest {
             check(view.getLocalVisibleRect(visibleBounds) && !visibleBounds.isEmpty) {
                 "The clipboard action is not visible"
             }
-            // input tap uses display coordinates; global visible bounds are relative to the
+            // Touch events use display coordinates; global visible bounds are relative to the
             // root window and can omit its status-bar/decor offset.
             view.getLocationOnScreen(locationOnScreen)
             Pair(locationOnScreen[0] + visibleBounds.centerX(), locationOnScreen[1] + visibleBounds.centerY())
         }
-        val tapOutput = runShellCommand("input tap ${center.first} ${center.second}")
-        assertShellSucceeded("inject the foreground clipboard action", tapOutput)
+        // am start -W and main-thread idleness do not synchronize the window's input surface.
+        // A shell tap can be lost during the return-to-foreground animation even with window
+        // focus. UiAutomation waits for window animations/input transactions before injecting.
+        val downTime = SystemClock.uptimeMillis()
+        for (action in intArrayOf(MotionEvent.ACTION_DOWN, MotionEvent.ACTION_UP)) {
+            val event = MotionEvent.obtain(
+                downTime,
+                SystemClock.uptimeMillis(),
+                action,
+                center.first.toFloat(),
+                center.second.toFloat(),
+                0,
+            )
+            event.source = InputDevice.SOURCE_TOUCHSCREEN
+            try {
+                assertTrue(
+                    "Unable to inject clipboard touch action $action at $center",
+                    instrumentation.uiAutomation.injectInputEvent(event, true),
+                )
+            } finally {
+                event.recycle()
+            }
+        }
         instrumentation.waitForIdleSync()
     }
 
@@ -371,8 +399,8 @@ class OpenccStandaloneUiTest {
         )
         assertShellSucceeded("return the standalone Activity to foreground", startOutput)
         instrumentation.waitForIdleSync()
-        // Activity.hasWindowFocus() is not a reliable readiness proxy on headless emulators. A
-        // real input event plus the observable clipboard/UI outcome below is the authoritative gate.
+        // Window focus alone does not mean the input surface is ready. tapAsUser synchronizes
+        // input delivery, and the observable clipboard/UI outcome remains the authoritative gate.
         assertFalse("Standalone Activity was destroyed", onMain { activity.isDestroyed })
         assertFalse("Standalone Activity is finishing", onMain { activity.isFinishing })
     }
