@@ -318,8 +318,9 @@ Los planes del complemento y su grado de avance se mantienen como una lista marc
 
 #### v1.4.2
 
-_2026/09/16_
+_2026/09/19_
 
+- `Corrección` Advertencias de lectura de SDK XML v4 con AGP 9.1 y comprobaciones de alineación nativa de APK activadas por error al ensamblar pruebas unitarias JVM, mediante los plugins de compilación compartidos 1.8.3
 - `Mejora` Tras compileSdk, targetSdk sube a 37 (Android 17); el comportamiento del plugin no depende del nuevo objetivo
 
 #### v1.4.1
