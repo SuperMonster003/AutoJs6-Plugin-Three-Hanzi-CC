@@ -15,7 +15,8 @@
     "La conversión usa diccionarios locales y nunca sube el texto. La aplicación solicita Internet para consultar actualizaciones en GitHub. Las consultas automáticas están activadas por defecto, como máximo cada 12 horas, también con datos medidos; pueden desactivarse en Ajustes.",
     "Paquetes a medida: 4 paquetes de una sola ABI y un paquete `universal` con todas las ABI, de modo que cada dispositivo instala solo lo que necesita.",
     "Multilingüe: la interfaz independiente, los metadatos, las instrucciones, el README y el changelog cubren 10 idiomas.",
-    "Un backend compartido: el editor y el servicio ligero reutilizan los mismos recursos verificados y el mismo motor nativo; las conexiones inactivas del complemento se liberan automáticamente."
+    "Un backend compartido: el editor y el servicio ligero reutilizan los mismos recursos verificados y el mismo motor nativo; las conexiones inactivas del complemento se liberan automáticamente.",
+    "Elige iconos de inicio adaptables claros, oscuros (predeterminados), automáticos o transparentes en Ajustes. Los colores automáticos y la transparencia dependen del lanzador. El cambio mantiene la aplicación en ejecución y puede tardar unos segundos."
   ],
   "h3_screenshots": "Captura de pantalla",
   "p_screenshots_intro": "Estas capturas Android sin retoques muestran el editor independiente en modo claro, el diseño árabe RTL con fuente al 170% en modo oscuro y la entrada existente del centro de complementos AutoJs6.",

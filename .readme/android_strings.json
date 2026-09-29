@@ -112,7 +112,16 @@
     "standalone_about_section_license": "许可",
     "standalone_about_version_details": "%1$s (%2$d) - %3$s",
     "standalone_about_license_summary": "Mozilla Public License 2.0 (MPL-2.0)",
-    "standalone_open_link_failed": "无法打开链接"
+    "standalone_open_link_failed": "无法打开链接",
+    "launcher_icon_applied_note": "启动器可能需要几秒钟刷新. 部分主屏幕快捷方式可能需要重新添加.",
+    "launcher_icon_auto": "自适应自动",
+    "launcher_icon_auto_note": "尝试跟随系统主题. 部分启动器会缓存图标或只使用一种配色.",
+    "launcher_icon_dark": "自适应暗色",
+    "launcher_icon_failed": "无法切换启动器图标, 请重试.",
+    "launcher_icon_light": "自适应亮色",
+    "launcher_icon_title": "启动器图标",
+    "launcher_icon_transparent": "透明背景",
+    "launcher_icon_transparent_note": "部分启动器会自行添加背景或遮罩, 透明效果可能无法保留."
   },
   "zh-Hant-HK": {
     "standalone_paste_action": "貼上",
@@ -227,7 +236,16 @@
     "standalone_about_section_license": "授權",
     "standalone_about_version_details": "%1$s (%2$d) - %3$s",
     "standalone_about_license_summary": "Mozilla Public License 2.0 (MPL-2.0)",
-    "standalone_open_link_failed": "無法開啟連結"
+    "standalone_open_link_failed": "無法開啟連結",
+    "launcher_icon_applied_note": "啓動器可能需要幾秒鐘刷新. 部分主畫面快捷方式可能需要重新添加.",
+    "launcher_icon_auto": "自適應自動",
+    "launcher_icon_auto_note": "嘗試跟隨系統主題. 部分啓動器會快取圖標或只使用一種配色.",
+    "launcher_icon_dark": "自適應暗色",
+    "launcher_icon_failed": "無法切換啓動器圖標, 請重試.",
+    "launcher_icon_light": "自適應亮色",
+    "launcher_icon_title": "啓動器圖標",
+    "launcher_icon_transparent": "透明背景",
+    "launcher_icon_transparent_note": "部分啓動器會自行添加背景或遮罩, 透明效果可能無法保留."
   },
   "zh-Hant-TW": {
     "standalone_paste_action": "貼上",
@@ -342,7 +360,16 @@
     "standalone_about_section_license": "授權",
     "standalone_about_version_details": "%1$s (%2$d) - %3$s",
     "standalone_about_license_summary": "Mozilla Public License 2.0 (MPL-2.0)",
-    "standalone_open_link_failed": "無法開啟連結"
+    "standalone_open_link_failed": "無法開啟連結",
+    "launcher_icon_applied_note": "啟動器可能需要幾秒鐘重新整理. 部分主畫面捷徑可能需要重新新增.",
+    "launcher_icon_auto": "自適應自動",
+    "launcher_icon_auto_note": "嘗試跟隨系統主題. 部分啟動器會快取圖示或只使用一種配色.",
+    "launcher_icon_dark": "自適應暗色",
+    "launcher_icon_failed": "無法切換啟動器圖示, 請重試.",
+    "launcher_icon_light": "自適應亮色",
+    "launcher_icon_title": "啟動器圖示",
+    "launcher_icon_transparent": "透明背景",
+    "launcher_icon_transparent_note": "部分啟動器會自行新增背景或遮罩, 透明效果可能無法保留."
   },
   "en": {
     "standalone_paste_action": "Paste",
@@ -457,7 +484,16 @@
     "standalone_about_section_license": "License",
     "standalone_about_version_details": "%1$s (%2$d) - %3$s",
     "standalone_about_license_summary": "Mozilla Public License 2.0 (MPL-2.0)",
-    "standalone_open_link_failed": "Could not open the link"
+    "standalone_open_link_failed": "Could not open the link",
+    "launcher_icon_applied_note": "The launcher may take a few seconds to refresh. Some home-screen shortcuts may need to be added again.",
+    "launcher_icon_auto": "Adaptive automatic",
+    "launcher_icon_auto_note": "Tries to follow the system theme. Some launchers cache icons or use only one color scheme.",
+    "launcher_icon_dark": "Adaptive dark",
+    "launcher_icon_failed": "Unable to change the launcher icon. Please try again.",
+    "launcher_icon_light": "Adaptive light",
+    "launcher_icon_title": "Launcher icon",
+    "launcher_icon_transparent": "Transparent background",
+    "launcher_icon_transparent_note": "Some launchers add their own background or mask, so transparency may not be preserved."
   },
   "fr": {
     "standalone_paste_action": "Coller",
@@ -572,7 +608,16 @@
     "standalone_about_section_license": "Licence",
     "standalone_about_version_details": "%1$s (%2$d) - %3$s",
     "standalone_about_license_summary": "Mozilla Public License 2.0 (MPL-2.0)",
-    "standalone_open_link_failed": "Impossible d'ouvrir le lien"
+    "standalone_open_link_failed": "Impossible d'ouvrir le lien",
+    "launcher_icon_applied_note": "Le lanceur peut prendre quelques secondes pour se rafraîchir. Certains raccourcis peuvent devoir être ajoutés a nouveau.",
+    "launcher_icon_auto": "Adaptative automatique",
+    "launcher_icon_auto_note": "Tente de suivre le thème du système. Certains lanceurs gardent les icônes en cache ou utilisent une seule palette.",
+    "launcher_icon_dark": "Adaptative sombre",
+    "launcher_icon_failed": "Impossible de changer l'icône du lanceur. Veuillez réessayer.",
+    "launcher_icon_light": "Adaptative claire",
+    "launcher_icon_title": "Icône du lanceur",
+    "launcher_icon_transparent": "Fond transparent",
+    "launcher_icon_transparent_note": "Certains lanceurs ajoutent un fond ou un masque. La transparence peut ne pas être conservée."
   },
   "es": {
     "standalone_paste_action": "Pegar",
@@ -687,7 +732,16 @@
     "standalone_about_section_license": "Licencia",
     "standalone_about_version_details": "%1$s (%2$d) - %3$s",
     "standalone_about_license_summary": "Mozilla Public License 2.0 (MPL-2.0)",
-    "standalone_open_link_failed": "No se pudo abrir el enlace"
+    "standalone_open_link_failed": "No se pudo abrir el enlace",
+    "launcher_icon_applied_note": "El lanzador puede tardar unos segundos en actualizarse. Puede ser necesario volver a agregar algunos accesos directos.",
+    "launcher_icon_auto": "Adaptable automático",
+    "launcher_icon_auto_note": "Intenta seguir el tema del sistema. Algunos lanzadores guardan los iconos en caché o usan una sola paleta.",
+    "launcher_icon_dark": "Adaptable oscuro",
+    "launcher_icon_failed": "No se pudo cambiar el icono del lanzador. Inténtalo de nuevo.",
+    "launcher_icon_light": "Adaptable claro",
+    "launcher_icon_title": "Icono del lanzador",
+    "launcher_icon_transparent": "Fondo transparente",
+    "launcher_icon_transparent_note": "Algunos lanzadores agregan un fondo o una máscara. Puede que no se conserve la transparencia."
   },
   "ja": {
     "standalone_paste_action": "貼り付け",
@@ -802,7 +856,16 @@
     "standalone_about_section_license": "ライセンス",
     "standalone_about_version_details": "%1$s (%2$d) - %3$s",
     "standalone_about_license_summary": "Mozilla Public License 2.0 (MPL-2.0)",
-    "standalone_open_link_failed": "リンクを開けませんでした"
+    "standalone_open_link_failed": "リンクを開けませんでした",
+    "launcher_icon_applied_note": "反映まで数秒かかる場合があります. ホーム画面のショートカットを再追加する必要がある場合があります.",
+    "launcher_icon_auto": "アダプティブ 自動",
+    "launcher_icon_auto_note": "システムテーマへの追従を試みます. ランチャーによってはアイコンがキャッシュされ, 配色が固定されます.",
+    "launcher_icon_dark": "アダプティブ ダーク",
+    "launcher_icon_failed": "ランチャーアイコンを変更できませんでした. もう一度お試しください.",
+    "launcher_icon_light": "アダプティブ ライト",
+    "launcher_icon_title": "ランチャーアイコン",
+    "launcher_icon_transparent": "透明な背景",
+    "launcher_icon_transparent_note": "ランチャーが背景やマスクを追加する場合, 透明な背景は維持されないことがあります."
   },
   "ko": {
     "standalone_paste_action": "붙여넣기",
@@ -917,7 +980,16 @@
     "standalone_about_section_license": "라이선스",
     "standalone_about_version_details": "%1$s (%2$d) - %3$s",
     "standalone_about_license_summary": "Mozilla Public License 2.0 (MPL-2.0)",
-    "standalone_open_link_failed": "링크를 열 수 없습니다"
+    "standalone_open_link_failed": "링크를 열 수 없습니다",
+    "launcher_icon_applied_note": "런처가 새로 고침되기까지 몇 초가 걸릴 수 있습니다. 일부 홈 화면 바로가기를 다시 추가해야 할 수 있습니다.",
+    "launcher_icon_auto": "적응형 자동",
+    "launcher_icon_auto_note": "시스템 테마를 따르려고 시도합니다. 일부 런처는 아이콘을 캐시하거나 한 가지 색상만 사용합니다.",
+    "launcher_icon_dark": "적응형 어둡게",
+    "launcher_icon_failed": "런처 아이콘을 변경할 수 없습니다. 다시 시도해 주세요.",
+    "launcher_icon_light": "적응형 밝게",
+    "launcher_icon_title": "런처 아이콘",
+    "launcher_icon_transparent": "투명 배경",
+    "launcher_icon_transparent_note": "일부 런처는 배경이나 마스크를 추가하므로 투명도가 유지되지 않을 수 있습니다."
   },
   "ru": {
     "standalone_paste_action": "Вставить",
@@ -1032,7 +1104,16 @@
     "standalone_about_section_license": "Лицензия",
     "standalone_about_version_details": "%1$s (%2$d) - %3$s",
     "standalone_about_license_summary": "Mozilla Public License 2.0 (MPL-2.0)",
-    "standalone_open_link_failed": "Не удалось открыть ссылку"
+    "standalone_open_link_failed": "Не удалось открыть ссылку",
+    "launcher_icon_applied_note": "Обновление значка может занять несколько секунд. Некоторые ярлыки на главном экране может потребоваться добавить заново.",
+    "launcher_icon_auto": "Адаптивный автоматический",
+    "launcher_icon_auto_note": "Пытается следовать системной теме. Некоторые лаунчеры кешируют значки или используют только одну цветовую схему.",
+    "launcher_icon_dark": "Адаптивный темный",
+    "launcher_icon_failed": "Не удалось изменить значок запуска. Повторите попытку.",
+    "launcher_icon_light": "Адаптивный светлый",
+    "launcher_icon_title": "Значок запуска",
+    "launcher_icon_transparent": "Прозрачный фон",
+    "launcher_icon_transparent_note": "Некоторые лаунчеры добавляют фон или маску, поэтому прозрачность может не сохраниться."
   },
   "ar": {
     "standalone_paste_action": "إلصاق",
@@ -1147,6 +1228,15 @@
     "standalone_about_section_license": "الترخيص",
     "standalone_about_version_details": "%1$s (%2$d) - %3$s",
     "standalone_about_license_summary": "Mozilla Public License 2.0 (MPL-2.0)",
-    "standalone_open_link_failed": "تعذر فتح الرابط"
+    "standalone_open_link_failed": "تعذر فتح الرابط",
+    "launcher_icon_applied_note": "قد يستغرق تحديث المشغل بضع ثوان. قد تحتاج إلى إضافة بعض اختصارات الشاشة الرئيسية مرة أخرى.",
+    "launcher_icon_auto": "متكيف تلقائي",
+    "launcher_icon_auto_note": "يحاول اتباع سمة النظام. بعض المشغلات تخزن الرموز مؤقتا أو تستخدم نظام ألوان واحدا فقط.",
+    "launcher_icon_dark": "متكيف داكن",
+    "launcher_icon_failed": "تعذر تغيير رمز المشغل. يرجى المحاولة مرة أخرى.",
+    "launcher_icon_light": "متكيف فاتح",
+    "launcher_icon_title": "رمز المشغل",
+    "launcher_icon_transparent": "خلفية شفافة",
+    "launcher_icon_transparent_note": "قد تضيف بعض المشغلات خلفية أو قناعا, لذلك قد لا يتم الحفاظ على الشفافية."
   }
 }

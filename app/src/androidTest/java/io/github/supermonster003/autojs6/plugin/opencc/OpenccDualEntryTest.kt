@@ -136,7 +136,7 @@ class OpenccDualEntryTest {
                 AboutActivity::class.java.name,
                 ReleaseHistoryActivity::class.java.name,
             ),
-            packageInfo.activities.orEmpty().map { it.name }.toSet(),
+            packageInfo.activities.orEmpty().filter { it.targetActivity == null }.map { it.name }.toSet(),
         )
         assertEquals(
             "The final APK service inventory changed",
@@ -152,7 +152,8 @@ class OpenccDualEntryTest {
         val launcherMatches = packageManager.queryIntentActivities(launcherIntent, 0)
         assertEquals("The APK must expose exactly one desktop entry", 1, launcherMatches.size)
         val activityInfo = launcherMatches.single().activityInfo
-        assertEquals(OpenccActivity::class.java.name, activityInfo.name)
+        assertEquals(LauncherIcons.current(context).component(context).className, activityInfo.name)
+        assertEquals(OpenccActivity::class.java.name, activityInfo.targetActivity)
         assertTrue("The Launcher activity must be exported", activityInfo.exported)
         assertNull("Desktop launch must not require the AutoJs6 plugin permission", activityInfo.permission)
         assertEquals("Launcher must use the ordinary app task affinity", context.packageName, activityInfo.taskAffinity)
