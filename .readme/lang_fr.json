@@ -15,7 +15,8 @@
     "La conversion utilise des dictionnaires locaux sans envoyer le texte. L'application accède à Internet pour vérifier les mises à jour GitHub. Les vérifications automatiques sont activées par défaut, au plus toutes les 12 heures, y compris sur les connexions limitées; elles peuvent être désactivées dans les paramètres.",
     "Paquets au plus juste: 4 paquets à ABI unique et un paquet `universal` regroupant toutes les ABI, afin que chaque appareil n'installe que le nécessaire.",
     "Multilingue: l'interface autonome, les métadonnées du plugin, les instructions, le README et le changelog couvrent 10 langues.",
-    "Un backend partagé: l'éditeur et le service léger réutilisent les mêmes ressources vérifiées et le même moteur natif; les connexions inactives du plugin sont libérées automatiquement."
+    "Un backend partagé: l'éditeur et le service léger réutilisent les mêmes ressources vérifiées et le même moteur natif; les connexions inactives du plugin sont libérées automatiquement.",
+    "Choisissez une icône de lanceur adaptative claire, sombre (par défaut), automatique ou transparente dans les paramètres. Les couleurs automatiques et la transparence dépendent du lanceur. Le changement conserve l'application en cours et peut demander quelques secondes."
   ],
   "h3_screenshots": "Capture d'écran",
   "p_screenshots_intro": "Ces captures Android non retouchées montrent l'éditeur autonome en mode jour, la disposition arabe RTL avec une police à 170% en mode nuit, puis l'entrée existante du centre de plugins AutoJs6.",

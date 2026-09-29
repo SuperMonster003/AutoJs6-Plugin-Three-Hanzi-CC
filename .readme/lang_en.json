@@ -15,7 +15,8 @@
     "Text conversion uses local dictionaries and never uploads the text. The app has Internet permission for GitHub update checks. Automatic checks are enabled by default, at most once every 12 hours, including metered connections; disable them in Settings when needed.",
     "Right-sized packages: 4 single-ABI packages and a `universal` package containing all ABIs, so each device installs only what it needs.",
     "Multilingual: the standalone UI, plugin metadata, usage instructions, README, and changelog cover 10 languages.",
-    "One shared backend: the editor and lightweight plugin service reuse the same verified resources and native engine; idle plugin connections are released automatically."
+    "One shared backend: the editor and lightweight plugin service reuse the same verified resources and native engine; idle plugin connections are released automatically.",
+    "Choose adaptive light, adaptive dark (default), automatic or transparent launcher icons in Settings. Automatic colors and transparency depend on launcher support; switching preserves the running app and may take a few seconds to refresh."
   ],
   "h3_screenshots": "Interface Screenshot",
   "p_screenshots_intro": "These are unedited Android runtime captures of the standalone editor in day mode, the Arabic RTL layout at 170% font size in night mode, and the existing AutoJs6 plugin-center entry.",

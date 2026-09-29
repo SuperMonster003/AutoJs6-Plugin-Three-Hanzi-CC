@@ -164,7 +164,7 @@ internal fun ConfiguredActivity.singleChoiceDialog(
     checkedIndex: Int,
     enabledAt: (Int) -> Boolean = { true },
     onSelect: (Int) -> Unit,
-) {
+): androidx.appcompat.app.AlertDialog {
     val dialog = materialDialog()
         .setTitle(title)
         .setSingleChoiceItems(
@@ -177,4 +177,5 @@ internal fun ConfiguredActivity.singleChoiceDialog(
         .setNegativeButton(android.R.string.cancel, null)
         .show()
     tintDialogButtons(dialog)
+    return dialog
 }

@@ -59,6 +59,7 @@ The standalone editor and the permission-protected AutoJs6 Binder service share 
 - Right-sized packages: 4 single-ABI packages and a `universal` package containing all ABIs, so each device installs only what it needs.
 - Multilingual: the standalone UI, plugin metadata, usage instructions, README, and changelog cover 10 languages.
 - One shared backend: the editor and lightweight plugin service reuse the same verified resources and native engine; idle plugin connections are released automatically.
+- Choose adaptive light, adaptive dark (default), automatic or transparent launcher icons in Settings. Automatic colors and transparency depend on launcher support; switching preserves the running app and may take a few seconds to refresh.
 
 ******
 
@@ -316,6 +317,12 @@ The plugin's plans and progress are maintained as a checkable list in ROADMAP.md
 
 ******
 
+#### v1.5.0
+
+_2026/09/29_
+
+- `Feature` Choose adaptive light, adaptive dark (default), automatic or transparent launcher icons in Settings. Automatic colors and transparency depend on launcher support; switching preserves the running app and may take a few seconds to refresh.
+
 #### v1.4.2
 
 _2026/09/19_
@@ -328,19 +335,6 @@ _2026/09/19_
 _2026/09/15_
 
 - `Improvement` Raise compileSdk to 37 (Android 17); targetSdk stays at 36 until the behavior that depends on the target is verified
-
-#### v1.4.0
-
-_2026/09/13_
-
-- `Feature` Redesign the standalone interface with Material 3 and add settings, about and release history pages, with language and theme preferences
-- `Feature` Add manual and optional automatic GitHub update checks, a 12-hour retry interval and ignored-version management; conversion text remains on the device
-- `Fix` Use English build dates in plugin metadata regardless of the build machine locale
-- `Fix` Report only the native ABIs present in the installed APK
-- `Fix` Compare numeric pre-release identifiers correctly when checking for updates
-- `Improvement` Consistent punctuation across interface strings
-- `Improvement` Build verification of 16 KB page alignment for 64-bit native libraries, including manifest contract checks and JSON reports
-- `Improvement` Host activation, plugin metadata, localized documentation and signed release collection follow the common plugin conventions
 
 ##### For more release history
 

@@ -59,6 +59,7 @@ El editor independiente y el servicio Binder de AutoJs6 protegido por permiso co
 - Paquetes a medida: 4 paquetes de una sola ABI y un paquete `universal` con todas las ABI, de modo que cada dispositivo instala solo lo que necesita.
 - Multilingüe: la interfaz independiente, los metadatos, las instrucciones, el README y el changelog cubren 10 idiomas.
 - Un backend compartido: el editor y el servicio ligero reutilizan los mismos recursos verificados y el mismo motor nativo; las conexiones inactivas del complemento se liberan automáticamente.
+- Elige iconos de inicio adaptables claros, oscuros (predeterminados), automáticos o transparentes en Ajustes. Los colores automáticos y la transparencia dependen del lanzador. El cambio mantiene la aplicación en ejecución y puede tardar unos segundos.
 
 ******
 
@@ -316,6 +317,12 @@ Los planes del complemento y su grado de avance se mantienen como una lista marc
 
 ******
 
+#### v1.5.0
+
+_2026/09/29_
+
+- `Función` Elige iconos de inicio adaptables claros, oscuros (predeterminados), automáticos o transparentes en Ajustes. Los colores automáticos y la transparencia dependen del lanzador. El cambio mantiene la aplicación en ejecución y puede tardar unos segundos.
+
 #### v1.4.2
 
 _2026/09/19_
@@ -328,19 +335,6 @@ _2026/09/19_
 _2026/09/15_
 
 - `Mejora` compileSdk sube a 37 (Android 17); targetSdk se mantiene en 36 hasta verificar el comportamiento que depende del objetivo
-
-#### v1.4.0
-
-_2026/09/13_
-
-- `Función` Unificar la interfaz independiente con Material 3 y añadir ajustes, información e historial de versiones, con preferencias de idioma y tema
-- `Función` Añadir búsquedas manuales y automáticas opcionales de actualizaciones de GitHub, un intervalo de 12 horas y gestión de versiones ignoradas; el texto convertido permanece en el dispositivo
-- `Corrección` Usar fechas de compilación en inglés independientemente del idioma de la máquina
-- `Corrección` Informar solo de las ABI nativas presentes en el APK instalado
-- `Corrección` Comparar correctamente los identificadores numéricos de versiones preliminares al buscar actualizaciones
-- `Mejora` Puntuación uniforme en los textos de la interfaz
-- `Mejora` Verificación de compilación de la alineación de páginas de 16 KB en bibliotecas nativas de 64 bits, con controles del contrato manifest e informes JSON
-- `Mejora` Activación del host, metadatos, documentación traducida y recopilación de APK firmados conforme a las convenciones comunes
 
 ##### Para ver más historial de versiones
 

@@ -394,7 +394,7 @@ def validate_android_string_sources(strings: dict[str, dict[str, Any]]) -> None:
     reference = strings[LANGUAGE_CODE_DEFAULT]
     require("error_unsupported_conversion_type" in reference, "Android strings are missing the service error")
     require(
-        all(key == "error_unsupported_conversion_type" or key.startswith("standalone_") for key in reference),
+        all(key == "error_unsupported_conversion_type" or key.startswith(("standalone_", "launcher_icon_")) for key in reference),
         "Android string sources may contain only the service error and standalone UI keys",
     )
     for code, localized in strings.items():
