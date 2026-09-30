@@ -2,13 +2,13 @@
 <resources>
     <color name="opencc_accent">#005EA8</color>
     <color name="opencc_brand_primary">#005EA8</color>
-    <color name="opencc_window_background">#FAFAFC</color>
-    <color name="opencc_system_bar">#FAFAFC</color>
+    <color name="opencc_window_background">#F3F4F5</color>
+    <color name="opencc_system_bar">#F3F4F5</color>
     <color name="opencc_surface">#FFFFFF</color>
-    <color name="opencc_surface_variant">#EFF1F5</color>
-    <color name="opencc_text_primary">#191C20</color>
-    <color name="opencc_text_secondary">#666B74</color>
-    <color name="opencc_divider">#E7E9EE</color>
-    <color name="opencc_outline">#D3D7DE</color>
+    <color name="opencc_surface_variant">#F3F4F5</color>
+    <color name="opencc_text_primary">#1D1B20</color>
+    <color name="opencc_text_secondary">#5F6368</color>
+    <color name="opencc_divider">#E0E3E7</color>
+    <color name="opencc_outline">#C5C8CE</color>
     <color name="opencc_error">#C62828</color>
 </resources>

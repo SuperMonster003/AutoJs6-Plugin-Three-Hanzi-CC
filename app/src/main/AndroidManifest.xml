@@ -53,7 +53,7 @@
         <activity-alias
             android:name=".launcher.AdaptiveDarkIconAlias"
             android:targetActivity=".OpenccActivity"
-            android:enabled="true"
+            android:enabled="false"
             android:exported="true"
             android:icon="@mipmap/ic_launcher_system"
             android:label="@string/app_name">
@@ -66,7 +66,7 @@
         <activity-alias
             android:name=".launcher.AdaptiveAutoIconAlias"
             android:targetActivity=".OpenccActivity"
-            android:enabled="false"
+            android:enabled="true"
             android:exported="true"
             android:icon="@mipmap/ic_launcher_system_auto"
             android:label="@string/app_name">
@@ -121,6 +121,17 @@
             android:theme="@style/Theme.Opencc" />
 
         <service
+            android:name=".OpenccPluginInfoService"
+            android:exported="true"
+            android:permission="org.autojs.permission.PLUGIN">
+            <intent-filter>
+                <action android:name="org.autojs.plugin.INFO" />
+                <category android:name="opencc" />
+            </intent-filter>
+            <meta-data android:name="requiresHostVersion" android:value="3923" />
+        </service>
+
+        <service
             android:name=".OpenccPluginService"
             android:exported="true"
             android:permission="org.autojs.permission.PLUGIN">
@@ -131,7 +142,7 @@
         </service>
 
         <!-- Both libraries below ship auto-start components; this plugin must expose zero
-             providers and receivers (enforced by CI and instrumentation tests). -->
+             providers or library receivers (the update-only icon receiver is intentional). -->
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
@@ -142,6 +153,13 @@
             android:name="androidx.profileinstaller.ProfileInstallReceiver"
             tools:ignore="MissingClass"
             tools:node="remove" />
+
+        <!-- Update-only repair keeps one launcher entry after changing the default to Auto. -->
+        <receiver android:name=".LauncherIconUpdateReceiver" android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
 
     </application>
 

@@ -21,6 +21,12 @@ import io.github.supermonster003.autojs6.plugin.opencc.R
 
 internal fun ConfiguredActivity.materialDialog(): MaterialAlertDialogBuilder =
     MaterialAlertDialogBuilder(this)
+        .setBackground(android.graphics.drawable.GradientDrawable().apply {
+            setColor(appPalette.surface)
+            cornerRadius = uiDp(24).toFloat()
+        })
+        .setBackgroundInsetStart(0)
+        .setBackgroundInsetEnd(0)
 
 /**
  * Text-entry dialog on an outlined field. `validate` returns an error message to keep the dialog
@@ -143,7 +149,7 @@ internal class PaletteChoiceAdapter(
         view.isSingleLine = false
         view.maxLines = Int.MAX_VALUE
         view.ellipsize = null
-        view.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
+        view.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
         view.setLineSpacing(0f, 1.08f)
         view.setPaddingRelative(
             activity.uiDp(Ui.SPACE_XXL),
@@ -163,16 +169,26 @@ internal fun ConfiguredActivity.singleChoiceDialog(
     labels: List<CharSequence>,
     checkedIndex: Int,
     enabledAt: (Int) -> Boolean = { true },
+    confirmSelection: Boolean = false,
     onSelect: (Int) -> Unit,
 ): androidx.appcompat.app.AlertDialog {
+    var pendingIndex = checkedIndex
     val dialog = materialDialog()
         .setTitle(title)
         .setSingleChoiceItems(
             PaletteChoiceAdapter(this, labels, enabledAt),
             checkedIndex,
         ) { dialog, index ->
-            dialog.dismiss()
-            onSelect(index)
+            pendingIndex = index
+            if (!confirmSelection) {
+                dialog.dismiss()
+                onSelect(index)
+            }
+        }
+        .apply {
+            if (confirmSelection) setPositiveButton(android.R.string.ok) { _, _ ->
+                if (pendingIndex in labels.indices && enabledAt(pendingIndex)) onSelect(pendingIndex)
+            }
         }
         .setNegativeButton(android.R.string.cancel, null)
         .show()

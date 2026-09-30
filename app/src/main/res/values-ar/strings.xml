@@ -2,13 +2,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="error_unsupported_conversion_type">نوع تحويل OpenCC غير مدعوم: %1$s</string>
     <string name="launcher_icon_applied_note">قد يستغرق تحديث المشغل بضع ثوان. قد تحتاج إلى إضافة بعض اختصارات الشاشة الرئيسية مرة أخرى.</string>
-    <string name="launcher_icon_auto">متكيف تلقائي</string>
+    <string name="launcher_icon_auto">أيقونة تكيفية (تلقائية)</string>
     <string name="launcher_icon_auto_note">يحاول اتباع سمة النظام. بعض المشغلات تخزن الرموز مؤقتا أو تستخدم نظام ألوان واحدا فقط.</string>
-    <string name="launcher_icon_dark">متكيف داكن</string>
+    <string name="launcher_icon_dark">أيقونة تكيفية (داكنة)</string>
     <string name="launcher_icon_failed">تعذر تغيير رمز المشغل. يرجى المحاولة مرة أخرى.</string>
-    <string name="launcher_icon_light">متكيف فاتح</string>
+    <string name="launcher_icon_light">أيقونة تكيفية (فاتحة)</string>
     <string name="launcher_icon_title">رمز المشغل</string>
-    <string name="launcher_icon_transparent">خلفية شفافة</string>
+    <string name="launcher_icon_transparent">أيقونة بخلفية شفافة</string>
     <string name="launcher_icon_transparent_note">قد تضيف بعض المشغلات خلفية أو قناعا, لذلك قد لا يتم الحفاظ على الشفافية.</string>
     <string name="plugin_description">محول OpenCC صيني محلي يعمل مستقلا ومع AutoJs6</string>
     <string name="standalone_about_app_summary">تفاصيل الإصدار وترخيص المصدر المفتوح وروابط المشروع</string>
@@ -123,4 +123,9 @@
     <string name="standalone_update_stop_ignoring">إيقاف التجاهل</string>
     <string name="standalone_update_up_to_date">أنت على أحدث إصدار</string>
     <string name="standalone_update_view_release">عرض الإصدار</string>
+    <string name="theme_picker_custom">لون مخصص</string>
+    <string name="theme_picker_input">HEX / RGB</string>
+    <string name="theme_picker_invalid">أدخل #RRGGBB أو RRGGBB أو rgb(r, g, b). يجب أن تكون قيم RGB بين 0 و255.</string>
+    <string name="theme_picker_presets">ألوان جاهزة</string>
+    <string name="theme_picker_preview">معاينة</string>
 </resources>

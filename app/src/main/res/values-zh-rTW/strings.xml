@@ -2,13 +2,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="error_unsupported_conversion_type">不支援的 OpenCC 轉換類型: %1$s</string>
     <string name="launcher_icon_applied_note">啟動器可能需要幾秒鐘重新整理. 部分主畫面捷徑可能需要重新新增.</string>
-    <string name="launcher_icon_auto">自適應自動</string>
+    <string name="launcher_icon_auto">自適應圖示 (自動)</string>
     <string name="launcher_icon_auto_note">嘗試跟隨系統主題. 部分啟動器會快取圖示或只使用一種配色.</string>
-    <string name="launcher_icon_dark">自適應暗色</string>
+    <string name="launcher_icon_dark">自適應圖示 (暗色)</string>
     <string name="launcher_icon_failed">無法切換啟動器圖示, 請重試.</string>
-    <string name="launcher_icon_light">自適應亮色</string>
+    <string name="launcher_icon_light">自適應圖示 (亮色)</string>
     <string name="launcher_icon_title">啟動器圖示</string>
-    <string name="launcher_icon_transparent">透明背景</string>
+    <string name="launcher_icon_transparent">透明背景圖示</string>
     <string name="launcher_icon_transparent_note">部分啟動器會自行新增背景或遮罩, 透明效果可能無法保留.</string>
     <string name="plugin_description">可獨立使用並相容 AutoJs6 的離線 OpenCC 中文轉換器</string>
     <string name="standalone_about_app_summary">版本資訊, 開放原始碼授權與專案連結</string>
@@ -65,7 +65,7 @@
     <string name="standalone_script_taiwan_traditional">台灣繁體</string>
     <string name="standalone_script_traditional_chinese">繁體中文</string>
     <string name="standalone_script_traditional_old_forms">繁體舊字形</string>
-    <string name="standalone_settings_dark_mode">深色模式</string>
+    <string name="standalone_settings_dark_mode">夜間模式</string>
     <string name="standalone_settings_language">語言</string>
     <string name="standalone_settings_remember_type">記住轉換方向</string>
     <string name="standalone_settings_remember_type_summary">下次啟動時還原最近使用的轉換方向</string>
@@ -123,4 +123,9 @@
     <string name="standalone_update_stop_ignoring">不再忽略</string>
     <string name="standalone_update_up_to_date">已是最新版本</string>
     <string name="standalone_update_view_release">檢視發行版</string>
+    <string name="theme_picker_custom">自訂色彩</string>
+    <string name="theme_picker_input">HEX / RGB</string>
+    <string name="theme_picker_invalid">請輸入 #RRGGBB, RRGGBB 或 rgb(r, g, b). RGB 數值須為 0..255.</string>
+    <string name="theme_picker_presets">預設色彩</string>
+    <string name="theme_picker_preview">預覽</string>
 </resources>

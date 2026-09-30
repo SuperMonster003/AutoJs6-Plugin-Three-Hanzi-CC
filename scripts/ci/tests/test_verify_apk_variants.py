@@ -31,6 +31,18 @@ class VerifyApkVariantsTest(unittest.TestCase):
                 ),
             ],
         )
+        launcher_filter = deepcopy(launcher.children)
+        launcher.children = []
+        aliases = [element("activity-alias", {
+            "name": f"{package_name}.launcher.{name}IconAlias",
+            "targetActivity": f"{package_name}.OpenccActivity",
+            "exported": True,
+            "enabled": name == "AdaptiveAuto",
+            "icon": 0x7F100001 + index,
+        }, deepcopy(launcher_filter)) for index, name in enumerate(("AdaptiveLight", "AdaptiveDark", "AdaptiveAuto", "Transparent"))]
+        update_receiver = element("receiver", {"name": f"{package_name}.LauncherIconUpdateReceiver", "exported": False}, [
+            element("intent-filter", {}, [element("action", {"name": "android.intent.action.MY_PACKAGE_REPLACED"})]),
+        ])
         wake = element(
             "activity",
             {
@@ -76,6 +88,9 @@ class VerifyApkVariantsTest(unittest.TestCase):
                 ),
             ],
         )
+        info_service = deepcopy(service)
+        info_service.attributes["name"] = f"{package_name}.OpenccPluginInfoService"
+        info_service.children[0].children[0].attributes["name"] = "org.autojs.plugin.INFO"
         return element(
             "manifest",
             {"package": package_name},
@@ -93,7 +108,7 @@ class VerifyApkVariantsTest(unittest.TestCase):
                         "usesCleartextTraffic": False,
                         "localeConfig": 0x7F110001,
                     },
-                    [launcher, wake, *internal_activities, service],
+                    [launcher, *aliases, wake, *internal_activities, service, info_service, update_receiver],
                 ),
             ],
         )
@@ -203,7 +218,7 @@ class VerifyApkVariantsTest(unittest.TestCase):
         launcher = next(
             child
             for child in application.children
-            if child.attributes.get("name", "").endswith(".OpenccActivity")
+            if child.attributes.get("name", "").endswith(".AdaptiveAutoIconAlias")
         )
         launcher.children[0].children[0].attributes["name"] = "android.intent.action.SEND"
         with self.assertRaisesRegex(verify_apk_variants.VerificationError, "only MAIN/LAUNCHER"):
@@ -214,6 +229,30 @@ class VerifyApkVariantsTest(unittest.TestCase):
         self.assertIn("app-arm64-v8a-release-unsigned.apk", names)
         self.assertNotIn("app-arm64-v8a-release.apk", names)
         self.assertEqual(5, len(names))
+
+    def test_auto_icon_keeps_an_independent_compiled_resource_id(self) -> None:
+        manifest = self.expected_manifest()
+        app = next(child for child in manifest.children if child.name == "application")
+        aliases = [child for child in app.children if child.name == "activity-alias"]
+        aliases[2].attributes["icon"] = aliases[1].attributes["icon"]
+        with self.assertRaisesRegex(verify_apk_variants.VerificationError, "independent icon ID"):
+            verify_apk_variants.verify_manifest_tree(manifest, "fixture.apk")
+
+    def test_a_second_default_launcher_entry_is_rejected(self) -> None:
+        manifest = self.expected_manifest()
+        app = next(child for child in manifest.children if child.name == "application")
+        dark = next(child for child in app.children if child.attributes.get("name", "").endswith(".AdaptiveDarkIconAlias"))
+        dark.attributes["enabled"] = True
+        with self.assertRaisesRegex(verify_apk_variants.VerificationError, "enabled"):
+            verify_apk_variants.verify_manifest_tree(manifest, "fixture.apk")
+
+    def test_common_metadata_service_must_remain_protected(self) -> None:
+        manifest = self.expected_manifest()
+        app = next(child for child in manifest.children if child.name == "application")
+        info = next(child for child in app.children if child.attributes.get("name", "").endswith(".OpenccPluginInfoService"))
+        del info.attributes["permission"]
+        with self.assertRaisesRegex(verify_apk_variants.VerificationError, "permission"):
+            verify_apk_variants.verify_manifest_tree(manifest, "fixture.apk")
 
     def test_unsigned_debug_is_rejected(self) -> None:
         with self.assertRaisesRegex(

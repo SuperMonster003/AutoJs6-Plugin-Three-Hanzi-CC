@@ -59,7 +59,8 @@ L'éditeur autonome et le service Binder AutoJs6 protégé par autorisation part
 - Paquets au plus juste: 4 paquets à ABI unique et un paquet `universal` regroupant toutes les ABI, afin que chaque appareil n'installe que le nécessaire.
 - Multilingue: l'interface autonome, les métadonnées du plugin, les instructions, le README et le changelog couvrent 10 langues.
 - Un backend partagé: l'éditeur et le service léger réutilisent les mêmes ressources vérifiées et le même moteur natif; les connexions inactives du plugin sont libérées automatiquement.
-- Choisissez une icône de lanceur adaptative claire, sombre (par défaut), automatique ou transparente dans les paramètres. Les couleurs automatiques et la transparence dépendent du lanceur. Le changement conserve l'application en cours et peut demander quelques secondes.
+- Choisissez une icône de lanceur adaptative claire, sombre, automatique (par défaut) ou transparente dans les paramètres. Les couleurs automatiques et la transparence dépendent du lanceur.
+- Paramètres de langue, de mode sombre, de couleur et d'icône harmonisés, avec surfaces neutres, contrôles thématiques et dialogues de confirmation. Prévisualisez les couleurs prédéfinies ou HEX/RGB avant de valider. Annuler conserve les paramètres enregistrés.
 
 ******
 
@@ -319,9 +320,11 @@ Les plans du plugin et leur avancement sont tenus à jour sous forme de liste co
 
 #### v1.5.0
 
-_2026/09/29_
+_2026/09/30_
 
-- `Fonctionnalité` Choisissez une icône de lanceur adaptative claire, sombre (par défaut), automatique ou transparente dans les paramètres. Les couleurs automatiques et la transparence dépendent du lanceur. Le changement conserve l'application en cours et peut demander quelques secondes.
+- `Fonctionnalité` Choisissez une icône de lanceur adaptative claire, sombre, automatique (par défaut) ou transparente dans les paramètres. Les couleurs automatiques et la transparence dépendent du lanceur.
+- `Correctif` Les mises à jour conservent une seule entrée de lanceur et un choix d'icône antérieur explicite. L'apparence de l'hôte est lue en arrière-plan sans interrompre une sélection en cours.
+- `Amélioration` Paramètres de langue, de mode sombre, de couleur et d'icône harmonisés, avec surfaces neutres, contrôles thématiques et dialogues de confirmation. Prévisualisez les couleurs prédéfinies ou HEX/RGB avant de valider. Annuler conserve les paramètres enregistrés.
 
 #### v1.4.2
 

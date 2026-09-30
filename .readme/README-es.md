@@ -59,7 +59,8 @@ El editor independiente y el servicio Binder de AutoJs6 protegido por permiso co
 - Paquetes a medida: 4 paquetes de una sola ABI y un paquete `universal` con todas las ABI, de modo que cada dispositivo instala solo lo que necesita.
 - Multilingüe: la interfaz independiente, los metadatos, las instrucciones, el README y el changelog cubren 10 idiomas.
 - Un backend compartido: el editor y el servicio ligero reutilizan los mismos recursos verificados y el mismo motor nativo; las conexiones inactivas del complemento se liberan automáticamente.
-- Elige iconos de inicio adaptables claros, oscuros (predeterminados), automáticos o transparentes en Ajustes. Los colores automáticos y la transparencia dependen del lanzador. El cambio mantiene la aplicación en ejecución y puede tardar unos segundos.
+- Elige iconos de inicio adaptables claros, oscuros, automáticos (predeterminados) o transparentes en Ajustes. Los colores automáticos y la transparencia dependen del lanzador.
+- Ajustes uniformes de idioma, modo oscuro, color e icono, con fondos neutros, controles temáticos y confirmación. Previsualiza colores predefinidos o HEX/RGB antes de aplicarlos. Cancelar conserva los ajustes guardados.
 
 ******
 
@@ -319,9 +320,11 @@ Los planes del complemento y su grado de avance se mantienen como una lista marc
 
 #### v1.5.0
 
-_2026/09/29_
+_2026/09/30_
 
-- `Función` Elige iconos de inicio adaptables claros, oscuros (predeterminados), automáticos o transparentes en Ajustes. Los colores automáticos y la transparencia dependen del lanzador. El cambio mantiene la aplicación en ejecución y puede tardar unos segundos.
+- `Función` Elige iconos de inicio adaptables claros, oscuros, automáticos (predeterminados) o transparentes en Ajustes. Los colores automáticos y la transparencia dependen del lanzador.
+- `Corrección` Las actualizaciones mantienen una sola entrada y conservan el icono elegido expresamente. La apariencia del anfitrión se lee en segundo plano sin interrumpir los cambios pendientes.
+- `Mejora` Ajustes uniformes de idioma, modo oscuro, color e icono, con fondos neutros, controles temáticos y confirmación. Previsualiza colores predefinidos o HEX/RGB antes de aplicarlos. Cancelar conserva los ajustes guardados.
 
 #### v1.4.2
 
