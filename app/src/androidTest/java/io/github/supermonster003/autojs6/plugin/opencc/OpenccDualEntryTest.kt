@@ -140,10 +140,11 @@ class OpenccDualEntryTest {
         )
         assertEquals(
             "The final APK service inventory changed",
-            setOf(OpenccPluginService::class.java.name),
+            setOf(OpenccPluginService::class.java.name, OpenccPluginInfoService::class.java.name),
             packageInfo.services.orEmpty().map { it.name }.toSet(),
         )
-        assertTrue("The APK must not declare broadcast receivers", packageInfo.receivers.orEmpty().isEmpty())
+        assertEquals("Only the update-only launcher repair receiver is allowed", setOf(LauncherIconUpdateReceiver::class.java.name), packageInfo.receivers.orEmpty().map { it.name }.toSet())
+        assertTrue("The update receiver must stay internal", packageInfo.receivers.orEmpty().none { it.exported })
         assertTrue("The APK must not declare content providers", packageInfo.providers.orEmpty().isEmpty())
 
         val launcherIntent = Intent(Intent.ACTION_MAIN)

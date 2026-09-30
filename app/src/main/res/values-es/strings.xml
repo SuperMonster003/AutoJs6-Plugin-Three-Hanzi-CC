@@ -2,13 +2,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="error_unsupported_conversion_type">Tipo de conversión OpenCC no compatible: %1$s</string>
     <string name="launcher_icon_applied_note">El lanzador puede tardar unos segundos en actualizarse. Puede ser necesario volver a agregar algunos accesos directos.</string>
-    <string name="launcher_icon_auto">Adaptable automático</string>
+    <string name="launcher_icon_auto">Icono adaptable (automático)</string>
     <string name="launcher_icon_auto_note">Intenta seguir el tema del sistema. Algunos lanzadores guardan los iconos en caché o usan una sola paleta.</string>
-    <string name="launcher_icon_dark">Adaptable oscuro</string>
+    <string name="launcher_icon_dark">Icono adaptable (oscuro)</string>
     <string name="launcher_icon_failed">No se pudo cambiar el icono del lanzador. Inténtalo de nuevo.</string>
-    <string name="launcher_icon_light">Adaptable claro</string>
+    <string name="launcher_icon_light">Icono adaptable (claro)</string>
     <string name="launcher_icon_title">Icono del lanzador</string>
-    <string name="launcher_icon_transparent">Fondo transparente</string>
+    <string name="launcher_icon_transparent">Icono con fondo transparente</string>
     <string name="launcher_icon_transparent_note">Algunos lanzadores agregan un fondo o una máscara. Puede que no se conserve la transparencia.</string>
     <string name="plugin_description">Conversor chino OpenCC sin conexión, independiente y compatible con AutoJs6</string>
     <string name="standalone_about_app_summary">Detalles de versión, licencia de código abierto y enlaces del proyecto</string>
@@ -123,4 +123,9 @@
     <string name="standalone_update_stop_ignoring">Dejar de ignorar</string>
     <string name="standalone_update_up_to_date">Actualizado</string>
     <string name="standalone_update_view_release">Ver publicación</string>
+    <string name="theme_picker_custom">Color personalizado</string>
+    <string name="theme_picker_input">HEX / RGB</string>
+    <string name="theme_picker_invalid">Introduce #RRGGBB, RRGGBB o rgb(r, g, b). Los valores RGB deben ser de 0 a 255.</string>
+    <string name="theme_picker_presets">Colores predefinidos</string>
+    <string name="theme_picker_preview">Vista previa</string>
 </resources>

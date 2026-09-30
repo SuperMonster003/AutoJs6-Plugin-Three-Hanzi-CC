@@ -59,7 +59,8 @@ The standalone editor and the permission-protected AutoJs6 Binder service share 
 - Right-sized packages: 4 single-ABI packages and a `universal` package containing all ABIs, so each device installs only what it needs.
 - Multilingual: the standalone UI, plugin metadata, usage instructions, README, and changelog cover 10 languages.
 - One shared backend: the editor and lightweight plugin service reuse the same verified resources and native engine; idle plugin connections are released automatically.
-- Choose adaptive light, adaptive dark (default), automatic or transparent launcher icons in Settings. Automatic colors and transparency depend on launcher support; switching preserves the running app and may take a few seconds to refresh.
+- Choose adaptive light, adaptive dark, automatic (default) or transparent launcher icons in Settings. Automatic colors and transparency depend on launcher support.
+- Consistent language, dark mode, theme color and launcher settings with neutral surfaces, themed controls and confirmation dialogs. Preview preset or HEX/RGB colors before applying; Cancel leaves the saved settings unchanged.
 
 ******
 
@@ -319,9 +320,11 @@ The plugin's plans and progress are maintained as a checkable list in ROADMAP.md
 
 #### v1.5.0
 
-_2026/09/29_
+_2026/09/30_
 
-- `Feature` Choose adaptive light, adaptive dark (default), automatic or transparent launcher icons in Settings. Automatic colors and transparency depend on launcher support; switching preserves the running app and may take a few seconds to refresh.
+- `Feature` Choose adaptive light, adaptive dark, automatic (default) or transparent launcher icons in Settings. Automatic colors and transparency depend on launcher support.
+- `Fix` App updates keep one launcher entry and preserve an explicitly chosen earlier icon. Host appearance is read in the background without replacing an active settings draft.
+- `Improvement` Consistent language, dark mode, theme color and launcher settings with neutral surfaces, themed controls and confirmation dialogs. Preview preset or HEX/RGB colors before applying; Cancel leaves the saved settings unchanged.
 
 #### v1.4.2
 

@@ -3,7 +3,7 @@
 The original 80 px OpenCC artwork is retained in icons/opencc-original.png. Its dark
 glyph is separated from the white contour using luminance multiplied by alpha, then
 recolored without retaining an opaque contour. Run with --check to verify without writes.
-Dark is the default launcher mode. Explicit light and best-effort automatic modes
+Auto is the default launcher choice. Explicit light/dark and best-effort automatic modes
 have independent resources; transparent launcher icons follow the launcher configuration; brand UI assets stay separate.
 """
 

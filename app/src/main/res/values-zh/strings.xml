@@ -2,13 +2,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="error_unsupported_conversion_type">不支持的 OpenCC 转换类型: %1$s</string>
     <string name="launcher_icon_applied_note">启动器可能需要几秒钟刷新. 部分主屏幕快捷方式可能需要重新添加.</string>
-    <string name="launcher_icon_auto">自适应自动</string>
+    <string name="launcher_icon_auto">自适应图标 (自动)</string>
     <string name="launcher_icon_auto_note">尝试跟随系统主题. 部分启动器会缓存图标或只使用一种配色.</string>
-    <string name="launcher_icon_dark">自适应暗色</string>
+    <string name="launcher_icon_dark">自适应图标 (暗色)</string>
     <string name="launcher_icon_failed">无法切换启动器图标, 请重试.</string>
-    <string name="launcher_icon_light">自适应亮色</string>
+    <string name="launcher_icon_light">自适应图标 (亮色)</string>
     <string name="launcher_icon_title">启动器图标</string>
-    <string name="launcher_icon_transparent">透明背景</string>
+    <string name="launcher_icon_transparent">透明背景图标</string>
     <string name="launcher_icon_transparent_note">部分启动器会自行添加背景或遮罩, 透明效果可能无法保留.</string>
     <string name="plugin_description">可独立使用并兼容 AutoJs6 的离线 OpenCC 中文转换器</string>
     <string name="standalone_about_app_summary">版本信息, 开源许可与项目链接</string>
@@ -65,7 +65,7 @@
     <string name="standalone_script_taiwan_traditional">台湾繁体</string>
     <string name="standalone_script_traditional_chinese">繁体中文</string>
     <string name="standalone_script_traditional_old_forms">繁体旧字形</string>
-    <string name="standalone_settings_dark_mode">暗色模式</string>
+    <string name="standalone_settings_dark_mode">夜间模式</string>
     <string name="standalone_settings_language">语言</string>
     <string name="standalone_settings_remember_type">记住转换方向</string>
     <string name="standalone_settings_remember_type_summary">下次启动时恢复最近使用的转换方向</string>
@@ -123,4 +123,9 @@
     <string name="standalone_update_stop_ignoring">不再忽略</string>
     <string name="standalone_update_up_to_date">已是最新版本</string>
     <string name="standalone_update_view_release">查看发行版</string>
+    <string name="theme_picker_custom">自定义颜色</string>
+    <string name="theme_picker_input">HEX / RGB</string>
+    <string name="theme_picker_invalid">请输入 #RRGGBB, RRGGBB 或 rgb(r, g, b). RGB 数值须为 0..255.</string>
+    <string name="theme_picker_presets">预设颜色</string>
+    <string name="theme_picker_preview">预览</string>
 </resources>

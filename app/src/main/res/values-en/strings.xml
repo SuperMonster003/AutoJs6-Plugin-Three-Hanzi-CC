@@ -2,13 +2,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="error_unsupported_conversion_type">Unsupported OpenCC conversion type: %1$s</string>
     <string name="launcher_icon_applied_note">The launcher may take a few seconds to refresh. Some home-screen shortcuts may need to be added again.</string>
-    <string name="launcher_icon_auto">Adaptive automatic</string>
+    <string name="launcher_icon_auto">Adaptive icon (automatic)</string>
     <string name="launcher_icon_auto_note">Tries to follow the system theme. Some launchers cache icons or use only one color scheme.</string>
-    <string name="launcher_icon_dark">Adaptive dark</string>
+    <string name="launcher_icon_dark">Adaptive icon (dark)</string>
     <string name="launcher_icon_failed">Unable to change the launcher icon. Please try again.</string>
-    <string name="launcher_icon_light">Adaptive light</string>
+    <string name="launcher_icon_light">Adaptive icon (light)</string>
     <string name="launcher_icon_title">Launcher icon</string>
-    <string name="launcher_icon_transparent">Transparent background</string>
+    <string name="launcher_icon_transparent">Transparent background icon</string>
     <string name="launcher_icon_transparent_note">Some launchers add their own background or mask, so transparency may not be preserved.</string>
     <string name="plugin_description">Offline OpenCC Chinese converter for standalone use and AutoJs6</string>
     <string name="standalone_about_app_summary">Version details, open source license, and project links</string>
@@ -123,4 +123,9 @@
     <string name="standalone_update_stop_ignoring">Stop ignoring</string>
     <string name="standalone_update_up_to_date">Up to date</string>
     <string name="standalone_update_view_release">View release</string>
+    <string name="theme_picker_custom">Custom color</string>
+    <string name="theme_picker_input">HEX / RGB</string>
+    <string name="theme_picker_invalid">Enter #RRGGBB, RRGGBB or rgb(r, g, b). RGB values must be 0..255.</string>
+    <string name="theme_picker_presets">Preset colors</string>
+    <string name="theme_picker_preview">Preview</string>
 </resources>

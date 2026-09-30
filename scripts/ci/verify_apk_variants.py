@@ -375,11 +375,19 @@ def verify_manifest_tree(root: ManifestElement, label: str) -> None:
 
     disallowed_components = {
         name: len(_children(application, name))
-        for name in ("activity-alias", "receiver", "provider")
+        for name in ("provider",)
         if _children(application, name)
     }
     if disallowed_components:
         raise VerificationError(f"{label} contains unexpected exported-surface components: {disallowed_components}")
+
+    receivers = _component_map(application, "receiver")
+    if set(receivers) != {f"{APPLICATION_ID}.LauncherIconUpdateReceiver"}:
+        raise VerificationError(f"{label} contains unexpected exported-surface receivers: {sorted(receivers)}")
+    update = next(iter(receivers.values()))
+    _require_attributes(update, "LauncherIconUpdateReceiver", {"exported": False}, {"permission", "process"})
+    if _intent_filters(update) != [(frozenset({"android.intent.action.MY_PACKAGE_REPLACED"}), frozenset())]:
+        raise VerificationError(f"{label} launcher receiver must handle only MY_PACKAGE_REPLACED")
 
     activities = _component_map(application, "activity")
     expected_activity_names = {
@@ -412,10 +420,25 @@ def verify_manifest_tree(root: ManifestElement, label: str) -> None:
     expected_launcher_filter = [
         (frozenset({"android.intent.action.MAIN"}), frozenset({"android.intent.category.LAUNCHER"})),
     ]
-    if _intent_filters(launcher) != expected_launcher_filter:
-        raise VerificationError(
-            f"{label} OpenccActivity intent filters must contain only MAIN/LAUNCHER",
-        )
+    if _intent_filters(launcher):
+        raise VerificationError(f"{label} OpenccActivity must remain an explicit stable target")
+    aliases = _component_map(application, "activity-alias")
+    expected_aliases = {f"{APPLICATION_ID}.launcher.{name}IconAlias" for name in ("AdaptiveLight", "AdaptiveDark", "AdaptiveAuto", "Transparent")}
+    if set(aliases) != expected_aliases:
+        raise VerificationError(f"{label} launcher alias inventory mismatch")
+    icons = []
+    for name, alias in aliases.items():
+        _require_attributes(alias, name, {"exported": True, "enabled": name.endswith(".AdaptiveAutoIconAlias")}, {"permission", "process"})
+        if _component_name(APPLICATION_ID, alias.attributes.get("targetActivity")) != f"{APPLICATION_ID}.OpenccActivity":
+            raise VerificationError(f"{label} launcher alias target changed: {name}")
+        if _intent_filters(alias) != expected_launcher_filter:
+            raise VerificationError(f"{label} launcher aliases must contain only MAIN/LAUNCHER")
+        icon = alias.attributes.get("icon")
+        if type(icon) is not int or icon == 0:
+            raise VerificationError(f"{label} launcher alias must declare a compiled icon: {name}")
+        icons.append(icon)
+    if len(set(icons)) != 4:
+        raise VerificationError(f"{label} each launcher choice, including Auto, must retain an independent icon ID")
 
     wake = activities[f"{APPLICATION_ID}.WakeActivity"]
     _require_attributes(
@@ -461,9 +484,10 @@ def verify_manifest_tree(root: ManifestElement, label: str) -> None:
 
     services = _component_map(application, "service")
     expected_service_name = f"{APPLICATION_ID}.OpenccPluginService"
-    if set(services) != {expected_service_name}:
+    expected_info_name = f"{APPLICATION_ID}.OpenccPluginInfoService"
+    if set(services) != {expected_service_name, expected_info_name}:
         raise VerificationError(
-            f"{label} service inventory mismatch: expected={[expected_service_name]}, actual={sorted(services)}",
+            f"{label} service inventory mismatch: expected={[expected_service_name, expected_info_name]}, actual={sorted(services)}",
         )
     service = services[expected_service_name]
     _require_attributes(
@@ -477,6 +501,10 @@ def verify_manifest_tree(root: ManifestElement, label: str) -> None:
     ]
     if _intent_filters(service) != expected_service_filter:
         raise VerificationError(f"{label} OpenccPluginService intent filters changed")
+    info = services[expected_info_name]
+    _require_attributes(info, "OpenccPluginInfoService", {"exported": True, "permission": PLUGIN_PERMISSION}, {"process", "isolatedProcess", "stopWithTask"})
+    if _intent_filters(info) != [(frozenset({"org.autojs.plugin.INFO"}), frozenset({"opencc"}))]:
+        raise VerificationError(f"{label} protected common INFO contract changed")
 
 
 def verify_manifest(data: bytes, label: str) -> None:
