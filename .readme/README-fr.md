@@ -325,6 +325,7 @@ _2026/09/30_
 - `Fonctionnalité` Choisissez une icône de lanceur adaptative claire, sombre, automatique (par défaut) ou transparente dans les paramètres. Les couleurs automatiques et la transparence dépendent du lanceur.
 - `Correctif` Les mises à jour conservent une seule entrée de lanceur et un choix d'icône antérieur explicite. L'apparence de l'hôte est lue en arrière-plan sans interrompre une sélection en cours.
 - `Amélioration` Paramètres de langue, de mode sombre, de couleur et d'icône harmonisés, avec surfaces neutres, contrôles thématiques et dialogues de confirmation. Prévisualisez les couleurs prédéfinies ou HEX/RGB avant de valider. Annuler conserve les paramètres enregistrés.
+- `Amélioration` Taille visuelle harmonisée des icônes du lanceur et du Centre de plugins, avec des fonds transparents et des motifs noirs, blancs ou gris neutres
 
 #### v1.4.2
 
