@@ -503,7 +503,7 @@ def verify_manifest_tree(root: ManifestElement, label: str) -> None:
         raise VerificationError(f"{label} ThreeHanziCcService intent filters changed")
     info = services[expected_info_name]
     _require_attributes(info, "ThreeHanziCcInfoService", {"exported": True, "permission": PLUGIN_PERMISSION}, {"process", "isolatedProcess", "stopWithTask"})
-    if _intent_filters(info) != [(frozenset({"org.autojs.plugin.INFO"}), frozenset({"opencc"}))]:
+    if _intent_filters(info) != [(frozenset({"org.autojs.plugin.INFO"}), frozenset({"three-hanzi-cc"}))]:
         raise VerificationError(f"{label} protected common INFO contract changed")
 
 

@@ -91,6 +91,7 @@ class VerifyApkVariantsTest(unittest.TestCase):
         info_service = deepcopy(service)
         info_service.attributes["name"] = f"{package_name}.ThreeHanziCcInfoService"
         info_service.children[0].children[0].attributes["name"] = "org.autojs.plugin.INFO"
+        info_service.children[0].children[1].attributes["name"] = "three-hanzi-cc"
         return element(
             "manifest",
             {"package": package_name},
@@ -139,6 +140,14 @@ class VerifyApkVariantsTest(unittest.TestCase):
 
     def test_expected_manifest_surface_passes(self) -> None:
         verify_apk_variants.verify_manifest_tree(self.expected_manifest(), "fixture.apk")
+
+    def test_old_product_info_category_is_rejected_without_changing_engine_category(self) -> None:
+        manifest = self.expected_manifest()
+        app = next(child for child in manifest.children if child.name == "application")
+        info = next(child for child in app.children if child.attributes.get("name", "").endswith(".ThreeHanziCcInfoService"))
+        info.children[0].children[1].attributes["name"] = "opencc"
+        with self.assertRaisesRegex(verify_apk_variants.VerificationError, "INFO contract"):
+            verify_apk_variants.verify_manifest_tree(manifest, "fixture.apk")
 
     def test_missing_internet_permission_is_rejected(self) -> None:
         manifest = self.expected_manifest()
