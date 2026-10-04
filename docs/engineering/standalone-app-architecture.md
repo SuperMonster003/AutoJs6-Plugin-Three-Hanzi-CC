@@ -16,9 +16,9 @@ AppCompat、Material Components、网络或分析依赖。两种入口都直接�
 `libopencc_jni.so`：
 
 ```text
-系统桌面 ──> OpenccActivity ───────┐
+系统桌面 ──> ThreeHanziCcActivity ───────┐
                                    ├──> OpenccConversionCoordinator
-AutoJs6 ──> OpenccPluginService ───┘          │
+AutoJs6 ──> ThreeHanziCcService ───┘          │
                                               └──> OpenccNativeEngine
                                                      │
                                                      ├──> 官方资源 ZIP/校验器
@@ -95,8 +95,8 @@ M5-A 的五种产物固定增加 `28,636 B`；M5-B 再固定增加 `14,188 B`，
 
 | 组件/能力 | exported | 权限 | 行为 |
 |---|---:|---|---|
-| `OpenccActivity` | `true` | 无 | 只声明 `MAIN`/`LAUNCHER`；代码忽略外部 URI、ClipData、文本和转换参数 |
-| `OpenccPluginService` | `true` | `org.autojs.permission.PLUGIN` | 继续提供既有 OpenCC Binder 契约 |
+| `ThreeHanziCcActivity` | `true` | 无 | 只声明 `MAIN`/`LAUNCHER`；代码忽略外部 URI、ClipData、文本和转换参数 |
+| `ThreeHanziCcService` | `true` | `org.autojs.permission.PLUGIN` | 继续提供既有 OpenCC Binder 契约 |
 | `WakeActivity` | `true` | `org.autojs.permission.PLUGIN` | 继续提供既有无界面唤醒协议 |
 
 Manifest 仍没有 `INTERNET`，并显式设置 `usesCleartextTraffic=false`。页面只在用户点击“粘贴”后读取剪贴板第一项的显式文本，不调用可能
@@ -117,7 +117,7 @@ OpenCC 资源继续位于 `noBackupFilesDir`，Android 本身也会排除该目�
   资源损坏恢复和不同 PID 重启复用测试。
 - Android 15 / API 35 / arm64-v8a 和 Android 9 / API 28 / 32-bit armeabi-v7a 真机也已通过新
   双入口测试；测试前设备均未安装目标包，测试后目标与 instrumentation 包已清理。
-- debug/release 各五 APK 内容门禁强制保留 `OpenccActivity` 和 JNI bridge；release 五 APK 均通过
+- debug/release 各五 APK 内容门禁强制保留 `ThreeHanziCcActivity` 和 JNI bridge；release 五 APK 均通过
   R8、签名、唯一 native 库、官方资源 SHA-256、ELF `LOAD >= 0x4000`、RELRO 与
   `zipalign -P 16`。
 - 10 个现有 locale 已具备 M5-A 基础页面文案；RTL/大字体/TalkBack/截图全矩阵仍属于 M5-D，
@@ -244,11 +244,11 @@ R8/JNI、官方资源、ELF `LOAD >= 0x4000`、RELRO、未压缩 native entry �
 
 | ABI | 正式文件 | 大小 | SHA-256 |
 |---|---|---:|---|
-| arm64-v8a | `autojs6-plugin-opencc-v1.3.0-arm64-v8a-b1392e35.apk` | 1,553,948 B | `c4049b3eec477dde0d2381464b79bf7338f26c3a4fc47f4036484b7c100d018c` |
-| armeabi-v7a | `autojs6-plugin-opencc-v1.3.0-armeabi-v7a-a7003615.apk` | 1,215,154 B | `c3fcedec487387100283b3e744e3bb8d84d4da618214ae081ef034240f9717aa` |
-| x86_64 | `autojs6-plugin-opencc-v1.3.0-x86_64-00da7436.apk` | 1,562,729 B | `503e1f3006fd8f078a40c7adf2e99cecd96beb7217941ad870e86445c978457e` |
-| x86 | `autojs6-plugin-opencc-v1.3.0-x86-4fb929dd.apk` | 1,516,110 B | `13befc05a88b9c9b438173af32ad179843b905d1d228d2d35fcbc95674b45e3f` |
-| universal | `autojs6-plugin-opencc-v1.3.0-universal-324e0e7c.apk` | 3,889,481 B | `2a1dfe9599954b7209dd773d2e32357171153134a9b00dcebd225813e06727ff` |
+| arm64-v8a | `autojs6-plugin-three-hanzi-cc-v1.3.0-arm64-v8a-b1392e35.apk` | 1,553,948 B | `c4049b3eec477dde0d2381464b79bf7338f26c3a4fc47f4036484b7c100d018c` |
+| armeabi-v7a | `autojs6-plugin-three-hanzi-cc-v1.3.0-armeabi-v7a-a7003615.apk` | 1,215,154 B | `c3fcedec487387100283b3e744e3bb8d84d4da618214ae081ef034240f9717aa` |
+| x86_64 | `autojs6-plugin-three-hanzi-cc-v1.3.0-x86_64-00da7436.apk` | 1,562,729 B | `503e1f3006fd8f078a40c7adf2e99cecd96beb7217941ad870e86445c978457e` |
+| x86 | `autojs6-plugin-three-hanzi-cc-v1.3.0-x86-4fb929dd.apk` | 1,516,110 B | `13befc05a88b9c9b438173af32ad179843b905d1d228d2d35fcbc95674b45e3f` |
+| universal | `autojs6-plugin-three-hanzi-cc-v1.3.0-universal-324e0e7c.apk` | 3,889,481 B | `2a1dfe9599954b7209dd773d2e32357171153134a9b00dcebd225813e06727ff` |
 
 签名包原地升级矩阵均先安装 GitHub 上的 v1.2.0 对应正式资产，再以 `adb install -r` 安装 v1.3.0；
 每轮核对 applicationId、签名、package UID 与 `firstInstallTime` 连续，恰好一个 Launcher 可解析，随后
@@ -269,12 +269,12 @@ release 启动失败”，`verify_minified_release_runtime.sh` 已成为 Actions
 非生产证书把 unsigned release 与平台探针签成同一身份，实际启动 Launcher 并重放 UI 与原始 Binder，
 临时密钥不进入缓存或 artifact。
 
-远端 [Build integrity run 33678517379](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33678517379)
+远端 [Build integrity run 33678517379](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/actions/runs/33678517379)
 已通过构建/静态审计、API 24 minified release、arm64、x86_64 4 KB 和 x86_64 16 KB 全部作业。16 KB
 作业第一次运行时是 UID 1000 的 `system_server` 在 `SettingsProvider.odex` 中空指针崩溃；仅重跑该作业
 后完整通过，应用测试没有以放宽断言或重试单测掩盖故障。
 
-轻量标签 `v1.3.0` 精确指向上述源码提交。[GitHub Release](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases/tag/v1.3.0)
+轻量标签 `v1.3.0` 精确指向上述源码提交。[GitHub Release](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/releases/tag/v1.3.0)
 于 2026-09-03 作为 Latest 正式发布，非 draft / prerelease；服务端回读的五个 APK、`SHA256SUMS.txt`
 和 `RELEASE_NOTES.md` 名称、大小与 SHA-256 全部等于本地候选。[官方索引生成 run 33680171383](https://github.com/SuperMonster003/AutoJs6-Official-Plugins-Index/actions/runs/33680171383)
 随后更新 `plugins.official.generated.json` 至提交 `3b9b47cf4acd306ab2de63638e1aa761c82c28ad`；线上
@@ -306,8 +306,8 @@ OpenCC 条目为 v1.3.0 / build 20，包含精确五资产 URL/摘要，图标�
 
 | 组件/能力 | exported | 权限 | 行为 |
 |---|---:|---|---|
-| `OpenccActivity` | `true` | 无 | `MAIN`/`LAUNCHER`；页内标题区 + 右上角三点菜单进入设置 |
-| `OpenccPluginService` | `true` | `org.autojs.permission.PLUGIN` | 既有 OpenCC Binder 契约，未改动 |
+| `ThreeHanziCcActivity` | `true` | 无 | `MAIN`/`LAUNCHER`；页内标题区 + 右上角三点菜单进入设置 |
+| `ThreeHanziCcService` | `true` | `org.autojs.permission.PLUGIN` | 既有 OpenCC Binder 契约，未改动 |
 | `WakeActivity` | `true` | `org.autojs.permission.PLUGIN` | 既有无界面唤醒协议，未改动 |
 | `AppSettingsActivity` | `false` | 无 | 设置页；仅应用内显式启动，无 intent-filter |
 | `AboutActivity` | `false` | 无 | 关于应用与开发者；仅应用内显式启动 |
@@ -321,7 +321,7 @@ requested permissions 精确为三项: `org.autojs.permission.PLUGIN`、`android
 
 ### 主要设计决策
 
-- **主题与品牌**: `Theme.Opencc` 继承 `Theme.Material3.DayNight.NoActionBar`；品牌主题色
+- **主题与品牌**: `Theme.ThreeHanziCc` 继承 `Theme.Material3.DayNight.NoActionBar`；品牌主题色
   `#005EA8`（夜间映射 `#9CCAFF`），另提供青/蓝/绿/紫四种可选主题色、自定义 RGB 与“跟随 AutoJs6”选项。
   暗色模式支持 跟随 AutoJs6 / 跟随系统 / 始终关闭 / 始终开启。语言支持 跟随 AutoJs6 / 跟随系统 / 10 个内置 locale。
   三项外观设置默认均跟随 AutoJs6；宿主契约不可用时，主题色回退 `#FFDEAD`，语言与日夜模式回退系统。

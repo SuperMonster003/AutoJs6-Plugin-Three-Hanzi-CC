@@ -31,10 +31,10 @@ FORBIDDEN_DEX_MARKERS = {
     b"com/zqc/opencc/android/lib/ChineseConverter": "legacy ChineseConverter JNI reference",
 }
 REQUIRED_DEX_MARKERS = {
-    b"Lio/github/supermonster003/autojs6/plugin/opencc/OpenccActivity;": (
-        "standalone OpenccActivity class descriptor"
+    b"Lio/github/supermonster003/autojs6/plugin/three/hanzi/cc/ThreeHanziCcActivity;": (
+        "standalone ThreeHanziCcActivity class descriptor"
     ),
-    b"Lio/github/supermonster003/autojs6/plugin/opencc/nativebridge/OpenccNativeEngine;": (
+    b"Lio/github/supermonster003/autojs6/plugin/three/hanzi/cc/nativebridge/OpenccNativeEngine;": (
         "OpenccNativeEngine class descriptor"
     ),
     b"nativeConvert": "OpenccNativeEngine.nativeConvert JNI method",
@@ -44,7 +44,7 @@ PT_LOAD = 1
 PT_GNU_RELRO = 0x6474E552
 MINIMUM_ELF_ALIGNMENT = 16 * 1024
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
-APPLICATION_ID = "io.github.supermonster003.autojs6.plugin.opencc"
+APPLICATION_ID = "io.github.supermonster003.autojs6.plugin.three.hanzi.cc"
 PLUGIN_PERMISSION = "org.autojs.permission.PLUGIN"
 INTERNET_PERMISSION = "android.permission.INTERNET"
 # Self-owned signature permission injected by androidx.core (targetSdk >= 33) to back-port
@@ -391,7 +391,7 @@ def verify_manifest_tree(root: ManifestElement, label: str) -> None:
 
     activities = _component_map(application, "activity")
     expected_activity_names = {
-        f"{APPLICATION_ID}.OpenccActivity",
+        f"{APPLICATION_ID}.ThreeHanziCcActivity",
         f"{APPLICATION_ID}.WakeActivity",
     } | {f"{APPLICATION_ID}.{short_name}" for short_name in INTERNAL_ACTIVITY_NAMES}
     if set(activities) != expected_activity_names:
@@ -400,10 +400,10 @@ def verify_manifest_tree(root: ManifestElement, label: str) -> None:
             f"actual={sorted(activities)}",
         )
 
-    launcher = activities[f"{APPLICATION_ID}.OpenccActivity"]
+    launcher = activities[f"{APPLICATION_ID}.ThreeHanziCcActivity"]
     _require_attributes(
         launcher,
-        "OpenccActivity",
+        "ThreeHanziCcActivity",
         {"exported": True},
         {
             "permission",
@@ -421,7 +421,7 @@ def verify_manifest_tree(root: ManifestElement, label: str) -> None:
         (frozenset({"android.intent.action.MAIN"}), frozenset({"android.intent.category.LAUNCHER"})),
     ]
     if _intent_filters(launcher):
-        raise VerificationError(f"{label} OpenccActivity must remain an explicit stable target")
+        raise VerificationError(f"{label} ThreeHanziCcActivity must remain an explicit stable target")
     aliases = _component_map(application, "activity-alias")
     expected_aliases = {f"{APPLICATION_ID}.launcher.{name}IconAlias" for name in ("AdaptiveLight", "AdaptiveDark", "AdaptiveAuto", "Transparent")}
     if set(aliases) != expected_aliases:
@@ -429,7 +429,7 @@ def verify_manifest_tree(root: ManifestElement, label: str) -> None:
     icons = []
     for name, alias in aliases.items():
         _require_attributes(alias, name, {"exported": True, "enabled": name.endswith(".AdaptiveAutoIconAlias")}, {"permission", "process"})
-        if _component_name(APPLICATION_ID, alias.attributes.get("targetActivity")) != f"{APPLICATION_ID}.OpenccActivity":
+        if _component_name(APPLICATION_ID, alias.attributes.get("targetActivity")) != f"{APPLICATION_ID}.ThreeHanziCcActivity":
             raise VerificationError(f"{label} launcher alias target changed: {name}")
         if _intent_filters(alias) != expected_launcher_filter:
             raise VerificationError(f"{label} launcher aliases must contain only MAIN/LAUNCHER")
@@ -483,8 +483,8 @@ def verify_manifest_tree(root: ManifestElement, label: str) -> None:
             raise VerificationError(f"{label} {short_name} must not declare intent filters")
 
     services = _component_map(application, "service")
-    expected_service_name = f"{APPLICATION_ID}.OpenccPluginService"
-    expected_info_name = f"{APPLICATION_ID}.OpenccPluginInfoService"
+    expected_service_name = f"{APPLICATION_ID}.ThreeHanziCcService"
+    expected_info_name = f"{APPLICATION_ID}.ThreeHanziCcInfoService"
     if set(services) != {expected_service_name, expected_info_name}:
         raise VerificationError(
             f"{label} service inventory mismatch: expected={[expected_service_name, expected_info_name]}, actual={sorted(services)}",
@@ -492,7 +492,7 @@ def verify_manifest_tree(root: ManifestElement, label: str) -> None:
     service = services[expected_service_name]
     _require_attributes(
         service,
-        "OpenccPluginService",
+        "ThreeHanziCcService",
         {"exported": True, "permission": PLUGIN_PERMISSION},
         {"process", "isolatedProcess", "stopWithTask"},
     )
@@ -500,9 +500,9 @@ def verify_manifest_tree(root: ManifestElement, label: str) -> None:
         (frozenset({"org.autojs.plugin.OPENCC"}), frozenset({"opencc"})),
     ]
     if _intent_filters(service) != expected_service_filter:
-        raise VerificationError(f"{label} OpenccPluginService intent filters changed")
+        raise VerificationError(f"{label} ThreeHanziCcService intent filters changed")
     info = services[expected_info_name]
-    _require_attributes(info, "OpenccPluginInfoService", {"exported": True, "permission": PLUGIN_PERMISSION}, {"process", "isolatedProcess", "stopWithTask"})
+    _require_attributes(info, "ThreeHanziCcInfoService", {"exported": True, "permission": PLUGIN_PERMISSION}, {"process", "isolatedProcess", "stopWithTask"})
     if _intent_filters(info) != [(frozenset({"org.autojs.plugin.INFO"}), frozenset({"opencc"}))]:
         raise VerificationError(f"{label} protected common INFO contract changed")
 

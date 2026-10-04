@@ -47,7 +47,7 @@ M4-B 迁移窗口曾在测试 APK 中保留 `android-opencc:1.2.2`，并实测�
 | S2TWP | `快闪存储器` | `快快閃記憶體儲器` | `快閃記憶體` | 修复短词优先导致的贪婪匹配错误 |
 | S2TWP | `老挝人民民主共和国` | `寮國人民民主共和國` | `寮人民民主共和國` | 对齐台湾官方译名 |
 
-官方输出断言位于 `OpenccPluginServiceTest`，旧值和审阅原因保留在本表。后续上游升级若改变
+官方输出断言位于 `ThreeHanziCcServiceTest`，旧值和审阅原因保留在本表。后续上游升级若改变
 任一官方输出，必须先更新审阅记录再合并，不需要也不得重新引入已退役的旧包装库。
 
 ## 已通过门禁
@@ -89,11 +89,11 @@ v1.0.2 正式包一致。
 
 | ABI | 正式发布文件 | 大小 | SHA-256 |
 |---|---|---:|---|
-| arm64-v8a | `autojs6-plugin-opencc-v1.2.0-arm64-v8a-f663d404.apk` | 1,499,452 B | `aa7007249475bc5312846652bae794c8eadb1c87205af9c7ec266d9934802923` |
-| armeabi-v7a | `autojs6-plugin-opencc-v1.2.0-armeabi-v7a-1c9378a1.apk` | 1,160,706 B | `967b792f1fbe04d7bf689eb03903d927649d564f946511bbe80e03f7ec2cd8f2` |
-| x86_64 | `autojs6-plugin-opencc-v1.2.0-x86_64-ab268561.apk` | 1,508,249 B | `a714c4786ebc491338f2841236c437ab14ec58ce58cbdecbc2d0b55c859286b0` |
-| x86 | `autojs6-plugin-opencc-v1.2.0-x86-4dc6b9dc.apk` | 1,461,662 B | `0e69ad0f438c13f6bd6104ecfb8438b9965923fd26bad02fd39e69909db1fc37` |
-| universal | `autojs6-plugin-opencc-v1.2.0-universal-9ff59a9c.apk` | 3,835,001 B | `2b2b03c430be83bc212ed6358c7ec08c13f4141c380f11ee95263afa6b0cc2d3` |
+| arm64-v8a | `autojs6-plugin-three-hanzi-cc-v1.2.0-arm64-v8a-f663d404.apk` | 1,499,452 B | `aa7007249475bc5312846652bae794c8eadb1c87205af9c7ec266d9934802923` |
+| armeabi-v7a | `autojs6-plugin-three-hanzi-cc-v1.2.0-armeabi-v7a-1c9378a1.apk` | 1,160,706 B | `967b792f1fbe04d7bf689eb03903d927649d564f946511bbe80e03f7ec2cd8f2` |
+| x86_64 | `autojs6-plugin-three-hanzi-cc-v1.2.0-x86_64-ab268561.apk` | 1,508,249 B | `a714c4786ebc491338f2841236c437ab14ec58ce58cbdecbc2d0b55c859286b0` |
+| x86 | `autojs6-plugin-three-hanzi-cc-v1.2.0-x86-4dc6b9dc.apk` | 1,461,662 B | `0e69ad0f438c13f6bd6104ecfb8438b9965923fd26bad02fd39e69909db1fc37` |
+| universal | `autojs6-plugin-three-hanzi-cc-v1.2.0-universal-9ff59a9c.apk` | 3,835,001 B | `2b2b03c430be83bc212ed6358c7ec08c13f4141c380f11ee95263afa6b0cc2d3` |
 
 每个原始 release APK 和上述正式发布文件均通过签名、精确 ABI、官方资源摘要、旧后端排除、
 R8 JNI 标记、ELF `0x4000`/RELRO 与 `zipalign -c -P 16 4` 门禁。随包生成的
@@ -103,7 +103,7 @@ R8 JNI 标记、ELF `0x4000`/RELRO 与 `zipalign -c -P 16 4` 门禁。随包生�
 ## M4-C 外部门禁完成证据
 
 - `v1.2.0` 轻量标签固定到 `a96beae56dd42b4a419019a40d878aa5d172f638`；
-  [GitHub Release](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases/tag/v1.2.0)
+  [GitHub Release](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/releases/tag/v1.2.0)
   以 `1.2.0 @ 2026/09/01` 标题作为 Latest 正式发布，且非 draft / prerelease。
 - 官方插件索引远端工作流生成提交 `a95d0b84eb80c51c51ef4752b0136e5483879aa9`；OpenCC 条目为
   `v1.2.0` / build 19 / 2026-09-01，四 ABI、五个下载 URL、大小、GitHub SHA-256、图标与多语言

@@ -5,7 +5,7 @@
   "h3_languages_with_ascii": "Languages",
   "p_languages_all_supported_for_readme": "The current README.md supports the following languages",
   "h3_introduction": "Introduction",
-  "p_introduction_what": "OpenCC is one install with two entry points for [OpenCC]({{ opencc_official_url }})-based Chinese text conversion. Launch it directly as a fully offline Android App, or let AutoJs6 discover the same APK as a plugin and use the global `opencc` script object. Both paths cover Simplified Chinese, Traditional Chinese, Hong Kong Traditional, Taiwan Traditional, and Japanese Shinjitai.",
+  "p_introduction_what": "3-Hanzi CC is one install with two entry points for [OpenCC]({{ opencc_official_url }})-based Chinese text conversion. Launch it directly as a fully offline Android App, or let AutoJs6 discover the same APK as a plugin and use the global `opencc` script object. Both paths cover Simplified Chinese, Traditional Chinese, Hong Kong Traditional, Taiwan Traditional, and Japanese Shinjitai.",
   "p_introduction_how": "The standalone editor and the permission-protected AutoJs6 Binder service share one official OpenCC engine, the same pinned dictionaries, cache, conversion types, and error model. The App does not require AutoJs6, while plugin mode keeps the existing script API and allows the conversion engine to be updated independently of the host.",
   "h3_features": "Features",
   "features": [
@@ -118,7 +118,7 @@
   "p_security_permission": "Only obtain the plugin from the official [Releases]({{ repo_url }}/releases) page or the AutoJs6 plugin center. Packages from unknown sources may fail host verification or carry risks even when the version number looks identical.",
   "h3_plugin_interface": "Plugin Interface",
   "p_plugin_interface": "The following information targets AutoJs6 host and plugin developers; the host uses these identifiers to discover the plugin and negotiate compatibility",
-  "p_contract_service": "`OpenccPluginService` responds to the `{{ plugin_service_action }}` action (category `{{ plugin_service_category }}`), using `{{ plugin_aidl_interface }}` from opencc-api. Contract version 2 appends type discovery, batch conversion, and chained conversion after the original `getInfo()` and `convert(text, conversionType)` methods, and advertises its version and supported types through `PluginInfo.capabilities`; older hosts keep using the original methods and transaction numbers. A `WakeActivity` is also provided so the host can wake the plugin process.",
+  "p_contract_service": "`ThreeHanziCcService` responds to the `{{ plugin_service_action }}` action (category `{{ plugin_service_category }}`), using `{{ plugin_aidl_interface }}` from opencc-api. Contract version 2 appends type discovery, batch conversion, and chained conversion after the original `getInfo()` and `convert(text, conversionType)` methods, and advertises its version and supported types through `PluginInfo.capabilities`; older hosts keep using the original methods and transaction numbers. A `WakeActivity` is also provided so the host can wake the plugin process.",
   "p_abi_reporting": "The plugin builds official OpenCC `{{ opencc_tag }}` directly at commit `{{ opencc_commit }}` with the matching release resources. Each ABI contains one statically linked, 16 KB-aligned `libopencc_jni.so`, and conversion remains fully offline.",
   "h3_roadmap": "Roadmap",
   "p_roadmap": "The plugin's plans and progress are maintained as a checkable list in ROADMAP.md, organized by milestone with acceptance criteria, covering documentation and release experience, engineering and continuous integration, conversion capability enhancements, and runtime evolution. Unchecked items express intent rather than current capabilities; discussion via Issues is welcome.",
@@ -144,5 +144,10 @@
   "text_link_opencc_official": "OpenCC official project",
   "text_link_third_party_notices": "Third-party notices",
   "p_instruction_more": "See the [AutoJs6 OpenCC documentation]({{ docs_opencc_url }}) and the [project README]({{ repo_url }}) for the full method list and conversion type reference.",
-  "p_instruction_backend": "The same APK can also be launched directly as an offline text-conversion App without AutoJs6. Both the standalone editor and this plugin entry use official OpenCC {{ opencc_version }} with pinned same-release dictionaries, and the native packages support Android devices with 16 KB memory pages."
+  "p_instruction_backend": "The same APK can also be launched directly as an offline text-conversion App without AutoJs6. Both the standalone editor and this plugin entry use official OpenCC {{ opencc_version }} with pinned same-release dictionaries, and the native packages support Android devices with 16 KB memory pages.",
+  "h3_standalone": "Get started",
+  "p_standalone": "3-Hanzi CC adopts the maintainer's Hanzi artwork across its home screen, launcher, documentation and Plugin Center. Language, dark mode, theme color and four launcher icon choices are available in the shared settings layout.",
+  "p_migration": "The application ID changes from `io.github.supermonster003.autojs6.plugin.opencc` to `io.github.supermonster003.autojs6.plugin.three.hanzi.cc`. Android installs this as a separate app; existing apps and data can remain, and settings are not migrated automatically.",
+  "h3_sources": "Sources and acknowledgments",
+  "p_sources": "[THIRD_PARTY_NOTICES.md]({{ repo_url }}/blob/master/THIRD_PARTY_NOTICES.md) · [RIGHTS_AND_TAKEDOWN.md]({{ repo_url }}/blob/master/RIGHTS_AND_TAKEDOWN.md)"
 }

@@ -3,17 +3,17 @@
 <div align="center">
   <p>
     <picture>
-      <source srcset="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/app/src/main/res/mipmap-night/ic_launcher.png?raw=true" media="(prefers-color-scheme: dark)" />
-      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/app/src/main/res/mipmap/ic_launcher.png?raw=true" alt="autojs6-plugin-opencc-ic-launcher" border="0" width="128" />
+      <source srcset="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/app/src/main/res/mipmap-night/ic_launcher.png?raw=true" media="(prefers-color-scheme: dark)" />
+      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/app/src/main/res/mipmap/ic_launcher.png?raw=true" alt="autojs6-plugin-three-hanzi-cc-ic-launcher" border="0" width="128" />
     </picture>
   </p>
 
   <p>محول OpenCC صيني محلي يعمل مستقلا ومع AutoJs6</p>
 
   <p>
-    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/SuperMonster003/AutoJs6-Plugin-OpenCC?label=Release"/></a>
-    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/issues"><img alt="GitHub closed issues" src="https://img.shields.io/github/issues/SuperMonster003/AutoJs6-Plugin-OpenCC?color=A24232&label=Issues"/></a>
-    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/LICENSE"><img alt="GitHub License" src="https://img.shields.io/github/license/SuperMonster003/AutoJs6-Plugin-OpenCC?color=534BAE&label=License"/></a>
+    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC?label=Release"/></a>
+    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/issues"><img alt="GitHub closed issues" src="https://img.shields.io/github/issues/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC?color=A24232&label=Issues"/></a>
+    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/LICENSE"><img alt="GitHub License" src="https://img.shields.io/github/license/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC?color=534BAE&label=License"/></a>
   </p>
 </div>
 
@@ -25,16 +25,24 @@
 
 يدعم README.md الحالي اللغات التالية:
 
-- [简体中文 [zh-Hans]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-zh-Hans.md)
-- [繁體中文 (香港) [zh-Hant-HK]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-zh-Hant-HK.md)
-- [繁體中文 (台灣) [zh-Hant-TW]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-zh-Hant-TW.md)
-- [English [en]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-en.md)
-- [Français [fr]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-fr.md)
-- [Español [es]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-es.md)
-- [日本語 [ja]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-ja.md)
-- [한국어 [ko]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-ko.md)
-- [Русский [ru]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-ru.md)
+- [简体中文 [zh-Hans]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/.readme/README-zh-Hans.md)
+- [繁體中文 (香港) [zh-Hant-HK]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/.readme/README-zh-Hant-HK.md)
+- [繁體中文 (台灣) [zh-Hant-TW]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/.readme/README-zh-Hant-TW.md)
+- [English [en]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/.readme/README-en.md)
+- [Français [fr]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/.readme/README-fr.md)
+- [Español [es]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/.readme/README-es.md)
+- [日本語 [ja]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/.readme/README-ja.md)
+- [한국어 [ko]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/.readme/README-ko.md)
+- [Русский [ru]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/.readme/README-ru.md)
 - العربية [ar] # الحالي
+
+******
+
+### بدء الاستخدام
+
+يستخدم 3-Hanzi CC رسم Hanzi الذي قدمه المشرف في الصفحة الرئيسية والمشغل والوثائق ومركز الملحقات. توفر الإعدادات الموحدة اللغة والوضع الليلي ولون السمة وأربعة خيارات لأيقونة المشغل.
+
+يتغير معرف التطبيق من `io.github.supermonster003.autojs6.plugin.opencc` إلى `io.github.supermonster003.autojs6.plugin.three.hanzi.cc`. يثبته Android كتطبيق مستقل; يمكن الاحتفاظ بالتطبيقات والبيانات السابقة ولا تنتقل الإعدادات تلقائيا.
 
 ******
 
@@ -42,7 +50,7 @@
 
 ******
 
-يوفر OpenCC في تثبيت واحد مدخلين لتحويل النص الصيني اعتمادا على [OpenCC](https://github.com/BYVoid/OpenCC). شغله مباشرة كتطبيق Android محلي بالكامل, أو دع AutoJs6 يتعرف على ملف APK نفسه كمكون إضافي واستخدم الكائن العام `opencc` في البرامج النصية. يغطي المساران الصينية المبسطة والتقليدية ومتغيرات هونغ كونغ وتايوان والشينجيتاي اليابانية.
+يوفر 3-Hanzi CC في تثبيت واحد مدخلين لتحويل النص الصيني اعتمادا على [OpenCC](https://github.com/BYVoid/OpenCC). شغله مباشرة كتطبيق Android محلي بالكامل, أو دع AutoJs6 يتعرف على ملف APK نفسه كمكون إضافي واستخدم الكائن العام `opencc` في البرامج النصية. يغطي المساران الصينية المبسطة والتقليدية ومتغيرات هونغ كونغ وتايوان والشينجيتاي اليابانية.
 
 يشترك المحرر المستقل وخدمة Binder المحمية بإذن AutoJs6 في محرك OpenCC رسمي واحد والقواميس المثبتة نفسها وذاكرة التخزين المؤقت وأنواع التحويل ونموذج الأخطاء. لا يحتاج التطبيق المستقل إلى AutoJs6, بينما يحافظ وضع المكون الإضافي على API البرامج النصية الحالي ويسمح بتحديث المحرك باستقلال عن المضيف.
 
@@ -73,19 +81,19 @@
 <table>
   <tr>
     <td align="center">
-      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/images/screenshots/standalone-phone-light.png?raw=true"
+      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/docs/images/screenshots/standalone-phone-light.png?raw=true"
            alt="تحويل مستقل محلي في المظهر النهاري" width="280" />
       <br />
       <sub>تحويل مستقل محلي في المظهر النهاري</sub>
     </td>
     <td align="center">
-      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/images/screenshots/standalone-rtl-large-dark.png?raw=true"
+      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/docs/images/screenshots/standalone-rtl-large-dark.png?raw=true"
            alt="تخطيط العربية RTL بحجم خط 170% في المظهر الليلي" width="280" />
       <br />
       <sub>تخطيط العربية RTL بحجم خط 170% في المظهر الليلي</sub>
     </td>
     <td align="center">
-      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/images/screenshots/plugin-center-enabled.png?raw=true"
+      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/docs/images/screenshots/plugin-center-enabled.png?raw=true"
            alt="التعرف على OpenCC 1.0.2 وتفعيله في مركز المكونات الإضافية" width="280" />
       <br />
       <sub>التعرف على OpenCC 1.0.2 وتفعيله في مركز المكونات الإضافية</sub>
@@ -99,7 +107,7 @@
 
 ******
 
-1. نزل ملف APK واحدا من [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases) أو مركز مكونات AutoJs6 وثبته. اختر الحزمة المطابقة لـ ABI الجهاز, وعند التردد اختر `universal` أو راجع `كيفية اختيار حزمة التثبيت`.
+1. نزل ملف APK واحدا من [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/releases) أو مركز مكونات AutoJs6 وثبته. اختر الحزمة المطابقة لـ ABI الجهاز, وعند التردد اختر `universal` أو راجع `كيفية اختيار حزمة التثبيت`.
 2. للاستخدام المستقل افتح `OpenCC` من المشغل, واكتب النص أو الصقه صراحة, واختر نوعا من الأنواع الـ 14 ثم اضغط `تحويل`. لا يلزم AutoJs6 ولا منح إذن المكونات الإضافية.
 3. للاستخدام كمكون إضافي حدث AutoJs6 إلى البنية الداخلية 3923 (6.7.1 Alpha4) أو أحدث; ويفي الإصدار 6.8.0 وما بعده بالمتطلب.
 4. افتح مركز مكونات AutoJs6 وتأكد من التعرف على `OpenCC` وتفعيله. تجتاز الحزم الرسمية تحقق التوقيع تلقائيا من دون تفويض يدوي.
@@ -248,7 +256,7 @@ console.log(opencc.s2t("汉字转换"));
 
 #### لماذا يكون `opencc` غير متاح في البرامج النصية العاملة على محرك Node.js?
 
-`opencc` حاليا حصري لمحرك Rhino, محرك JavaScript الافتراضي في AutoJs6; ولا توفر بيئة تشغيل Node.js تنفيذا له بعد. راجع [ROADMAP.md](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/ROADMAP.md) للاطلاع على الخطط ذات الصلة.
+`opencc` حاليا حصري لمحرك Rhino, محرك JavaScript الافتراضي في AutoJs6; ولا توفر بيئة تشغيل Node.js تنفيذا له بعد. راجع [ROADMAP.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/ROADMAP.md) للاطلاع على الخطط ذات الصلة.
 
 #### هل يتطلب التحويل اتصالا بالشبكة? وهل النص الطويل بطيء?
 
@@ -271,7 +279,7 @@ console.log(opencc.s2t("汉字转换"));
 - خدمة محمية: لا يستطيع الارتباط بها واستدعاءها إلا مضيف يحمل الإذن مثل AutoJs6. ويتحقق AutoJs6 أيضا من توقيع الحزمة, فلا يمكن للتطبيقات الأخرى استدعاء الخدمة.
 - معالجة محلية: يستخدم المدخلان القواميس المدمجة بلا اتصال. لا تسجل المدخلات والنتائج ولا تحفظ أو تنسخ احتياطيا أو ترفع أو تجمع.
 
-احصل على المكون الإضافي فقط من صفحة [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases) الرسمية أو من مركز المكونات الإضافية في AutoJs6. فالحزم مجهولة المصدر قد لا تجتاز تحقق المضيف أو قد تحمل مخاطر حتى لو بدا رقم الإصدار مطابقا.
+احصل على المكون الإضافي فقط من صفحة [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/releases) الرسمية أو من مركز المكونات الإضافية في AutoJs6. فالحزم مجهولة المصدر قد لا تجتاز تحقق المضيف أو قد تحمل مخاطر حتى لو بدا رقم الإصدار مطابقا.
 
 ******
 
@@ -282,8 +290,8 @@ console.log(opencc.s2t("汉字转换"));
 المعلومات التالية موجهة لمطوري مضيف AutoJs6 ومطوري المكونات الإضافية; يستخدم المضيف هذه المعرفات لاكتشاف المكون الإضافي والتفاوض على التوافق:
 
 ```text
-application id: io.github.supermonster003.autojs6.plugin.opencc
-plugin id: opencc
+application id: io.github.supermonster003.autojs6.plugin.three.hanzi.cc
+plugin id: three-hanzi-cc
 engine: opencc
 variant: default
 service action: org.autojs.plugin.OPENCC
@@ -298,7 +306,7 @@ OpenCC source commit: 025f371dc76b598d77384fbdab90c937471844d8
 OpenCC resources SHA-256: 9ea0d303219b34d014d5c116677b5d325043beafb2c8a62ee889ca67f4d054a5
 ```
 
-تستجيب `OpenccPluginService` للإجراء `org.autojs.plugin.OPENCC` (الفئة `opencc`) عبر `org.autojs.plugin.opencc.api.IOpenccPlugin` من opencc-api. يضيف الإصدار 2 من العقد اكتشاف الأنواع والتحويل الدفعي والتحويل المتسلسل بعد الطريقتين الأصليتين `getInfo()` و`convert(text, conversionType)`, ويعلن الإصدار والأنواع المدعومة عبر `PluginInfo.capabilities`; وتواصل المضيفات القديمة استخدام الطرق وأرقام المعاملات الأصلية. كما يتوفر `WakeActivity` لإيقاظ عملية المكون الإضافي.
+تستجيب `ThreeHanziCcService` للإجراء `org.autojs.plugin.OPENCC` (الفئة `opencc`) عبر `org.autojs.plugin.opencc.api.IOpenccPlugin` من opencc-api. يضيف الإصدار 2 من العقد اكتشاف الأنواع والتحويل الدفعي والتحويل المتسلسل بعد الطريقتين الأصليتين `getInfo()` و`convert(text, conversionType)`, ويعلن الإصدار والأنواع المدعومة عبر `PluginInfo.capabilities`; وتواصل المضيفات القديمة استخدام الطرق وأرقام المعاملات الأصلية. كما يتوفر `WakeActivity` لإيقاظ عملية المكون الإضافي.
 
 يبني المكون الإضافي إصدار OpenCC الرسمي `ver.1.4.2` مباشرة عند الالتزام `025f371dc76b598d77384fbdab90c937471844d8` مع موارد الإصدار نفسه. تحتوي كل ABI على ملف `libopencc_jni.so` واحد مرتبط ساكنا ومحاذى إلى 16 KB, ويظل التحويل محليا بالكامل.
 
@@ -310,13 +318,20 @@ OpenCC resources SHA-256: 9ea0d303219b34d014d5c116677b5d325043beafb2c8a62ee889ca
 
 تدون خطط المكون الإضافي وتقدمه في ROADMAP.md بوصفها قائمة قابلة للتأشير, منظمة حسب مراحل رئيسية مع شروط قبول, وتغطي الوثائق وتجربة الإصدار, والهندسة والتكامل المستمر, وتعزيز قدرات التحويل, وتطور بيئة التشغيل. البنود غير المؤشرة تعبر عن نوايا لا عن قدرات حالية; ونرحب بالنقاش عبر Issues.
 
-- [عرض ROADMAP.md](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/ROADMAP.md)
+- [عرض ROADMAP.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/ROADMAP.md)
 
 ******
 
 ### سجل الإصدارات
 
 ******
+
+#### v2.0.0
+
+_2026/10/04_
+
+- `تلميح` يتغير معرف التطبيق من io.github.supermonster003.autojs6.plugin.opencc إلى io.github.supermonster003.autojs6.plugin.three.hanzi.cc. يثبته Android كتطبيق مستقل; يمكن الاحتفاظ بالتطبيقات والبيانات السابقة ولا تنتقل الإعدادات تلقائيا
+- `تحسين` يستخدم 3-Hanzi CC رسم Hanzi الذي قدمه المشرف في الصفحة الرئيسية والمشغل والوثائق ومركز الملحقات
 
 #### v1.5.0
 
@@ -334,15 +349,9 @@ _2026/09/19_
 - `إصلاح` تحذيرات قراءة SDK XML v4 مع AGP 9.1 وتشغيل فحص محاذاة مكتبات APK الأصلية خطأ عند تجميع اختبارات JVM, باستخدام إضافات البناء المشتركة 1.8.3
 - `تحسين` بعد compileSdk, رفع targetSdk إلى 37 (Android 17), لا يعتمد سلوك المكون الإضافي على الهدف الجديد
 
-#### v1.4.1
-
-_2026/09/15_
-
-- `تحسين` رفع compileSdk إلى 37 (Android 17), يبقى targetSdk عند 36 حتى يتم التحقق من السلوك المعتمد على الهدف
-
 ##### لمزيد من سجل الإصدارات
 
-* [CHANGELOG.md](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/app/src/main/assets/doc/CHANGELOG-ar.md)
+* [CHANGELOG.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/app/src/main/assets/doc/CHANGELOG-ar.md)
 
 ******
 
@@ -422,7 +431,7 @@ app/src/main/res/raw-*/plugin_instruction.md
 
 ******
 
-يوزع رمز المشروع بموجب [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/LICENSE). ويستخدم تحويل النص الصيني [OpenCC](https://github.com/BYVoid/OpenCC) (Apache License 2.0) مباشرة; وترد مصادر وتراخيص OpenCC وMarisa Trie وDarts Clone وRapidJSON المضمنة في [إشعارات الجهات الخارجية](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/THIRD_PARTY_NOTICES.md).
+يوزع رمز المشروع بموجب [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/LICENSE). ويستخدم تحويل النص الصيني [OpenCC](https://github.com/BYVoid/OpenCC) (Apache License 2.0) مباشرة; وترد مصادر وتراخيص OpenCC وMarisa Trie وDarts Clone وRapidJSON المضمنة في [إشعارات الجهات الخارجية](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/THIRD_PARTY_NOTICES.md).
 
 ******
 
@@ -433,7 +442,12 @@ app/src/main/res/raw-*/plugin_instruction.md
 - وثائق AutoJs6 OpenCC: https://docs.autojs6.com/#/opencc
 - مشروع AutoJs6: https://github.com/SuperMonster003/AutoJs6
 - مشروع OpenCC الرسمي: https://github.com/BYVoid/OpenCC
-- إشعارات الجهات الخارجية: https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/THIRD_PARTY_NOTICES.md
+- إشعارات الجهات الخارجية: https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/THIRD_PARTY_NOTICES.md
 
 
-[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/16kb.md)
+[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/docs/16kb.md)
+
+
+### المصادر والشكر
+
+[THIRD_PARTY_NOTICES.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/THIRD_PARTY_NOTICES.md) · [RIGHTS_AND_TAKEDOWN.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/RIGHTS_AND_TAKEDOWN.md)

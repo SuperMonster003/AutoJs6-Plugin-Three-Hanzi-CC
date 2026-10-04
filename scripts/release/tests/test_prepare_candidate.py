@@ -45,7 +45,7 @@ class PrepareCandidateTest(unittest.TestCase):
         self.root = Path(self.temporary_directory.name)
         (self.root / ".changelog").mkdir()
         (self.root / "settings.gradle.kts").write_text(
-            'rootProject.name = "autojs6-plugin-opencc"\n',
+            'rootProject.name = "autojs6-plugin-three-hanzi-cc"\n',
             encoding="utf-8",
         )
         (self.root / "version.properties").write_text(
@@ -172,7 +172,7 @@ class PrepareCandidateTest(unittest.TestCase):
         self.assertEqual(first_payload, second_manifest.read_bytes())
         data = json.loads(first_payload)
         self.assertEqual("signed-candidate-only", data["artifact_role"])
-        self.assertEqual("SuperMonster003/AutoJs6-Plugin-OpenCC", data["repository"])
+        self.assertEqual("SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC", data["repository"])
         self.assertEqual(SOURCE_SHA, data["source_sha"])
         self.assertEqual({"name": "1.3.0", "build": 20}, data["version"])
         self.assertEqual(SIGNER_SHA256, data["signer_certificate_sha256"])
@@ -295,7 +295,7 @@ class PrepareCandidateTest(unittest.TestCase):
         older_version_root = self.root / "older"
         older_version_root.mkdir()
         (older_version_root / "settings.gradle.kts").write_text(
-            'rootProject.name = "autojs6-plugin-opencc"\n',
+            'rootProject.name = "autojs6-plugin-three-hanzi-cc"\n',
             encoding="utf-8",
         )
         (older_version_root / "version.properties").write_text(

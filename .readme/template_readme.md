@@ -29,6 +29,14 @@
 
 ******
 
+### {{ h3_standalone }}
+
+{{ p_standalone }}
+
+{{ p_migration }}
+
+******
+
 ### {{ h3_introduction }}
 
 ******
@@ -366,4 +374,9 @@ app/src/main/res/raw-*/plugin_instruction.md
 - {{ text_link_third_party_notices }}: {{ third_party_notices_url }}
 
 
-[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/16kb.md)
+[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/docs/16kb.md)
+
+
+### {{ h3_sources }}
+
+{{ p_sources }}

@@ -3,17 +3,17 @@
 <div align="center">
   <p>
     <picture>
-      <source srcset="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/app/src/main/res/mipmap-night/ic_launcher.png?raw=true" media="(prefers-color-scheme: dark)" />
-      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/app/src/main/res/mipmap/ic_launcher.png?raw=true" alt="autojs6-plugin-opencc-ic-launcher" border="0" width="128" />
+      <source srcset="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/app/src/main/res/mipmap-night/ic_launcher.png?raw=true" media="(prefers-color-scheme: dark)" />
+      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/app/src/main/res/mipmap/ic_launcher.png?raw=true" alt="autojs6-plugin-three-hanzi-cc-ic-launcher" border="0" width="128" />
     </picture>
   </p>
 
   <p>Offline OpenCC Chinese converter for standalone use and AutoJs6</p>
 
   <p>
-    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/SuperMonster003/AutoJs6-Plugin-OpenCC?label=Release"/></a>
-    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/issues"><img alt="GitHub closed issues" src="https://img.shields.io/github/issues/SuperMonster003/AutoJs6-Plugin-OpenCC?color=A24232&label=Issues"/></a>
-    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/LICENSE"><img alt="GitHub License" src="https://img.shields.io/github/license/SuperMonster003/AutoJs6-Plugin-OpenCC?color=534BAE&label=License"/></a>
+    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC?label=Release"/></a>
+    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/issues"><img alt="GitHub closed issues" src="https://img.shields.io/github/issues/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC?color=A24232&label=Issues"/></a>
+    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/LICENSE"><img alt="GitHub License" src="https://img.shields.io/github/license/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC?color=534BAE&label=License"/></a>
   </p>
 </div>
 
@@ -25,16 +25,24 @@
 
 The current README.md supports the following languages:
 
-- [简体中文 [zh-Hans]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-zh-Hans.md)
-- [繁體中文 (香港) [zh-Hant-HK]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-zh-Hant-HK.md)
-- [繁體中文 (台灣) [zh-Hant-TW]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-zh-Hant-TW.md)
+- [简体中文 [zh-Hans]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/.readme/README-zh-Hans.md)
+- [繁體中文 (香港) [zh-Hant-HK]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/.readme/README-zh-Hant-HK.md)
+- [繁體中文 (台灣) [zh-Hant-TW]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/.readme/README-zh-Hant-TW.md)
 - English [en] # current
-- [Français [fr]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-fr.md)
-- [Español [es]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-es.md)
-- [日本語 [ja]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-ja.md)
-- [한국어 [ko]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-ko.md)
-- [Русский [ru]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-ru.md)
-- [العربية [ar]](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/.readme/README-ar.md)
+- [Français [fr]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/.readme/README-fr.md)
+- [Español [es]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/.readme/README-es.md)
+- [日本語 [ja]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/.readme/README-ja.md)
+- [한국어 [ko]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/.readme/README-ko.md)
+- [Русский [ru]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/.readme/README-ru.md)
+- [العربية [ar]](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/.readme/README-ar.md)
+
+******
+
+### Get started
+
+3-Hanzi CC adopts the maintainer's Hanzi artwork across its home screen, launcher, documentation and Plugin Center. Language, dark mode, theme color and four launcher icon choices are available in the shared settings layout.
+
+The application ID changes from `io.github.supermonster003.autojs6.plugin.opencc` to `io.github.supermonster003.autojs6.plugin.three.hanzi.cc`. Android installs this as a separate app; existing apps and data can remain, and settings are not migrated automatically.
 
 ******
 
@@ -42,7 +50,7 @@ The current README.md supports the following languages:
 
 ******
 
-OpenCC is one install with two entry points for [OpenCC](https://github.com/BYVoid/OpenCC)-based Chinese text conversion. Launch it directly as a fully offline Android App, or let AutoJs6 discover the same APK as a plugin and use the global `opencc` script object. Both paths cover Simplified Chinese, Traditional Chinese, Hong Kong Traditional, Taiwan Traditional, and Japanese Shinjitai.
+3-Hanzi CC is one install with two entry points for [OpenCC](https://github.com/BYVoid/OpenCC)-based Chinese text conversion. Launch it directly as a fully offline Android App, or let AutoJs6 discover the same APK as a plugin and use the global `opencc` script object. Both paths cover Simplified Chinese, Traditional Chinese, Hong Kong Traditional, Taiwan Traditional, and Japanese Shinjitai.
 
 The standalone editor and the permission-protected AutoJs6 Binder service share one official OpenCC engine, the same pinned dictionaries, cache, conversion types, and error model. The App does not require AutoJs6, while plugin mode keeps the existing script API and allows the conversion engine to be updated independently of the host.
 
@@ -73,19 +81,19 @@ These are unedited Android runtime captures of the standalone editor in day mode
 <table>
   <tr>
     <td align="center">
-      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/images/screenshots/standalone-phone-light.png?raw=true"
+      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/docs/images/screenshots/standalone-phone-light.png?raw=true"
            alt="Standalone offline conversion in the day theme" width="280" />
       <br />
       <sub>Standalone offline conversion in the day theme</sub>
     </td>
     <td align="center">
-      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/images/screenshots/standalone-rtl-large-dark.png?raw=true"
+      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/docs/images/screenshots/standalone-rtl-large-dark.png?raw=true"
            alt="Arabic RTL layout at 170% font size in the night theme" width="280" />
       <br />
       <sub>Arabic RTL layout at 170% font size in the night theme</sub>
     </td>
     <td align="center">
-      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/images/screenshots/plugin-center-enabled.png?raw=true"
+      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/docs/images/screenshots/plugin-center-enabled.png?raw=true"
            alt="OpenCC 1.0.2 recognized and enabled in the plugin center" width="280" />
       <br />
       <sub>OpenCC 1.0.2 recognized and enabled in the plugin center</sub>
@@ -99,7 +107,7 @@ These are unedited Android runtime captures of the standalone editor in day mode
 
 ******
 
-1. Download and install one APK from [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases) or the AutoJs6 plugin center. Choose the package matching your device ABI; when unsure, choose `universal` or see `How to Choose a Package` below.
+1. Download and install one APK from [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/releases) or the AutoJs6 plugin center. Choose the package matching your device ABI; when unsure, choose `universal` or see `How to Choose a Package` below.
 2. For standalone use, open `OpenCC` from the launcher, type or explicitly paste text, choose one of the 14 conversion types, and tap `Convert`. AutoJs6 and a plugin-permission grant are not required.
 3. For plugin use, update AutoJs6 to internal build 3923 (6.7.1 Alpha4) or later; release 6.8.0 and newer satisfy this requirement.
 4. Open the AutoJs6 plugin center and confirm `OpenCC` is recognized and enabled. Official release packages pass signature verification automatically, with no manual authorization required.
@@ -248,7 +256,7 @@ This means AutoJs6 could not find the plugin on the device. Install the plugin a
 
 #### Why is `opencc` unavailable in scripts running on the Node.js engine?
 
-`opencc` is currently exclusive to Rhino, the default JavaScript engine of AutoJs6; the Node.js runtime does not provide an implementation yet. See [ROADMAP.md](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/ROADMAP.md) for related plans.
+`opencc` is currently exclusive to Rhino, the default JavaScript engine of AutoJs6; the Node.js runtime does not provide an implementation yet. See [ROADMAP.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/ROADMAP.md) for related plans.
 
 #### Does conversion require a network connection? Is long text slow?
 
@@ -271,7 +279,7 @@ The standalone App and AutoJs6 plugin entry have separate, explicit boundaries:
 - Protected plugin service: only hosts holding the plugin permission, such as AutoJs6, can bind and call it. AutoJs6 also verifies the package signature; unrelated apps cannot invoke the service.
 - Local processing: both entry points use bundled dictionaries completely offline. Input and output are not logged, persisted, backed up, uploaded, or collected.
 
-Only obtain the plugin from the official [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/releases) page or the AutoJs6 plugin center. Packages from unknown sources may fail host verification or carry risks even when the version number looks identical.
+Only obtain the plugin from the official [Releases](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/releases) page or the AutoJs6 plugin center. Packages from unknown sources may fail host verification or carry risks even when the version number looks identical.
 
 ******
 
@@ -282,8 +290,8 @@ Only obtain the plugin from the official [Releases](https://github.com/SuperMons
 The following information targets AutoJs6 host and plugin developers; the host uses these identifiers to discover the plugin and negotiate compatibility:
 
 ```text
-application id: io.github.supermonster003.autojs6.plugin.opencc
-plugin id: opencc
+application id: io.github.supermonster003.autojs6.plugin.three.hanzi.cc
+plugin id: three-hanzi-cc
 engine: opencc
 variant: default
 service action: org.autojs.plugin.OPENCC
@@ -298,7 +306,7 @@ OpenCC source commit: 025f371dc76b598d77384fbdab90c937471844d8
 OpenCC resources SHA-256: 9ea0d303219b34d014d5c116677b5d325043beafb2c8a62ee889ca67f4d054a5
 ```
 
-`OpenccPluginService` responds to the `org.autojs.plugin.OPENCC` action (category `opencc`), using `org.autojs.plugin.opencc.api.IOpenccPlugin` from opencc-api. Contract version 2 appends type discovery, batch conversion, and chained conversion after the original `getInfo()` and `convert(text, conversionType)` methods, and advertises its version and supported types through `PluginInfo.capabilities`; older hosts keep using the original methods and transaction numbers. A `WakeActivity` is also provided so the host can wake the plugin process.
+`ThreeHanziCcService` responds to the `org.autojs.plugin.OPENCC` action (category `opencc`), using `org.autojs.plugin.opencc.api.IOpenccPlugin` from opencc-api. Contract version 2 appends type discovery, batch conversion, and chained conversion after the original `getInfo()` and `convert(text, conversionType)` methods, and advertises its version and supported types through `PluginInfo.capabilities`; older hosts keep using the original methods and transaction numbers. A `WakeActivity` is also provided so the host can wake the plugin process.
 
 The plugin builds official OpenCC `ver.1.4.2` directly at commit `025f371dc76b598d77384fbdab90c937471844d8` with the matching release resources. Each ABI contains one statically linked, 16 KB-aligned `libopencc_jni.so`, and conversion remains fully offline.
 
@@ -310,13 +318,20 @@ The plugin builds official OpenCC `ver.1.4.2` directly at commit `025f371dc76b59
 
 The plugin's plans and progress are maintained as a checkable list in ROADMAP.md, organized by milestone with acceptance criteria, covering documentation and release experience, engineering and continuous integration, conversion capability enhancements, and runtime evolution. Unchecked items express intent rather than current capabilities; discussion via Issues is welcome.
 
-- [View ROADMAP.md](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/ROADMAP.md)
+- [View ROADMAP.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/ROADMAP.md)
 
 ******
 
 ### Release History
 
 ******
+
+#### v2.0.0
+
+_2026/10/04_
+
+- `Hint` The application ID changes from io.github.supermonster003.autojs6.plugin.opencc to io.github.supermonster003.autojs6.plugin.three.hanzi.cc. Android installs this as a separate app; existing apps and data can remain, and settings are not migrated automatically
+- `Improvement` 3-Hanzi CC adopts the maintainer's Hanzi artwork across its home screen, launcher, documentation and Plugin Center
 
 #### v1.5.0
 
@@ -334,15 +349,9 @@ _2026/09/19_
 - `Fix` SDK XML v4 parsing warnings with AGP 9.1 and APK native alignment checks incorrectly triggered by JVM unit-test assembly tasks, using shared build plugins 1.8.3
 - `Improvement` Raise targetSdk to 37 (Android 17) after compileSdk; the plugin's behavior does not depend on the new target
 
-#### v1.4.1
-
-_2026/09/15_
-
-- `Improvement` Raise compileSdk to 37 (Android 17); targetSdk stays at 36 until the behavior that depends on the target is verified
-
 ##### For more release history
 
-* [CHANGELOG.md](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/app/src/main/assets/doc/CHANGELOG-en.md)
+* [CHANGELOG.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/app/src/main/assets/doc/CHANGELOG-en.md)
 
 ******
 
@@ -422,7 +431,7 @@ app/src/main/res/raw-*/plugin_instruction.md
 
 ******
 
-The project code is licensed under the [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/LICENSE). Chinese conversion is powered directly by [OpenCC](https://github.com/BYVoid/OpenCC) (Apache License 2.0); bundled OpenCC, Marisa Trie, Darts Clone, and RapidJSON sources and licenses are listed in [Third-Party Notices](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/THIRD_PARTY_NOTICES.md).
+The project code is licensed under the [Mozilla Public License 2.0](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/LICENSE). Chinese conversion is powered directly by [OpenCC](https://github.com/BYVoid/OpenCC) (Apache License 2.0); bundled OpenCC, Marisa Trie, Darts Clone, and RapidJSON sources and licenses are listed in [Third-Party Notices](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/THIRD_PARTY_NOTICES.md).
 
 ******
 
@@ -433,7 +442,12 @@ The project code is licensed under the [Mozilla Public License 2.0](https://gith
 - AutoJs6 OpenCC documentation: https://docs.autojs6.com/#/opencc
 - AutoJs6 project: https://github.com/SuperMonster003/AutoJs6
 - OpenCC official project: https://github.com/BYVoid/OpenCC
-- Third-party notices: https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/THIRD_PARTY_NOTICES.md
+- Third-party notices: https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/THIRD_PARTY_NOTICES.md
 
 
-[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/blob/master/docs/16kb.md)
+[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/docs/16kb.md)
+
+
+### Sources and acknowledgments
+
+[THIRD_PARTY_NOTICES.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/THIRD_PARTY_NOTICES.md) · [RIGHTS_AND_TAKEDOWN.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/blob/master/RIGHTS_AND_TAKEDOWN.md)

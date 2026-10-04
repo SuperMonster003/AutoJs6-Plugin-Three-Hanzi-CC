@@ -383,7 +383,7 @@ class GitHubApi:
             "Accept": "application/vnd.github+json",
             "Authorization": f"Bearer {self.token}",
             "Content-Type": content_type,
-            "User-Agent": "AutoJs6-Plugin-OpenCC-draft-controller/1",
+            "User-Agent": "AutoJs6-Plugin-Three-Hanzi-CC-draft-controller/1",
             "X-GitHub-Api-Version": API_VERSION,
         }
         if body is not None:

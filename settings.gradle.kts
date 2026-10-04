@@ -1,6 +1,6 @@
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-rootProject.name = "autojs6-plugin-opencc"
+rootProject.name = "autojs6-plugin-three-hanzi-cc"
 
 pluginManagement {
     providers.gradleProperty("autojs.buildPlugins.includeBuild").orNull?.let { includeBuild(it) }

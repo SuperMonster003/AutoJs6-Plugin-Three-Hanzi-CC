@@ -4,6 +4,13 @@
 
 ******
 
+# v2.0.0
+
+###### 2026/10/04
+
+* `Note` L'identifiant passe de io.github.supermonster003.autojs6.plugin.opencc à io.github.supermonster003.autojs6.plugin.three.hanzi.cc. Android installe une application distincte; les anciennes applications et leurs données peuvent être conservées, sans migration automatique des paramètres
+* `Amélioration` 3-Hanzi CC utilise le dessin Hanzi fourni par le mainteneur dans son accueil, son lanceur, sa documentation et le centre de plugins
+
 # v1.5.0
 
 ###### 2026/09/30

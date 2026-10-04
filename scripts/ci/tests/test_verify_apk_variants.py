@@ -19,7 +19,7 @@ class VerifyApkVariantsTest(unittest.TestCase):
         package_name = verify_apk_variants.APPLICATION_ID
         launcher = element(
             "activity",
-            {"name": f"{package_name}.OpenccActivity", "exported": True},
+            {"name": f"{package_name}.ThreeHanziCcActivity", "exported": True},
             [
                 element(
                     "intent-filter",
@@ -35,7 +35,7 @@ class VerifyApkVariantsTest(unittest.TestCase):
         launcher.children = []
         aliases = [element("activity-alias", {
             "name": f"{package_name}.launcher.{name}IconAlias",
-            "targetActivity": f"{package_name}.OpenccActivity",
+            "targetActivity": f"{package_name}.ThreeHanziCcActivity",
             "exported": True,
             "enabled": name == "AdaptiveAuto",
             "icon": 0x7F100001 + index,
@@ -73,7 +73,7 @@ class VerifyApkVariantsTest(unittest.TestCase):
         service = element(
             "service",
             {
-                "name": f"{package_name}.OpenccPluginService",
+                "name": f"{package_name}.ThreeHanziCcService",
                 "exported": True,
                 "permission": permission,
             },
@@ -89,7 +89,7 @@ class VerifyApkVariantsTest(unittest.TestCase):
             ],
         )
         info_service = deepcopy(service)
-        info_service.attributes["name"] = f"{package_name}.OpenccPluginInfoService"
+        info_service.attributes["name"] = f"{package_name}.ThreeHanziCcInfoService"
         info_service.children[0].children[0].attributes["name"] = "org.autojs.plugin.INFO"
         return element(
             "manifest",
@@ -114,7 +114,7 @@ class VerifyApkVariantsTest(unittest.TestCase):
         )
 
     def test_standalone_entry_is_required_in_every_target_apk(self) -> None:
-        marker = b"Lio/github/supermonster003/autojs6/plugin/opencc/OpenccActivity;"
+        marker = b"Lio/github/supermonster003/autojs6/plugin/three/hanzi/cc/ThreeHanziCcActivity;"
         self.assertIn(marker, verify_apk_variants.REQUIRED_DEX_MARKERS)
 
     def test_application_locale_config_is_required(self) -> None:
@@ -249,7 +249,7 @@ class VerifyApkVariantsTest(unittest.TestCase):
     def test_common_metadata_service_must_remain_protected(self) -> None:
         manifest = self.expected_manifest()
         app = next(child for child in manifest.children if child.name == "application")
-        info = next(child for child in app.children if child.attributes.get("name", "").endswith(".OpenccPluginInfoService"))
+        info = next(child for child in app.children if child.attributes.get("name", "").endswith(".ThreeHanziCcInfoService"))
         del info.attributes["permission"]
         with self.assertRaisesRegex(verify_apk_variants.VerificationError, "permission"):
             verify_apk_variants.verify_manifest_tree(manifest, "fixture.apk")

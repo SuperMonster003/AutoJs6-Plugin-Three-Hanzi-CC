@@ -25,7 +25,7 @@ class PrepareReleaseTest(unittest.TestCase):
         self.root = Path(self.temporary_directory.name)
         (self.root / ".changelog").mkdir()
         (self.root / "settings.gradle.kts").write_text(
-            'rootProject.name = "autojs6-plugin-opencc"\n',
+            'rootProject.name = "autojs6-plugin-three-hanzi-cc"\n',
             encoding="utf-8",
         )
         (self.root / "version.properties").write_text("VERSION_NAME=1.2.3\n", encoding="utf-8")
@@ -70,7 +70,7 @@ class PrepareReleaseTest(unittest.TestCase):
             native_abis = {"arm64-v8a", "armeabi-v7a", "x86_64", "x86"} if abi == "universal" else {abi}
             temporary = self.input_dir / f"{abi}.tmp"
             self.create_fake_apk(temporary, native_abis, abi)
-            final = self.input_dir / f"autojs6-plugin-opencc-v1.2.3-{abi}-{crc32(temporary)}.apk"
+            final = self.input_dir / f"autojs6-plugin-three-hanzi-cc-v1.2.3-{abi}-{crc32(temporary)}.apk"
             temporary.rename(final)
 
     def test_complete_set_generates_exact_bundle_checksums_and_notes(self) -> None:
@@ -111,7 +111,7 @@ class PrepareReleaseTest(unittest.TestCase):
         duplicate = self.input_dir / "duplicate.tmp"
         self.create_fake_apk(duplicate, {"arm64-v8a"}, "duplicate")
         duplicate.rename(
-            self.input_dir / f"autojs6-plugin-opencc-v1.2.3-arm64-v8a-{crc32(duplicate)}.apk",
+            self.input_dir / f"autojs6-plugin-three-hanzi-cc-v1.2.3-arm64-v8a-{crc32(duplicate)}.apk",
         )
         with self.assertRaisesRegex(ReleaseError, "Duplicate current-version APKs"):
             collect_records(self.input_dir, self.context)
@@ -136,7 +136,7 @@ class PrepareReleaseTest(unittest.TestCase):
         self.create_released_set()
         foreign = self.input_dir / "foreign.tmp"
         self.create_fake_apk(foreign, {"x86_64"}, "old-version")
-        foreign_name = self.input_dir / f"autojs6-plugin-opencc-v1.2.2-x86_64-{crc32(foreign)}.apk"
+        foreign_name = self.input_dir / f"autojs6-plugin-three-hanzi-cc-v1.2.2-x86_64-{crc32(foreign)}.apk"
         foreign.rename(foreign_name)
 
         records, foreign_versions = collect_records(self.input_dir, self.context)

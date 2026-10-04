@@ -16,11 +16,11 @@ from pathlib import Path
 from typing import Any, Sequence
 
 
-TARGET_PACKAGE = "io.github.supermonster003.autojs6.plugin.opencc"
+TARGET_PACKAGE = "io.github.supermonster003.autojs6.plugin.three.hanzi.cc"
 TEST_PACKAGE = f"{TARGET_PACKAGE}.test"
 RUNNER = f"{TEST_PACKAGE}/androidx.test.runner.AndroidJUnitRunner"
 BENCHMARK_CLASS = (
-    "io.github.supermonster003.autojs6.plugin.opencc."
+    "io.github.supermonster003.autojs6.plugin.three.hanzi.cc."
     "OpenccPerformanceBenchmarkTest"
 )
 RESULT_PREFIX = "OPENCC_BENCHMARK_JSON="
@@ -32,7 +32,7 @@ CURRENT_APK_PATTERN = re.compile(
     r"^app-(arm64-v8a|armeabi-v7a|x86_64|x86|universal)-release\.apk$"
 )
 BASELINE_APK_PATTERN = re.compile(
-    r"^autojs6-plugin-opencc-v(?P<version>[^-]+)-"
+    r"^autojs6-plugin-three-hanzi-cc-v(?P<version>[^-]+)-"
     r"(?P<abi>arm64-v8a|armeabi-v7a|x86_64|x86|universal)-[0-9a-fA-F]+\.apk$"
 )
 

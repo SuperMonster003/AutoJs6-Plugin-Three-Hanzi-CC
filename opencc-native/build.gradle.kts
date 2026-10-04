@@ -24,7 +24,7 @@ val controlledAcceptance = when (controlledAcceptanceProperty) {
 }
 
 android {
-    namespace = "io.github.supermonster003.autojs6.plugin.opencc.nativebridge"
+    namespace = "io.github.supermonster003.autojs6.plugin.three.hanzi.cc.nativebridge"
     compileSdk = versions.sdkVersionCompile
     ndkVersion = "28.2.13676358"
 

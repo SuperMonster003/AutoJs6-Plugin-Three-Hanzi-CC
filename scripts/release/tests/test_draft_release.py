@@ -42,7 +42,7 @@ from scripts.release.prepare_release import (
 )
 
 
-REPOSITORY = "SuperMonster003/AutoJs6-Plugin-OpenCC"
+REPOSITORY = "SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC"
 SOURCE_SHA = "1" * 40
 BASELINE_SHA = "2" * 40
 SIGNER_SHA256 = "A" * 64
@@ -298,7 +298,7 @@ class DraftReleaseTest(unittest.TestCase):
         (self.root / ".changelog").mkdir()
         (self.root / "scripts" / "release").mkdir(parents=True)
         (self.root / "settings.gradle.kts").write_text(
-            'rootProject.name = "autojs6-plugin-opencc"\n',
+            'rootProject.name = "autojs6-plugin-three-hanzi-cc"\n',
             encoding="utf-8",
         )
         (self.root / "version.properties").write_text(

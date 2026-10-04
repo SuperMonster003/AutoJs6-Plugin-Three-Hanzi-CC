@@ -112,7 +112,7 @@ class ApkSizeCollectionTest(unittest.TestCase):
             baseline.mkdir(parents=True)
             for index, abi in enumerate(benchmark.RELEASE_ABIS, start=1):
                 (current / f"app-{abi}-release.apk").write_bytes(b"x" * index)
-                (baseline / f"autojs6-plugin-opencc-v1.0.2-{abi}-deadbeef.apk").write_bytes(
+                (baseline / f"autojs6-plugin-three-hanzi-cc-v1.0.2-{abi}-deadbeef.apk").write_bytes(
                     b"y" * (index + 10)
                 )
 

@@ -4,6 +4,13 @@
 
 ******
 
+# v2.0.0
+
+###### 2026/10/04
+
+* `提示` 应用 ID 从 io.github.supermonster003.autojs6.plugin.opencc 改为 io.github.supermonster003.autojs6.plugin.three.hanzi.cc. Android 将其视为独立应用, 原应用与数据可以保留, 设置不会自动迁移
+* `优化` 3-Hanzi CC 的首页, 启动器, 文档和插件中心统一使用维护者提供的汉字图稿
+
 # v1.5.0
 
 ###### 2026/09/30

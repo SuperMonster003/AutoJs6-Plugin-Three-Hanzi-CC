@@ -5,7 +5,7 @@
   "h3_languages_with_ascii": "語言 (Languages)",
   "p_languages_all_supported_for_readme": "目前 README.md 支援以下語言",
   "h3_introduction": "簡介",
-  "p_introduction_what": "OpenCC 只需安裝一個 APK, 即可透過兩種入口使用基於 [OpenCC]({{ opencc_official_url }}) 的中文文字轉換: 直接從桌面啟動完全離線的 Android App, 或讓 AutoJs6 將同一個 APK 識別為外掛並在腳本中使用全域物件 `opencc`. 兩條路徑都涵蓋簡體, 通用繁體, 香港繁體, 台灣正體與日文新字體.",
+  "p_introduction_what": "3-Hanzi CC 只需安裝一個 APK, 即可透過兩種入口使用基於 [OpenCC]({{ opencc_official_url }}) 的中文文字轉換: 直接從桌面啟動完全離線的 Android App, 或讓 AutoJs6 將同一個 APK 識別為外掛並在腳本中使用全域物件 `opencc`. 兩條路徑都涵蓋簡體, 通用繁體, 香港繁體, 台灣正體與日文新字體.",
   "p_introduction_how": "獨立編輯器與受權限保護的 AutoJs6 Binder 服務共用唯一的官方 OpenCC 引擎, 同一組固定詞典, 快取, 轉換類型和錯誤模型. 獨立 App 不要求安裝 AutoJs6; 外掛模式則保持現有腳本 API, 並允許轉換引擎獨立於主程式更新.",
   "h3_features": "功能亮點",
   "features": [
@@ -118,7 +118,7 @@
   "p_security_permission": "請僅從官方 [Releases]({{ repo_url }}/releases) 頁面或 AutoJs6 外掛中心取得外掛. 來源不明的安裝套件即使版本號相同, 也可能無法通過主程式驗證或暗藏風險.",
   "h3_plugin_interface": "外掛介面",
   "p_plugin_interface": "以下資訊面向 AutoJs6 主程式與外掛開發者, 主程式透過這些識別資訊發現外掛並完成相容性協商",
-  "p_contract_service": "`OpenccPluginService` 會回應 `{{ plugin_service_action }}` action (category `{{ plugin_service_category }}`), Binder 介面為 opencc-api 的 `{{ plugin_aidl_interface }}`. 契約版本 2 在原有 `getInfo()` 與 `convert(text, conversionType)` 之後追加類型探索, 批次轉換與鏈式轉換方法, 並透過 `PluginInfo.capabilities` 公告版本與支援類型; 舊版主程式繼續使用原有方法和交易編號. 另提供 `WakeActivity` 供主程式喚醒外掛處理程序.",
+  "p_contract_service": "`ThreeHanziCcService` 會回應 `{{ plugin_service_action }}` action (category `{{ plugin_service_category }}`), Binder 介面為 opencc-api 的 `{{ plugin_aidl_interface }}`. 契約版本 2 在原有 `getInfo()` 與 `convert(text, conversionType)` 之後追加類型探索, 批次轉換與鏈式轉換方法, 並透過 `PluginInfo.capabilities` 公告版本與支援類型; 舊版主程式繼續使用原有方法和交易編號. 另提供 `WakeActivity` 供主程式喚醒外掛處理程序.",
   "p_abi_reporting": "外掛直接建置固定在提交 `{{ opencc_commit }}` 的官方 OpenCC `{{ opencc_tag }}`, 並使用同一發行版的配套資源. 每個 ABI 僅包含一個靜態連結且按 16 KB 對齊的 `libopencc_jni.so`, 轉換始終完全離線.",
   "h3_roadmap": "開發路線圖",
   "p_roadmap": "外掛的能力規劃與完成情況以可勾選清單維護在 ROADMAP.md 中, 依里程碑組織並附驗收條件, 涵蓋文件與發布體驗, 工程化與持續整合, 轉換能力增強與執行環境演進等方向. 未勾選條目表示規劃意向而非目前版本能力, 歡迎透過 Issues 參與討論.",
@@ -144,5 +144,10 @@
   "text_link_opencc_official": "OpenCC 官方專案",
   "text_link_third_party_notices": "第三方聲明",
   "p_instruction_more": "更多方法與完整轉換類型說明請參閱 [AutoJs6 OpenCC 文件]({{ docs_opencc_url }}) 與 [專案 README]({{ repo_url }}).",
-  "p_instruction_backend": "同一個 APK 也可在不安裝 AutoJs6 時從桌面直接啟動, 作為離線文字轉換 App 使用. 獨立編輯器與本外掛入口均使用官方 OpenCC {{ opencc_version }} 及固定於同一發行版的詞典, 原生安裝套件支援 16 KB 記憶體頁面的 Android 裝置."
+  "p_instruction_backend": "同一個 APK 也可在不安裝 AutoJs6 時從桌面直接啟動, 作為離線文字轉換 App 使用. 獨立編輯器與本外掛入口均使用官方 OpenCC {{ opencc_version }} 及固定於同一發行版的詞典, 原生安裝套件支援 16 KB 記憶體頁面的 Android 裝置.",
+  "h3_standalone": "開始使用",
+  "p_standalone": "3-Hanzi CC 的首頁, 啟動器, 文件和外掛程式中心統一使用維護者提供的漢字圖稿. 統一設定頁提供語言, 夜間模式, 主題色及四種啟動器圖示選項.",
+  "p_migration": "應用程式 ID 從 `io.github.supermonster003.autojs6.plugin.opencc` 改為 `io.github.supermonster003.autojs6.plugin.three.hanzi.cc`. Android 將其視為獨立應用程式, 原應用程式與資料可以保留, 設定不會自動遷移.",
+  "h3_sources": "來源與致謝",
+  "p_sources": "[THIRD_PARTY_NOTICES.md]({{ repo_url }}/blob/master/THIRD_PARTY_NOTICES.md) · [RIGHTS_AND_TAKEDOWN.md]({{ repo_url }}/blob/master/RIGHTS_AND_TAKEDOWN.md)"
 }

@@ -1,4 +1,6 @@
-OpenCC réunit dans une seule installation deux accès à la conversion de texte chinois basée sur [OpenCC](https://github.com/BYVoid/OpenCC). Lancez directement l'application Android entièrement hors ligne, ou laissez AutoJs6 reconnaître le même APK comme plugin et utilisez l'objet global `opencc` dans les scripts. Les deux voies couvrent le chinois simplifié, le chinois traditionnel, les variantes de Hong Kong et de Taïwan, ainsi que le shinjitai japonais.
+# AutoJs6 3-Hanzi CC
+
+3-Hanzi CC réunit dans une seule installation deux accès à la conversion de texte chinois basée sur [OpenCC](https://github.com/BYVoid/OpenCC). Lancez directement l'application Android entièrement hors ligne, ou laissez AutoJs6 reconnaître le même APK comme plugin et utilisez l'objet global `opencc` dans les scripts. Les deux voies couvrent le chinois simplifié, le chinois traditionnel, les variantes de Hong Kong et de Taïwan, ainsi que le shinjitai japonais.
 
 Le même APK peut aussi être lancé directement comme application de conversion hors ligne, sans AutoJs6. L'éditeur autonome et cette entrée plugin utilisent OpenCC officiel 1.4.2 avec les dictionnaires verrouillés de la même version; les paquets natifs prennent en charge les pages mémoire Android de 16 KB.
 
@@ -34,4 +36,7 @@ console.log(opencc.s2t("汉字转换"));
 
 Une sortie `漢字轉換` signifie que toute la chaîne du plugin fonctionne. Si le script échoue, suivez le message d'erreur: installez ce plugin s'il signale un plugin manquant, activez le commutateur correspondant dans le centre de plugins s'il signale un plugin désactivé ou non autorisé, et mettez AutoJs6 à jour s'il exige un hôte plus récent.
 
-Consultez la [documentation AutoJs6 OpenCC](https://docs.autojs6.com/#/opencc) et le [README du projet](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC) pour la liste complète des méthodes et la référence des types de conversion.
+Consultez la [documentation AutoJs6 OpenCC](https://docs.autojs6.com/#/opencc) et le [README du projet](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC) pour la liste complète des méthodes et la référence des types de conversion.
+
+
+L'identifiant passe de `io.github.supermonster003.autojs6.plugin.opencc` à `io.github.supermonster003.autojs6.plugin.three.hanzi.cc`. Android installe une application distincte; les anciennes applications et leurs données peuvent être conservées, sans migration automatique des paramètres.

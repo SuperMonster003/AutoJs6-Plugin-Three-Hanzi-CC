@@ -1,4 +1,6 @@
-OpenCC 只需安裝一個 APK, 即可透過兩種入口使用基於 [OpenCC](https://github.com/BYVoid/OpenCC) 的中文文本轉換: 直接從桌面啟動完全離線的 Android App, 或讓 AutoJs6 將同一個 APK 識別為插件並在腳本中使用全局對象 `opencc`. 兩條路徑均涵蓋簡體, 通用繁體, 香港繁體, 台灣正體與日文新字體.
+# AutoJs6 3-Hanzi CC
+
+3-Hanzi CC 只需安裝一個 APK, 即可透過兩種入口使用基於 [OpenCC](https://github.com/BYVoid/OpenCC) 的中文文本轉換: 直接從桌面啟動完全離線的 Android App, 或讓 AutoJs6 將同一個 APK 識別為插件並在腳本中使用全局對象 `opencc`. 兩條路徑均涵蓋簡體, 通用繁體, 香港繁體, 台灣正體與日文新字體.
 
 同一個 APK 亦可在不安裝 AutoJs6 時從桌面直接啟動, 作為離線文本轉換 App 使用. 獨立編輯器與本插件入口均使用官方 OpenCC 1.4.2 及固定在同一發行版的詞典, 原生安裝包支援 16 KB 記憶體頁面的 Android 裝置.
 
@@ -34,4 +36,7 @@ console.log(opencc.s2t("汉字转换"));
 
 輸出 `漢字轉換` 即表示插件鏈路完整可用. 若腳本報錯, 請按提示排查: 提示缺少插件時安裝本插件; 提示未啟用或未授權時到插件中心開啟對應開關; 提示需要更高版本的宿主環境時升級 AutoJs6.
 
-更多方法與完整轉換類型說明參見 [AutoJs6 OpenCC 文件](https://docs.autojs6.com/#/opencc) 與 [項目 README](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC).
+更多方法與完整轉換類型說明參見 [AutoJs6 OpenCC 文件](https://docs.autojs6.com/#/opencc) 與 [項目 README](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC).
+
+
+應用程式 ID 從 `io.github.supermonster003.autojs6.plugin.opencc` 改為 `io.github.supermonster003.autojs6.plugin.three.hanzi.cc`. Android 將其視為獨立應用程式, 原應用程式與資料可以保留, 設定不會自動遷移.
