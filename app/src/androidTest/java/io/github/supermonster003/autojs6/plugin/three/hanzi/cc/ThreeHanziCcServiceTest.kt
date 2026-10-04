@@ -228,11 +228,11 @@ class ThreeHanziCcServiceTest {
         val info = plugin.info
         val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
 
-        assertEquals("OpenCC", info.name)
+        assertEquals("3-Hanzi CC", info.name)
         assertTrue(info.description?.isNotBlank() == true)
         assertEquals("@raw/plugin_instruction", info.instruction)
         assertEquals("SuperMonster003", info.author)
-        assertEquals(OpenccPluginIds.ID, info.id)
+        assertEquals("three-hanzi-cc", info.id)
         assertEquals(OpenccPluginIds.ENGINE, info.engine)
         assertEquals(OpenccPluginIds.VARIANT_DEFAULT, info.variant)
         assertEquals(packageInfo.versionName.orEmpty(), info.versionName)
