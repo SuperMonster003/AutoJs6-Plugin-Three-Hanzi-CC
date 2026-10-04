@@ -12,14 +12,19 @@ import hashlib
 import io
 import json
 import math
-from pathlib import Path
 import re
 import struct
 import zlib
+from pathlib import Path
 
 from PIL import Image, ImageChops, ImageDraw, ImageOps
 
-VERSION = "1.0.0"
+VERSION = "1.2.0"
+SUPPORTED_VERSIONS = {"1.0.0", "1.1.0", VERSION}
+RECOMMENDED_SCALE = (0.80, 1.20)
+VISUAL_TARGET = 0.52
+RASTER_TOLERANCE = 0.006
+THREE_BACKGROUNDS = {"day": "#fafafa", "night": "#212121"}
 SIZE = 432
 SUPERSAMPLE = 4
 ASSET_ID = re.compile(r"[a-f0-9]{64}\Z")
@@ -138,10 +143,38 @@ def default_tone(mode="mask", foreground="#272727"):
     }
 
 
+def is_three(recipe: dict) -> bool:
+    return recipe.get("repository", "").startswith("AutoJs6-Plugin-Three-")
+
+
+def backgrounds(recipe: dict) -> dict:
+    if is_three(recipe):
+        return dict(THREE_BACKGROUNDS)
+    return recipe["params"].get("backgrounds", dict(THREE_BACKGROUNDS))
+
+
+def rgba_color(value: str) -> tuple:
+    return (
+        (0, 0, 0, 0)
+        if value == "transparent"
+        else tuple(bytes.fromhex(value[1:])) + (255,)
+    )
+
+
 def validate_params(params: dict) -> None:
     expected = {"geometry", "day", "night", "sources"}
-    if not isinstance(params, dict) or set(params) != expected:
+    if not isinstance(params, dict) or set(params) - {"backgrounds"} != expected:
         raise ValueError("图标参数结构不完整或包含未知字段")
+    if "backgrounds" in params:
+        colors = params["backgrounds"]
+        if not isinstance(colors, dict) or set(colors) != {"day", "night"}:
+            raise ValueError("背景参数须分别包含亮色和暗色")
+        if any(
+            not isinstance(c, str)
+            or not re.fullmatch(r"transparent|#[0-9a-fA-F]{6}", c)
+            for c in colors.values()
+        ):
+            raise ValueError("背景须使用 #RRGGBB 或 transparent")
     geometry = params["geometry"]
     if (
         not isinstance(geometry, dict)
@@ -294,12 +327,10 @@ def render_images(recipe: dict, loader) -> dict[str, Image.Image]:
     raw_alpha = alpha.crop(bounds)
     normalized = geometry["mode"] == "normalized"
     ratio = (
-        0.52 * geometry["scale"] / visual_size(raw_alpha)
+        VISUAL_TARGET * geometry["scale"] / visual_size(raw_alpha)
         if normalized
         else geometry["scale"]
     )
-    if normalized and ratio * max(1, raw_alpha.height / raw_alpha.width) > 0.80:
-        raise ValueError("图案最长边超过画布的 80%，请减小尺寸")
     result = {}
     for mode in ("day", "night"):
         original = sources[mode]
@@ -323,7 +354,7 @@ def render_images(recipe: dict, loader) -> dict[str, Image.Image]:
             crop_alpha = original.getchannel("A")
         for surface, factor in (("ui", 1.0), ("adaptive", 72 / 108)):
             target_ratio = (
-                0.52 * geometry["scale"] / visual_size(crop_alpha)
+                VISUAL_TARGET * geometry["scale"] / visual_size(crop_alpha)
                 if normalized and recipe["profile"] != "neutral-v1"
                 else ratio
             ) * factor
@@ -348,21 +379,29 @@ def render_images(recipe: dict, loader) -> dict[str, Image.Image]:
                 toned.putalpha(placed)
             result[f"{surface}-{mode}"] = toned
     result["mono"] = glyph(result["adaptive-day"].getchannel("A"), (0, 0, 0))
-    result["legacy-day"] = legacy(result["ui-day"], (250, 250, 250))
-    result["legacy-night"] = legacy(result["ui-night"], (33, 33, 33))
+    for mode, color in backgrounds(recipe).items():
+        result[f"legacy-{mode}"] = (
+            result[f"ui-{mode}"].copy()
+            if color == "transparent"
+            else legacy(result[f"ui-{mode}"], rgba_color(color)[:3])
+        )
     return result
 
 
 def inspect_images(recipe: dict, images: dict) -> dict:
     errors, warnings = [], []
     metrics = {}
-    neutral = recipe["profile"] == "neutral-v1"
-    if neutral:
+    standard = recipe["profile"] == "neutral-v1"
+    neutral = is_three(recipe) or (standard and not recipe.get("repository"))
+    if (
+        is_three(recipe)
+        and recipe["params"].get("backgrounds", THREE_BACKGROUNDS) != THREE_BACKGROUNDS
+    ):
+        errors.append("Three 系列固定使用 #FAFAFA / #212121 背景")
+    if standard:
         geometry = recipe["params"]["geometry"]
         if geometry["mode"] != "normalized":
             errors.append("规范图标必须使用统一的视觉归一化方式")
-        if not 0.94 <= geometry["scale"] <= 1.06:
-            errors.append("规范图标的光学校正须在 94%–106% 之间")
     alphas = []
     for mode in ("day", "night"):
         image = images[f"ui-{mode}"]
@@ -395,11 +434,26 @@ def inspect_images(recipe: dict, images: dict) -> dict:
                 errors.append(
                     f"{'浅色' if mode == 'day' else '深色'}图稿包含彩色像素，请选择灰阶或单色填充"
                 )
+        if standard:
             if alpha.histogram()[0] <= SIZE * SIZE / 2:
                 errors.append("透明区域须超过画布的一半")
-            if not 0.48 < value < 0.54:
-                errors.append(
-                    f"视觉尺寸 {value:.3f} 超出现有工程验收范围 0.48–0.54，请微调大小"
+            # Optical size is an art-direction guide. Cropping and safe circles
+            # are independent constraints and remain blocking errors below.
+            low, high = RECOMMENDED_SCALE
+            if not (low <= geometry["scale"] <= high) or not (
+                VISUAL_TARGET * low - RASTER_TOLERANCE
+                <= value
+                <= VISUAL_TARGET * high + RASTER_TOLERANCE
+            ):
+                warnings.append(
+                    "尺寸偏离建议范围（缩放 80%–120%，视觉尺寸约 0.42–0.62）；可继续应用，请结合整组预览判断"
+                )
+            if (
+                bounds
+                and max(bounds[2] - bounds[0], bounds[3] - bounds[1]) > SIZE * 0.80
+            ):
+                warnings.append(
+                    "图案最长边超过画布的 80%；可继续应用，请留意圆形边缘的视觉留白"
                 )
             if radius > 216:
                 errors.append("图案超出列表圆形边界")
@@ -407,7 +461,7 @@ def inspect_images(recipe: dict, images: dict) -> dict:
                 errors.append("启动器前景超出 33 dp 安全圆")
         elif value > 0.8:
             warnings.append("当前图稿较满，可使用“按标准归一化”与其他插件比较")
-    if neutral and alphas[0] != alphas[1]:
+    if standard and alphas[0] != alphas[1]:
         errors.append("亮暗图稿的透明轮廓必须一致")
     return {
         "metrics": metrics,
@@ -422,13 +476,53 @@ def generated_files(recipe: dict, loader, *, strict=True) -> dict[str, bytes]:
     if strict and report["errors"]:
         raise ValueError("；".join(report["errors"]))
     baseline = recipe.get("baseline", {})
-    unchanged = canonical(recipe["params"]) == canonical(baseline.get("params"))
+    artwork = lambda params: {
+        k: v for k, v in (params or {}).items() if k != "backgrounds"
+    }
+    unchanged = canonical(artwork(recipe["params"])) == canonical(
+        artwork(baseline.get("params"))
+    )
+    background_changed = recipe["params"].get("backgrounds") != baseline.get(
+        "params", {}
+    ).get("backgrounds")
     result = {}
     for path, descriptor in recipe["outputs"].items():
         if not path.startswith("app/src/") or "/res/" not in path:
             raise ValueError("生成目标必须是项目资源文件")
         role = descriptor["role"]
-        if descriptor.get("original") and (role in {"keep", "keep-rule"} or unchanged):
+        if role == "background-keep":
+            result[path] = (
+                b'<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@color/ic_plugin_center_background" />\n'
+            )
+        elif role == "background-color":
+            color = backgrounds(recipe)[descriptor["theme"]]
+            value = "#00000000" if color == "transparent" else color.upper()
+            result[path] = (
+                '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_plugin_center_background">'
+                + value
+                + "</color>\n</resources>\n"
+            ).encode()
+        elif role == "adaptive-background":
+            original = loader(descriptor["original"])
+            if not background_changed:
+                result[path] = original
+            else:
+                theme = descriptor.get("theme")
+                value = backgrounds(recipe).get(theme) if theme else None
+                value = (
+                    "@android:color/transparent"
+                    if value == "transparent"
+                    else value or "@color/ic_plugin_center_background"
+                )
+                result[path] = re.sub(
+                    rb'(<background\b[^>]*android:drawable=")[^"]*(")',
+                    lambda m, value=value: m[1] + value.encode() + m[2],
+                    original,
+                )
+        elif descriptor.get("original") and (
+            role in {"keep", "keep-rule"}
+            or (unchanged and not (background_changed and role.startswith("legacy-")))
+        ):
             result[path] = loader(descriptor["original"])
         elif role == "keep":
             raise ValueError("缺少需要保留的原资源")
@@ -452,7 +546,10 @@ def main(root: Path | None = None) -> int:
     args = parser.parse_args()
     root = (args.root or root or Path(__file__).resolve().parents[1]).resolve()
     recipe = json.loads((root / ".icons/recipe.json").read_text(encoding="utf-8"))
-    if recipe.get("schemaVersion") != 1 or recipe.get("generatorVersion") != VERSION:
+    if (
+        recipe.get("schemaVersion") != 1
+        or recipe.get("generatorVersion") not in SUPPORTED_VERSIONS
+    ):
         raise ValueError("图标配方与生成内核版本不匹配")
 
     def loader(asset_id):
