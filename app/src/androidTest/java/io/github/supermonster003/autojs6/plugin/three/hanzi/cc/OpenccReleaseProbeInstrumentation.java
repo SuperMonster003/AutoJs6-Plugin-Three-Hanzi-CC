@@ -135,10 +135,12 @@ public final class OpenccReleaseProbeInstrumentation extends Instrumentation {
         require(launcher != null, "Release APK has no Launcher activity");
         List<ResolveInfo> launchers = packageManager.queryIntentActivities(launcher, 0);
         requireEquals(1, launchers.size(), "Release APK must expose exactly one Launcher");
-        require(
-            launchers.get(0).activityInfo.name.endsWith(".ThreeHanziCcActivity"),
-            "Unexpected Launcher class: " + launchers.get(0).activityInfo.name
-        );
+        android.content.pm.ActivityInfo entry = launchers.get(0).activityInfo;
+        String target = entry.targetActivity != null ? entry.targetActivity : entry.name;
+        requireEquals(context.getPackageName() + ".ThreeHanziCcActivity", target, "Unexpected Launcher target");
+        require(entry.name.startsWith(context.getPackageName() + ".launcher."), "Launcher must use a stable icon alias");
+        // Instrumentation tracks the actual Activity class, while PackageManager verifies the alias above.
+        launcher.setComponent(new ComponentName(context.getPackageName(), target));
         launcher.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         Activity activity = startActivitySync(launcher);
         require(activity != null, "Could not launch ThreeHanziCcActivity");
