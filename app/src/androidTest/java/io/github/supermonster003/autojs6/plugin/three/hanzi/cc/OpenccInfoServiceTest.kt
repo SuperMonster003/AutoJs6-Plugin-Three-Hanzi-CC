@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicReference
 class OpenccInfoServiceTest {
     @Test fun protectedCommonInfoEntryReturnsInstalledMetadata() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
-        val intent = Intent("org.autojs.plugin.INFO").addCategory("opencc").setPackage(context.packageName)
+        val intent = Intent("org.autojs.plugin.INFO").addCategory("three-hanzi-cc").setPackage(context.packageName)
         val matches = context.packageManager.queryIntentServices(intent, 0)
         assertEquals(1, matches.size)
         val entry = matches.single().serviceInfo
@@ -35,7 +35,7 @@ class OpenccInfoServiceTest {
             val binder = requireNotNull(service.get())
             assertEquals(IPluginInfoProvider::class.java.name, binder.interfaceDescriptor)
             val info = IPluginInfoProvider.Stub.asInterface(binder).info
-            assertEquals("opencc", info.id)
+            assertEquals("three-hanzi-cc", info.id)
             assertEquals("opencc", info.engine)
             assertEquals(context.packageManager.getPackageInfo(context.packageName, 0).versionName, info.versionName)
         } finally { context.unbindService(connection) }
