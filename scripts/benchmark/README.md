@@ -14,7 +14,7 @@ processes:
 The benchmark is informational. It records raw nanoseconds and memory snapshots but deliberately
 does not impose timing thresholds on CI, because Android emulator and shared-runner performance is
 not stable enough for a release gate. Correctness remains enforced by
-`OpenccPluginServiceTest`.
+`ThreeHanziCcServiceTest`.
 
 Build the required APKs first:
 

@@ -1,4 +1,6 @@
-OpenCC は 1 つのインストールで, [OpenCC](https://github.com/BYVoid/OpenCC) ベースの中国語テキスト変換を 2 つの入口から利用できます. 完全オフラインの Android アプリとして直接起動するか, 同じ APK を AutoJs6 プラグインとして認識させてスクリプトのグローバルオブジェクト `opencc` を使用します. どちらも簡体字, 繁体字, 香港/台湾の字形, 日本語新字体をカバーします.
+# AutoJs6 3-Hanzi CC
+
+3-Hanzi CC は 1 つのインストールで, [OpenCC](https://github.com/BYVoid/OpenCC) ベースの中国語テキスト変換を 2 つの入口から利用できます. 完全オフラインの Android アプリとして直接起動するか, 同じ APK を AutoJs6 プラグインとして認識させてスクリプトのグローバルオブジェクト `opencc` を使用します. どちらも簡体字, 繁体字, 香港/台湾の字形, 日本語新字体をカバーします.
 
 同じ APK は AutoJs6 なしでもオフライン変換アプリとして直接起動できます. 単独エディターと本プラグイン入口は公式 OpenCC 1.4.2 と同一リリースに固定した辞書を共有し, ネイティブパッケージは Android の 16 KB メモリページに対応します.
 
@@ -34,4 +36,7 @@ console.log(opencc.s2t("汉字转换"));
 
 `漢字轉換` が出力されればプラグインの連携は完全に機能しています. スクリプトがエラーになった場合はメッセージに従って対処してください: プラグインの欠落と表示されたら本プラグインをインストールし, 無効または未承認と表示されたらプラグインセンターで該当スイッチをオンにし, より新しいホストが必要と表示されたら AutoJs6 を更新します.
 
-メソッドの一覧と変換タイプの完全なリファレンスは [AutoJs6 OpenCC ドキュメント](https://docs.autojs6.com/#/opencc) と [プロジェクト README](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC) を参照してください.
+メソッドの一覧と変換タイプの完全なリファレンスは [AutoJs6 OpenCC ドキュメント](https://docs.autojs6.com/#/opencc) と [プロジェクト README](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC) を参照してください.
+
+
+アプリ ID を `io.github.supermonster003.autojs6.plugin.opencc` から `io.github.supermonster003.autojs6.plugin.three.hanzi.cc` に変更. Android では別のアプリとしてインストールされ, 以前のアプリとデータは保持でき, 設定は自動移行されません.

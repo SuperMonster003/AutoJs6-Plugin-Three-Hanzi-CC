@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "generatorVersion": "1.0.0",
+  "profile": "neutral-v1",
+  "repository": "AutoJs6-Plugin-Three-Hanzi-CC",
+  "packages": [
+    "io.github.supermonster003.autojs6.plugin.three.hanzi.cc"
+  ],
+  "launcher": true,
+  "params": {
+    "sources": {
+      "day": "504edb46c9346c99fa440237b7eefae51200dd8d535b9901b73a98d8973d537e",
+      "night": "3d9489aa4e758116ad034f7c7e1b83878323e1b901eab22c7d0572b33518a1b5",
+      "alphaMode": "alpha"
+    },
+    "geometry": {
+      "mode": "normalized",
+      "scale": 1,
+      "offsetX": 0,
+      "offsetY": 0
+    },
+    "day": {
+      "mode": "mask",
+      "foreground": "#272727",
+      "brightness": 1,
+      "contrast": 1,
+      "gamma": 1,
+      "threshold": 128,
+      "invert": false
+    },
+    "night": {
+      "mode": "mask",
+      "foreground": "#d8d8d8",
+      "brightness": 1,
+      "contrast": 1,
+      "gamma": 1,
+      "threshold": 128,
+      "invert": false
+    }
+  },
+  "baseline": {
+    "params": {
+      "sources": {
+        "day": "21afef56fc99a64969a88a951bef2e246395c14d081fcac633f4b246da2faecf",
+        "night": "21afef56fc99a64969a88a951bef2e246395c14d081fcac633f4b246da2faecf",
+        "alphaMode": "alpha"
+      },
+      "geometry": {
+        "mode": "normalized",
+        "scale": 1.0,
+        "offsetX": 0.0,
+        "offsetY": 0.0
+      },
+      "day": {
+        "mode": "mask",
+        "foreground": "#272727",
+        "brightness": 1.0,
+        "contrast": 1.0,
+        "gamma": 1.0,
+        "threshold": 128,
+        "invert": false
+      },
+      "night": {
+        "mode": "mask",
+        "foreground": "#d8d8d8",
+        "brightness": 1.0,
+        "contrast": 1.0,
+        "gamma": 1.0,
+        "threshold": 128,
+        "invert": false
+      }
+    },
+    "day": "997e7e90bf000ed55e1035ebca2f13dcaef07ca940291168dd395a9f6306b6c5",
+    "night": "c8fa20c72a8e29da62e93c5afd0edc522fe2a8943e85d33dc6e355943f27b46a"
+  },
+  "outputs": {
+    "app/src/main/res/mipmap/ic_plugin_center.png": {
+      "role": "ui-day",
+      "original": "997e7e90bf000ed55e1035ebca2f13dcaef07ca940291168dd395a9f6306b6c5"
+    },
+    "app/src/main/res/mipmap-night/ic_plugin_center.png": {
+      "role": "ui-night",
+      "original": "c8fa20c72a8e29da62e93c5afd0edc522fe2a8943e85d33dc6e355943f27b46a"
+    },
+    "app/src/main/res/raw/keep_plugin_center_icon.xml": {
+      "role": "keep-rule",
+      "original": "887b28427e8b83cdc88e98d7547ba6ce72dc663fd375a25694d3c609b866748f"
+    },
+    "app/src/main/res/mipmap/ic_launcher_system.png": {
+      "role": "legacy-night",
+      "original": "9151728d0ec6528daaf783378ed6d99e923ae6b811272b6cb4f75813316d54df"
+    },
+    "app/src/main/res/mipmap/ic_launcher_system_foreground.png": {
+      "role": "adaptive-night",
+      "original": "7067f18c67c3aef33ce41983947d0a0f6cfed1ea9196872d0da67263ba537ffc"
+    },
+    "app/src/main/res/mipmap/ic_launcher_system_light.png": {
+      "role": "legacy-day",
+      "original": "0a42944b4b2eec68c59844caffa55e90907be43e74e012185643427ee804959a"
+    },
+    "app/src/main/res/mipmap/ic_launcher_system_light_foreground.png": {
+      "role": "adaptive-day",
+      "original": "779643afc46a2bfef89e37633e64964332ba02239fc51153c597a16254294380"
+    },
+    "app/src/main/res/mipmap/ic_launcher_system_monochrome.png": {
+      "role": "mono",
+      "original": "1a55d6edfb49b6dc5c0e43e78a5b9c87cac7475cbd57684798cb579b4a89610f"
+    },
+    "app/src/main/res/mipmap/ic_launcher_transparent.png": {
+      "role": "ui-day",
+      "original": "997e7e90bf000ed55e1035ebca2f13dcaef07ca940291168dd395a9f6306b6c5"
+    },
+    "app/src/main/res/mipmap-night/ic_launcher_transparent.png": {
+      "role": "ui-night",
+      "original": "c8fa20c72a8e29da62e93c5afd0edc522fe2a8943e85d33dc6e355943f27b46a"
+    },
+    "app/src/main/res/mipmap/ic_launcher.png": {
+      "original": "f7649b293b6355e5fa8973324501825201b4b51e343f54140d957424f8d0e4be",
+      "role": "ui-day"
+    },
+    "app/src/main/res/mipmap-night/ic_launcher.png": {
+      "original": "5463d61ee416de464edbe358e6223be972eb45f5bb42c7f0a805352b5cff031f",
+      "role": "ui-night"
+    }
+  },
+  "assets": [
+    "0a42944b4b2eec68c59844caffa55e90907be43e74e012185643427ee804959a",
+    "1a55d6edfb49b6dc5c0e43e78a5b9c87cac7475cbd57684798cb579b4a89610f",
+    "21afef56fc99a64969a88a951bef2e246395c14d081fcac633f4b246da2faecf",
+    "3d9489aa4e758116ad034f7c7e1b83878323e1b901eab22c7d0572b33518a1b5",
+    "504edb46c9346c99fa440237b7eefae51200dd8d535b9901b73a98d8973d537e",
+    "5ae080c76eb219bdccbf504672a550176b4e2c689a322b12a32fc3202150b136",
+    "677101cfc35f21364ab286bafeaec6d16c032fa763671eca76495f12a08db5ec",
+    "7067f18c67c3aef33ce41983947d0a0f6cfed1ea9196872d0da67263ba537ffc",
+    "779643afc46a2bfef89e37633e64964332ba02239fc51153c597a16254294380",
+    "887b28427e8b83cdc88e98d7547ba6ce72dc663fd375a25694d3c609b866748f",
+    "9151728d0ec6528daaf783378ed6d99e923ae6b811272b6cb4f75813316d54df",
+    "997e7e90bf000ed55e1035ebca2f13dcaef07ca940291168dd395a9f6306b6c5",
+    "c8fa20c72a8e29da62e93c5afd0edc522fe2a8943e85d33dc6e355943f27b46a",
+    "f7649b293b6355e5fa8973324501825201b4b51e343f54140d957424f8d0e4be",
+    "5463d61ee416de464edbe358e6223be972eb45f5bb42c7f0a805352b5cff031f"
+  ],
+  "legacyGenerator": ".python/generate_launcher_icons.py",
+  "originalSources": {
+    "504edb46c9346c99fa440237b7eefae51200dd8d535b9901b73a98d8973d537e": {
+      "asset": "677101cfc35f21364ab286bafeaec6d16c032fa763671eca76495f12a08db5ec",
+      "filename": "three-hanzi-ic-launcher-light.png"
+    },
+    "3d9489aa4e758116ad034f7c7e1b83878323e1b901eab22c7d0572b33518a1b5": {
+      "asset": "5ae080c76eb219bdccbf504672a550176b4e2c689a322b12a32fc3202150b136",
+      "filename": "three-hanzi-ic-launcher-dark.png"
+    }
+  }
+}

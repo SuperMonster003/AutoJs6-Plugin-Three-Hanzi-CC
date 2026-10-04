@@ -4,6 +4,13 @@
 
 ******
 
+# v2.0.0
+
+###### 2026/10/04
+
+* `Hint` The application ID changes from io.github.supermonster003.autojs6.plugin.opencc to io.github.supermonster003.autojs6.plugin.three.hanzi.cc. Android installs this as a separate app; existing apps and data can remain, and settings are not migrated automatically
+* `Improvement` 3-Hanzi CC adopts the maintainer's Hanzi artwork across its home screen, launcher, documentation and Plugin Center
+
 # v1.5.0
 
 ###### 2026/09/30

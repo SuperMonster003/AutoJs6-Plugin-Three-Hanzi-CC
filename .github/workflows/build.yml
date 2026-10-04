@@ -59,15 +59,15 @@ jobs:
       - name: Run unit tests and assemble debug/release APKs
         run: |
           chmod +x gradlew
-          ./gradlew :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest :app:assembleRelease --stacktrace
+          ./gradlew -Pautojs.gradle.build.number.auto.increment.enabled=false -Pautojs.gradle.build.time.update.enabled=false :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest :app:assembleRelease --stacktrace
 
       - name: Assemble platform-only release probe APK
         run: |
-          ./gradlew :app:assembleDebugAndroidTest -PopenccReleaseProbe=true --stacktrace
+          ./gradlew -Pautojs.gradle.build.number.auto.increment.enabled=false -Pautojs.gradle.build.time.update.enabled=false :app:assembleDebugAndroidTest -PopenccReleaseProbe=true --stacktrace
           mkdir -p app/build/outputs/apk/releaseProbe
           cp app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
             app/build/outputs/apk/releaseProbe/app-release-probe-androidTest.apk
-          ./gradlew :app:assembleDebugAndroidTest -PopenccReleaseProbe=false --stacktrace
+          ./gradlew -Pautojs.gradle.build.number.auto.increment.enabled=false -Pautojs.gradle.build.time.update.enabled=false :app:assembleDebugAndroidTest -PopenccReleaseProbe=false --stacktrace
 
       - name: Verify all ABI variants
         run: |

@@ -5,6 +5,15 @@
   "changelog_label_improvement": "改善",
   "changelog_label_dependency": "依存関係",
   "$data": {
+    "v2.0.0": {
+      "released_date": "2026/10/04",
+      "hint": [
+        "アプリ ID を io.github.supermonster003.autojs6.plugin.opencc から io.github.supermonster003.autojs6.plugin.three.hanzi.cc に変更. Android では別のアプリとしてインストールされ, 以前のアプリとデータは保持でき, 設定は自動移行されません"
+      ],
+      "improvement": [
+        "3-Hanzi CC のホーム, ランチャー, ドキュメント, プラグインセンターに管理者提供の漢字アイコンを適用"
+      ]
+    },
     "v1.5.0": {
       "released_date": "2026/09/30",
       "feature": [

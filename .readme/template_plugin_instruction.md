@@ -1,3 +1,5 @@
+# AutoJs6 3-Hanzi CC
+
 {{ p_introduction_what }}
 
 {{ p_instruction_backend }}
@@ -35,3 +37,6 @@ console.log(opencc.s2t("汉字转换"));
 {{ p_self_check_result }}
 
 {{ p_instruction_more }}
+
+
+{{ p_migration }}

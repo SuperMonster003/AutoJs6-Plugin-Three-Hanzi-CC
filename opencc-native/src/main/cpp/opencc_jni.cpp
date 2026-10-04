@@ -209,7 +209,7 @@ opencc::SimpleConverter& GetConverterLocked(
 }  // namespace
 
 extern "C" JNIEXPORT jstring JNICALL
-Java_io_github_supermonster003_autojs6_plugin_opencc_nativebridge_OpenccNativeEngine_nativeConvert(
+Java_io_github_supermonster003_autojs6_plugin_three_hanzi_cc_nativebridge_OpenccNativeEngine_nativeConvert(
     JNIEnv* env,
     jclass,
     jstring text,
@@ -271,7 +271,7 @@ Java_io_github_supermonster003_autojs6_plugin_opencc_nativebridge_OpenccNativeEn
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_io_github_supermonster003_autojs6_plugin_opencc_nativebridge_OpenccNativeEngine_nativeClearCache(
+Java_io_github_supermonster003_autojs6_plugin_three_hanzi_cc_nativebridge_OpenccNativeEngine_nativeClearCache(
     JNIEnv*,
     jclass) {
   std::lock_guard<std::mutex> lock(gConverterMutex);

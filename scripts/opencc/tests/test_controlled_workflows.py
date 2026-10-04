@@ -18,15 +18,15 @@ class ControlledWorkflowContractTest(unittest.TestCase):
         cls.native_build = (ROOT / "opencc-native/build.gradle.kts").read_text(encoding="utf-8")
         cls.upstream_bridge = (
             ROOT
-            / "opencc-native/src/main/java/io/github/supermonster003/autojs6/plugin/opencc/nativebridge/OpenccUpstream.java"
+            / "opencc-native/src/main/java/io/github/supermonster003/autojs6/plugin/three/hanzi/cc/nativebridge/OpenccUpstream.java"
         ).read_text(encoding="utf-8")
         cls.runtime_test = (
             ROOT
-            / "app/src/test/java/io/github/supermonster003/autojs6/plugin/opencc/PluginRuntimeInfoTest.kt"
+            / "app/src/test/java/io/github/supermonster003/autojs6/plugin/three/hanzi/cc/PluginRuntimeInfoTest.kt"
         ).read_text(encoding="utf-8")
         cls.device_test = (
             ROOT
-            / "app/src/androidTest/java/io/github/supermonster003/autojs6/plugin/opencc/OpenccPluginServiceTest.kt"
+            / "app/src/androidTest/java/io/github/supermonster003/autojs6/plugin/three/hanzi/cc/ThreeHanziCcServiceTest.kt"
         ).read_text(encoding="utf-8")
 
     def test_build_fixture_is_explicit_manual_input(self) -> None:

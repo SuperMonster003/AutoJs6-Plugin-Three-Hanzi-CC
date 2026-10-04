@@ -4,6 +4,13 @@
 
 ******
 
+# v2.0.0
+
+###### 2026/10/04
+
+* `힌트` 앱 ID가 io.github.supermonster003.autojs6.plugin.opencc에서 io.github.supermonster003.autojs6.plugin.three.hanzi.cc(으)로 변경됩니다. Android는 별도 앱으로 설치하며 기존 앱과 데이터를 유지할 수 있고 설정은 자동으로 이전되지 않습니다
+* `개선` 3-Hanzi CC의 홈, 런처, 문서 및 플러그인 센터에 관리자가 제공한 한자 아이콘 적용
+
 # v1.5.0
 
 ###### 2026/09/30

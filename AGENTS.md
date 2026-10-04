@@ -1,4 +1,4 @@
-# AutoJs6-Plugin-OpenCC
+# AutoJs6-Plugin-Three-Hanzi-CC
 
 This repository owns its existing plugin implementation and contracts. Keep identity values in version.properties, Manifest and the current shared API aligned.
 
@@ -29,7 +29,16 @@ This repository owns its existing plugin implementation and contracts. Keep iden
 
 - Follow `../AUTOJS6_PLUGIN_BLACK_N_WHITE_ADAPTIVE_ICON_AGENTS.md` for every standalone plugin, including the Plugin Center. `.python/icon_geometry.py` v1 is a self-contained copy of the common geometry algorithm; keep its implementation identical across the standalone plugins. Never read sibling checkouts during a build.
 - Derive size from the equal-weight combination of visible bounding-box area (alpha >= 16) and alpha-weighted ink area. Target visible size is 0.52 of the canvas, with only documented optical corrections in 0.94-1.06. The adaptive ratio is always the UI ratio multiplied by 72/108. This supersedes older hardcoded UI/adaptive widths in historical notes. Preserve aspect ratio, optical placement and final nonzero-alpha safety checks.
-- Current derived widths: UI 0.6443, adaptive 0.4296 (rounded documentation values, not generation constants). Optical scale=1.00 and zero offsets.
+- Current geometry and tonal parameters are authoritative in `.icons/recipe.json`; do not restore pre-Hanzi hardcoded widths.
 - Generate `mipmap/ic_plugin_center.png` and its night counterpart from the same geometry as the transparent UI/launcher mode. They are transparent neutral artwork for installed and catalog entries, independent of the active launcher alias. Keep them through `raw/keep_plugin_center_icon.xml`. Existing separate brand assets retain their original purpose.
 - Black, white and neutral grayscale are allowed for every plugin without per-plugin approval. Pure silhouettes default to #272727 / #D8D8D8; shaded artwork may preserve meaningful tonal details with R=G=B and matching day/night alpha. Stamp Mail is one example, not an exception. Keep light-theme artwork dark enough and dark-theme artwork light enough to remain legible. Do not introduce a filled background into the Plugin Center assets.
 - Run the icon generator and its read-only `--check`, `.python/tests/test_icon_geometry.py`, existing icon regressions, and review the full set at 36/48/64 px in both themes and in launcher masks. `.github/workflows/icons.yml` verifies Windows/Linux reproducibility. Synthetic previews do not replace actual launcher verification.
+
+
+## Three-series identity and standalone app (2026-10-04)
+
+- Follow `../AUTOJS6_PLUGIN_THREE_SERIES_RENAME_AGENTS.md`, `../AUTOJS6_PLUGIN_STANDALONE_SETTINGS_AGENTS.md` and `../AUTOJS6_PLUGIN_BLACK_N_WHITE_ADAPTIVE_ICON_AGENTS.md`. The current user's rename/merge decisions override the earlier identity-preservation wording above.
+- Product: `3-Hanzi CC`; repository: `AutoJs6-Plugin-Three-Hanzi-CC`; applicationId/namespace: `io.github.supermonster003.autojs6.plugin.three.hanzi.cc`; plugin ID: `three-hanzi-cc`; version: `2.0.0`. New Android identity; old apps/data are not removed or migrated automatically.
+- Public capability actions, AIDL packages, transaction order and engine names describe behavior and remain compatible. Four stable launcher aliases default to Auto; settings expose language, night mode, theme color, launcher icon and bundled release history.
+- Preserve the maintainer's existing `.icons/recipe.json` geometry and color parameters. Update only identity/output mappings during the rename. The nativebridge Java package and exported JNI symbols move together; upstream OpenCC names, dictionaries and the `opencc` engine/category stay unchanged. The INFO category and product ID are `three-hanzi-cc`.
+- Commit `.icons/`, portable generators, icon CI, `.gitattributes` and generated resources together. Ignore only caches, local signing files and build outputs. Icon Studio drafts/backups remain outside this repository in its ignored `.studio/`.

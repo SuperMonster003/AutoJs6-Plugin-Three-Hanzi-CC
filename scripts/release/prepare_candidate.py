@@ -36,7 +36,7 @@ from scripts.release.prepare_release import (  # noqa: E402
 
 BASELINE_SCHEMA_VERSION = 1
 CANDIDATE_SCHEMA_VERSION = 1
-EXPECTED_REPOSITORY = "SuperMonster003/AutoJs6-Plugin-OpenCC"
+EXPECTED_REPOSITORY = "SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC"
 MAX_BASELINE_BYTES = 64 * 1024
 MAX_APK_GROWTH_BYTES = 512 * 1024
 MAX_APK_GROWTH_PERCENT = 25

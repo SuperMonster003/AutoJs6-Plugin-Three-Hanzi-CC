@@ -29,7 +29,7 @@ done
 expected_baseline_version="${EXPECTED_BASELINE_VERSION_NAME:-1.2.0}"
 expected_version_name="${EXPECTED_VERSION_NAME:?Set EXPECTED_VERSION_NAME}"
 expected_version_code="${EXPECTED_VERSION_CODE:?Set EXPECTED_VERSION_CODE}"
-target_package="io.github.supermonster003.autojs6.plugin.opencc"
+target_package="io.github.supermonster003.autojs6.plugin.three.hanzi.cc"
 test_package="${target_package}.test"
 probe_runner="${target_package}.OpenccReleaseProbeInstrumentation"
 
@@ -152,9 +152,9 @@ candidate_launcher="$(
   resolved_activity
 )"
 case "$candidate_launcher" in
-  "${target_package}/${target_package}.OpenccActivity"|"${target_package}/.OpenccActivity") ;;
+  "${target_package}/${target_package}.ThreeHanziCcActivity"|"${target_package}/.ThreeHanziCcActivity") ;;
   *)
-    printf 'Candidate Launcher did not resolve to OpenccActivity: %s\n' "$candidate_launcher" >&2
+    printf 'Candidate Launcher did not resolve to ThreeHanziCcActivity: %s\n' "$candidate_launcher" >&2
     exit 1
     ;;
 esac

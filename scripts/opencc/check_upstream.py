@@ -24,7 +24,7 @@ import verify_upstream
 
 DEFAULT_API_BASE = "https://api.github.com/repos/BYVoid/OpenCC"
 VERSION_PATTERN = re.compile(r"[0-9]+(?:\.[0-9]+){2}")
-USER_AGENT = "AutoJs6-Plugin-OpenCC-upstream-checker/1"
+USER_AGENT = "AutoJs6-Plugin-Three-Hanzi-CC-upstream-checker/1"
 
 
 class UpstreamCheckError(Exception):

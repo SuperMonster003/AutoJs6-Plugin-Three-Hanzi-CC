@@ -38,7 +38,7 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
-          EXPECTED_REPOSITORY: SuperMonster003/AutoJs6-Plugin-OpenCC
+          EXPECTED_REPOSITORY: SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC
           AUTOMATION_MODE: ${{ vars.OPENCC_AUTOMATION_MODE }}
           SOURCE_SHA: ${{ inputs.source_sha }}
         run: |
@@ -85,7 +85,7 @@ jobs:
     steps:
       - name: Require the trusted master deployment context
         env:
-          EXPECTED_REPOSITORY: SuperMonster003/AutoJs6-Plugin-OpenCC
+          EXPECTED_REPOSITORY: SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC
         run: |
           set -euo pipefail
           test "${GITHUB_REPOSITORY}" = "${EXPECTED_REPOSITORY}"
@@ -215,7 +215,7 @@ jobs:
       - name: Require the trusted candidate deployment context
         shell: bash
         env:
-          EXPECTED_REPOSITORY: SuperMonster003/AutoJs6-Plugin-OpenCC
+          EXPECTED_REPOSITORY: SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC
           AUTOMATION_MODE: ${{ vars.OPENCC_AUTOMATION_MODE }}
           OPERATION: ${{ inputs.operation }}
           SOURCE_SHA: ${{ inputs.source_sha }}
@@ -370,7 +370,7 @@ jobs:
           PY
 
           unset KEYSTORE_BASE64 STORE_PASSWORD KEY_ALIAS KEY_PASSWORD
-          bash ./gradlew :app:assembleRelease --no-daemon --stacktrace
+          bash ./gradlew :app:assembleRelease --no-daemon --stacktrace -Pautojs.gradle.build.number.auto.increment.enabled=false -Pautojs.gradle.build.time.update.enabled=false
 
           cleanup_signing_material
           trap - EXIT HUP INT TERM

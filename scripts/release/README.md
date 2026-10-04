@@ -50,7 +50,7 @@ EXPECTED_VERSION_CODE=20 \
 EXPECTED_PAGE_SIZE=4096 \
 sh scripts/release/verify_release_upgrade.sh \
   path/to/v1.2.0-abi.apk \
-  build/release/v1.3.0/autojs6-plugin-opencc-v1.3.0-abi-xxxxxxxx.apk \
+  build/release/v1.3.0/autojs6-plugin-three-hanzi-cc-v1.3.0-abi-xxxxxxxx.apk \
   app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
   abi
 ```
@@ -61,7 +61,7 @@ keeps `AndroidJUnitRunner` for the normal debug device suite; setting it to any 
 
 The script starts from an uninstalled state, installs v1.2.0, requires that it has no Launcher, and
 performs an actual `adb install -r` upgrade. It then requires the same package UID and
-`firstInstallTime`, the expected version name/code, and exactly one `OpenccActivity` Launcher. Finally,
+`firstInstallTime`, the expected version name/code, and exactly one `ThreeHanziCcActivity` Launcher. Finally,
 the platform-only Java probe converts Unicode text through both the visible editor and legacy raw
 Binder transaction 2 against the signed minified target. Its exit trap removes the target and
 instrumentation packages.
@@ -131,7 +131,7 @@ gh workflow run opencc-release.yml \
 
 ### Online candidate acceptance
 
-[Run 33722685481](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33722685481)
+[Run 33722685481](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/actions/runs/33722685481)
 completed the first production-Environment candidate exercise from source
 `42e6fde7fdae5fdd9dbb76e37c09488e0bacbb2a`. Every candidate step and cleanup/post-step succeeded,
 the mutually exclusive preflight/index-token job was skipped, and the run produced no annotation.
@@ -157,17 +157,17 @@ matched independent recalculation; a second local `apksigner` pass returned the 
 certificate. Before/after GitHub API snapshots also proved that the five existing tags, v1.3.0
 Release ID `381556777` and its seven assets, official index `main` commit and workflow history, and
 the `pr-only` policy did not change. The same source commit's
-[Build integrity run 33722663942](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33722663942)
+[Build integrity run 33722663942](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/actions/runs/33722663942)
 also passed all five jobs: build/APK inventory, API 24 minSdk, arm64 Binder, x86_64 4 KB Binder, and
 x86_64 16 KB Binder.
 
-After the draft controller landed, [run 33738494609](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33738494609)
+After the draft controller landed, [run 33738494609](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/actions/runs/33738494609)
 repeated the complete candidate path from exact source `b41d0286b071ba6160ea83c5dba5c2da11a5b474`.
 It uploaded exactly one `opencc-signed-candidate-v1.3.0-build20-b41d0286b071` artifact (ID
 `9886881929`, 9,749,717 bytes, server archive SHA-256
 `d54e4bef6d114ab30185dd9f33640c9b49cedd601d15f3f4b8048c16b96b5707`); every candidate,
 cleanup, and post-step succeeded and all five jobs had zero annotations. The same source's
-[Build integrity run 33737709352](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33737709352)
+[Build integrity run 33737709352](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/actions/runs/33737709352)
 passed the exact five-job inventory. Its Android 10+ clipboard test uses the observable Paste UI
 result and `ClipboardManager` readback as the gate after restoring the task to the foreground,
 because headless emulators can report `Activity.hasWindowFocus()` as false while the task itself is
@@ -179,12 +179,12 @@ pre-Android-10 path unchanged but performs Android 10+ Paste as a bounded sequen
 input taps, accepting only the final visible source/status result; Copy remains an explicit write and
 is followed by a foreground `ClipboardManager` readback. The exact UI test passed six consecutive
 API 35 device runs plus an API 28 run locally. Its
-[Build integrity run 33741159918](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33741159918)
+[Build integrity run 33741159918](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/actions/runs/33741159918)
 passed all five jobs on attempt 2 with zero annotations. Attempt 1's only failed job was the 16 KB
 emulator failing to connect through `adb` with exit code 20 before tests started; rerunning that job
 against the same SHA passed the complete 16 KB device script.
 
-[Candidate run 33742434419](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33742434419)
+[Candidate run 33742434419](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/actions/runs/33742434419)
 then revalidated that exact final code SHA. It produced exactly one
 `opencc-signed-candidate-v1.3.0-build20-315f4825277d` artifact (ID `9888406464`, 9,749,717 bytes,
 server archive SHA-256 `fdf19dc67c55d82156dc0bee0ae50e952495cf80088ad537768e7aa3e0a7bc93`),
@@ -224,7 +224,7 @@ updates an existing Release and never dispatches the plugin index.
 
 ### Online draft policy-lock acceptance
 
-[Run 33739003669](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33739003669)
+[Run 33739003669](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/actions/runs/33739003669)
 exercised `operation=draft` at the same exact source while the repository variable was still
 `OPENCC_AUTOMATION_MODE=pr-only`. Only `Report the draft policy lock without release writes` ran and
 succeeded; the credential, candidate, exact-SHA gate-dispatch, and draft-write jobs were all skipped.
@@ -236,7 +236,7 @@ and the repository policy remained `pr-only`. This accepts the online locked pat
 draft-write transaction still requires the D2/D3 online exercises, a genuinely newer version/build,
 and an explicit temporary transition to `release`.
 
-[Run 33742904676](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC/actions/runs/33742904676)
+[Run 33742904676](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC/actions/runs/33742904676)
 repeated the same lock acceptance at final controller/test source
 `315f4825277d5a7c50cad7ff9ead76972344dd85`: one read-only report succeeded, the other four jobs were
 skipped, and artifact/annotation counts remained zero. The only `opencc-release` deployment at that

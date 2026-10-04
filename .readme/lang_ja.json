@@ -5,7 +5,7 @@
   "h3_languages_with_ascii": "言語 (Languages)",
   "p_languages_all_supported_for_readme": "現在の README.md は次の言語に対応しています",
   "h3_introduction": "概要",
-  "p_introduction_what": "OpenCC は 1 つのインストールで, [OpenCC]({{ opencc_official_url }}) ベースの中国語テキスト変換を 2 つの入口から利用できます. 完全オフラインの Android アプリとして直接起動するか, 同じ APK を AutoJs6 プラグインとして認識させてスクリプトのグローバルオブジェクト `opencc` を使用します. どちらも簡体字, 繁体字, 香港/台湾の字形, 日本語新字体をカバーします.",
+  "p_introduction_what": "3-Hanzi CC は 1 つのインストールで, [OpenCC]({{ opencc_official_url }}) ベースの中国語テキスト変換を 2 つの入口から利用できます. 完全オフラインの Android アプリとして直接起動するか, 同じ APK を AutoJs6 プラグインとして認識させてスクリプトのグローバルオブジェクト `opencc` を使用します. どちらも簡体字, 繁体字, 香港/台湾の字形, 日本語新字体をカバーします.",
   "p_introduction_how": "単独エディターと権限で保護された AutoJs6 Binder サービスは, 1 つの公式 OpenCC エンジン, 同じ固定辞書, キャッシュ, 変換タイプ, エラーモデルを共有します. アプリ単独では AutoJs6 は不要で, プラグインモードでは既存のスクリプト API を維持したまま変換エンジンをホストと独立して更新できます.",
   "h3_features": "主な機能",
   "features": [
@@ -118,7 +118,7 @@
   "p_security_permission": "プラグインは公式の [Releases]({{ repo_url }}/releases) ページまたは AutoJs6 プラグインセンターからのみ入手してください. 出所不明のパッケージは, バージョン番号が同じに見えてもホストの検証を通過できなかったり, リスクを含んでいたりする可能性があります.",
   "h3_plugin_interface": "プラグインインターフェース",
   "p_plugin_interface": "以下の情報は AutoJs6 ホストとプラグインの開発者向けです. ホストはこれらの識別子でプラグインを発見し, 互換性ネゴシエーションを行います",
-  "p_contract_service": "`OpenccPluginService` は `{{ plugin_service_action }}` アクション (カテゴリ `{{ plugin_service_category }}`) に opencc-api の `{{ plugin_aidl_interface }}` で応答します. 契約バージョン 2 は既存の `getInfo()` と `convert(text, conversionType)` の後ろにタイプ検出, 一括変換, チェーン変換を追加し, `PluginInfo.capabilities` でバージョンと対応タイプを通知します; 古いホストは既存のメソッドとトランザクション番号をそのまま使用できます. ホストがプラグインプロセスを起動するための `WakeActivity` も提供します.",
+  "p_contract_service": "`ThreeHanziCcService` は `{{ plugin_service_action }}` アクション (カテゴリ `{{ plugin_service_category }}`) に opencc-api の `{{ plugin_aidl_interface }}` で応答します. 契約バージョン 2 は既存の `getInfo()` と `convert(text, conversionType)` の後ろにタイプ検出, 一括変換, チェーン変換を追加し, `PluginInfo.capabilities` でバージョンと対応タイプを通知します; 古いホストは既存のメソッドとトランザクション番号をそのまま使用できます. ホストがプラグインプロセスを起動するための `WakeActivity` も提供します.",
   "p_abi_reporting": "プラグインはコミット `{{ opencc_commit }}` に固定した公式 OpenCC `{{ opencc_tag }}` と同一リリースのリソースを直接ビルドします. 各 ABI には静的リンクされ 16 KB 境界に整列した `libopencc_jni.so` が 1 つだけ含まれ, 変換は常に完全オフラインです.",
   "h3_roadmap": "開発ロードマップ",
   "p_roadmap": "プラグインの機能計画と進捗はチェック可能なリストとして ROADMAP.md で管理されています. マイルストーンごとに整理され受け入れ条件が付記されており, ドキュメントとリリース体験, エンジニアリングと継続的インテグレーション, 変換機能の強化, ランタイムの進化などの方向をカバーします. 未チェックの項目は計画上の意向であり現行バージョンの機能ではありません. Issues でのディスカッションを歓迎します.",
@@ -144,5 +144,10 @@
   "text_link_opencc_official": "OpenCC 公式プロジェクト",
   "text_link_third_party_notices": "サードパーティー通知",
   "p_instruction_more": "メソッドの一覧と変換タイプの完全なリファレンスは [AutoJs6 OpenCC ドキュメント]({{ docs_opencc_url }}) と [プロジェクト README]({{ repo_url }}) を参照してください.",
-  "p_instruction_backend": "同じ APK は AutoJs6 なしでもオフライン変換アプリとして直接起動できます. 単独エディターと本プラグイン入口は公式 OpenCC {{ opencc_version }} と同一リリースに固定した辞書を共有し, ネイティブパッケージは Android の 16 KB メモリページに対応します."
+  "p_instruction_backend": "同じ APK は AutoJs6 なしでもオフライン変換アプリとして直接起動できます. 単独エディターと本プラグイン入口は公式 OpenCC {{ opencc_version }} と同一リリースに固定した辞書を共有し, ネイティブパッケージは Android の 16 KB メモリページに対応します.",
+  "h3_standalone": "使い始める",
+  "p_standalone": "3-Hanzi CC のホーム, ランチャー, ドキュメント, プラグインセンターに管理者提供の漢字アイコンを適用. 共通の設定画面で言語, 夜間モード, テーマ色, 4 種類のランチャーアイコンを選択可能.",
+  "p_migration": "アプリ ID を `io.github.supermonster003.autojs6.plugin.opencc` から `io.github.supermonster003.autojs6.plugin.three.hanzi.cc` に変更. Android では別のアプリとしてインストールされ, 以前のアプリとデータは保持でき, 設定は自動移行されません.",
+  "h3_sources": "出典と謝辞",
+  "p_sources": "[THIRD_PARTY_NOTICES.md]({{ repo_url }}/blob/master/THIRD_PARTY_NOTICES.md) · [RIGHTS_AND_TAKEDOWN.md]({{ repo_url }}/blob/master/RIGHTS_AND_TAKEDOWN.md)"
 }

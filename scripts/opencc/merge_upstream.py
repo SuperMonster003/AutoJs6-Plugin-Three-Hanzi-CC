@@ -140,7 +140,7 @@ class GitHubApi:
                 "Accept": accept,
                 "Authorization": f"Bearer {self.token}",
                 "Content-Type": "application/json",
-                "User-Agent": "AutoJs6-Plugin-OpenCC-merge-controller/1",
+                "User-Agent": "AutoJs6-Plugin-Three-Hanzi-CC-merge-controller/1",
                 "X-GitHub-Api-Version": API_VERSION,
             },
         )

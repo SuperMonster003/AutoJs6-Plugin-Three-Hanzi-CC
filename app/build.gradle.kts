@@ -9,7 +9,7 @@ plugins {
     id("com.android.application")
 }
 
-val globalApplicationId = "io.github.supermonster003.autojs6.plugin.opencc"
+val globalApplicationId = "io.github.supermonster003.autojs6.plugin.three.hanzi.cc"
 val releaseProbeProperty = providers.gradleProperty("openccReleaseProbe").orNull
 val useReleaseProbeInstrumentation = when (releaseProbeProperty) {
     null, "false" -> false
@@ -38,11 +38,12 @@ android {
         versionCode = versions.appVersionCode
         versionName = versions.appVersionName
 
-        resValue("string", "app_name", "OpenCC")
+        resValue("string", "app_name", "3-Hanzi CC")
         resValue("string", "plugin_author", "SuperMonster003")
-        resValue("string", "plugin_id", "opencc")
+        resValue("string", "plugin_id", "three-hanzi-cc")
         resValue("string", "plugin_engine", "opencc")
         resValue("string", "plugin_variant", "default")
+        resValue("string", "plugin_requires_host_version", "3923")
         resValue("string", "plugin_version_date", utils.getDateString("MMM d, yyyy", "GMT+08:00"))
     }
 

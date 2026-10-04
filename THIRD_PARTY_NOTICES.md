@@ -1,5 +1,7 @@
 # Third-party notices
 
+3-Hanzi CC is the renamed standalone plugin built on OpenCC. OpenCC remains the name of the upstream engine and its public conversion API. The maintainer supplied the new artwork; its original files and Icon Studio recipe, when present, are retained.
+
 This file records third-party code compiled into the official OpenCC native backend. The plugin
 itself remains licensed under the Mozilla Public License 2.0; the components below retain their
 own licenses.

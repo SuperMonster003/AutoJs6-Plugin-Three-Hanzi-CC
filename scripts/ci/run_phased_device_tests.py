@@ -10,7 +10,7 @@ import subprocess
 
 
 ROOT = Path(__file__).resolve().parents[2]
-PACKAGE = "io.github.supermonster003.autojs6.plugin.opencc"
+PACKAGE = "io.github.supermonster003.autojs6.plugin.three.hanzi.cc"
 PHASES = (
     ("entry-standalone", "OpenccEntryResourceTest", "opencc_entry_resource_phase", "standalone"),
     ("entry-binder", "OpenccEntryResourceTest", "opencc_entry_resource_phase", "binder"),

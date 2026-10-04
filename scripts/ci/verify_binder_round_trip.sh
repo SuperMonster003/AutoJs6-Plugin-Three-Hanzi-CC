@@ -16,7 +16,7 @@ case "$abi" in
     ;;
 esac
 
-target_package="io.github.supermonster003.autojs6.plugin.opencc"
+target_package="io.github.supermonster003.autojs6.plugin.three.hanzi.cc"
 test_package="${target_package}.test"
 target_apk="ci-apks/debug/app-${abi}-debug.apk"
 test_apk="ci-apks/androidTest/debug/app-debug-androidTest.apk"
@@ -118,13 +118,13 @@ run_instrumentation() {
 }
 
 run_instrumentation \
-  io.github.supermonster003.autojs6.plugin.opencc.OpenccEntryResourceTest \
+  io.github.supermonster003.autojs6.plugin.three.hanzi.cc.OpenccEntryResourceTest \
   -e opencc_entry_resource_phase standalone
 run_instrumentation \
-  io.github.supermonster003.autojs6.plugin.opencc.OpenccEntryResourceTest \
+  io.github.supermonster003.autojs6.plugin.three.hanzi.cc.OpenccEntryResourceTest \
   -e opencc_entry_resource_phase binder
 run_instrumentation \
-  io.github.supermonster003.autojs6.plugin.opencc.OpenccAccessibilityLayoutTest
+  io.github.supermonster003.autojs6.plugin.three.hanzi.cc.OpenccAccessibilityLayoutTest
 if [ "${sdk_level}" -ge 33 ]; then
   original_font_scale="$(adb shell settings get system font_scale | tr -d '\r')"
   original_night_mode="$(adb shell cmd uimode night | tr -d '\r' | sed -n 's/^Night mode: //p')"
@@ -135,23 +135,23 @@ if [ "${sdk_level}" -ge 33 ]; then
   adb shell am force-stop "${target_package}"
   sleep 1
   run_instrumentation \
-    io.github.supermonster003.autojs6.plugin.opencc.OpenccAccessibilityLayoutTest \
+    io.github.supermonster003.autojs6.plugin.three.hanzi.cc.OpenccAccessibilityLayoutTest \
     -e opencc_expect_rtl true \
     -e opencc_expect_large_font true \
     -e opencc_expect_night true
   restore_accessibility_environment
 fi
 run_instrumentation \
-  io.github.supermonster003.autojs6.plugin.opencc.OpenccPluginServiceTest
+  io.github.supermonster003.autojs6.plugin.three.hanzi.cc.ThreeHanziCcServiceTest
 run_instrumentation \
-  io.github.supermonster003.autojs6.plugin.opencc.OpenccDualEntryTest
+  io.github.supermonster003.autojs6.plugin.three.hanzi.cc.OpenccDualEntryTest
 run_instrumentation \
-  io.github.supermonster003.autojs6.plugin.opencc.OpenccDualEntryLifecycleTest
+  io.github.supermonster003.autojs6.plugin.three.hanzi.cc.OpenccDualEntryLifecycleTest
 run_instrumentation \
-  io.github.supermonster003.autojs6.plugin.opencc.OpenccStandaloneUiTest
+  io.github.supermonster003.autojs6.plugin.three.hanzi.cc.OpenccStandaloneUiTest
 run_instrumentation \
-  io.github.supermonster003.autojs6.plugin.opencc.OpenccResourceRestartTest \
+  io.github.supermonster003.autojs6.plugin.three.hanzi.cc.OpenccResourceRestartTest \
   -e opencc_resource_restart_phase prepare
 run_instrumentation \
-  io.github.supermonster003.autojs6.plugin.opencc.OpenccResourceRestartTest \
+  io.github.supermonster003.autojs6.plugin.three.hanzi.cc.OpenccResourceRestartTest \
   -e opencc_resource_restart_phase verify

@@ -4,6 +4,13 @@
 
 ******
 
+# v2.0.0
+
+###### 2026/10/04
+
+* `ヒント` アプリ ID を io.github.supermonster003.autojs6.plugin.opencc から io.github.supermonster003.autojs6.plugin.three.hanzi.cc に変更. Android では別のアプリとしてインストールされ, 以前のアプリとデータは保持でき, 設定は自動移行されません
+* `改善` 3-Hanzi CC のホーム, ランチャー, ドキュメント, プラグインセンターに管理者提供の漢字アイコンを適用
+
 # v1.5.0
 
 ###### 2026/09/30

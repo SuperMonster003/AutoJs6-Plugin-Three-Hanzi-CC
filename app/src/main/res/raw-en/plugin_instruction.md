@@ -1,4 +1,6 @@
-OpenCC is one install with two entry points for [OpenCC](https://github.com/BYVoid/OpenCC)-based Chinese text conversion. Launch it directly as a fully offline Android App, or let AutoJs6 discover the same APK as a plugin and use the global `opencc` script object. Both paths cover Simplified Chinese, Traditional Chinese, Hong Kong Traditional, Taiwan Traditional, and Japanese Shinjitai.
+# AutoJs6 3-Hanzi CC
+
+3-Hanzi CC is one install with two entry points for [OpenCC](https://github.com/BYVoid/OpenCC)-based Chinese text conversion. Launch it directly as a fully offline Android App, or let AutoJs6 discover the same APK as a plugin and use the global `opencc` script object. Both paths cover Simplified Chinese, Traditional Chinese, Hong Kong Traditional, Taiwan Traditional, and Japanese Shinjitai.
 
 The same APK can also be launched directly as an offline text-conversion App without AutoJs6. Both the standalone editor and this plugin entry use official OpenCC 1.4.2 with pinned same-release dictionaries, and the native packages support Android devices with 16 KB memory pages.
 
@@ -34,4 +36,7 @@ console.log(opencc.s2t("汉字转换"));
 
 An output of `漢字轉換` means the whole plugin chain works. If the script fails, follow the error message: install this plugin when it reports a missing plugin, toggle the corresponding switch in the plugin center when it reports the plugin is disabled or unauthorized, and update AutoJs6 when it requires a newer host.
 
-See the [AutoJs6 OpenCC documentation](https://docs.autojs6.com/#/opencc) and the [project README](https://github.com/SuperMonster003/AutoJs6-Plugin-OpenCC) for the full method list and conversion type reference.
+See the [AutoJs6 OpenCC documentation](https://docs.autojs6.com/#/opencc) and the [project README](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC) for the full method list and conversion type reference.
+
+
+The application ID changes from `io.github.supermonster003.autojs6.plugin.opencc` to `io.github.supermonster003.autojs6.plugin.three.hanzi.cc`. Android installs this as a separate app; existing apps and data can remain, and settings are not migrated automatically.

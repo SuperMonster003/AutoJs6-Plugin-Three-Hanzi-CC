@@ -18,7 +18,7 @@ esac
 
 expected_version_name="${EXPECTED_VERSION_NAME:?Set EXPECTED_VERSION_NAME}"
 expected_version_code="${EXPECTED_VERSION_CODE:?Set EXPECTED_VERSION_CODE}"
-target_package="io.github.supermonster003.autojs6.plugin.opencc"
+target_package="io.github.supermonster003.autojs6.plugin.three.hanzi.cc"
 test_package="${target_package}.test"
 probe_runner="${target_package}.OpenccReleaseProbeInstrumentation"
 unsigned_target_apk="ci-apks/release/app-${abi}-release-unsigned.apk"
