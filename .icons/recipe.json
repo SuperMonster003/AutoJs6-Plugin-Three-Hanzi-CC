@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatorVersion": "1.0.0",
+  "generatorVersion": "1.2.0",
   "profile": "neutral-v1",
   "repository": "AutoJs6-Plugin-Three-Hanzi-CC",
   "packages": [
@@ -15,7 +15,7 @@
     },
     "geometry": {
       "mode": "normalized",
-      "scale": 1,
+      "scale": 1.08,
       "offsetX": 0,
       "offsetY": 0
     },
@@ -36,6 +36,10 @@
       "gamma": 1,
       "threshold": 128,
       "invert": false
+    },
+    "backgrounds": {
+      "day": "#fafafa",
+      "night": "#212121"
     }
   },
   "baseline": {
@@ -68,6 +72,10 @@
         "gamma": 1.0,
         "threshold": 128,
         "invert": false
+      },
+      "backgrounds": {
+        "day": "#fafafa",
+        "night": "#212121"
       }
     },
     "day": "997e7e90bf000ed55e1035ebca2f13dcaef07ca940291168dd395a9f6306b6c5",
@@ -121,6 +129,17 @@
     "app/src/main/res/mipmap-night/ic_launcher.png": {
       "original": "5463d61ee416de464edbe358e6223be972eb45f5bb42c7f0a805352b5cff031f",
       "role": "ui-night"
+    },
+    "app/src/main/res/values/icon_studio_backgrounds.xml": {
+      "role": "background-color",
+      "theme": "day"
+    },
+    "app/src/main/res/values-night/icon_studio_backgrounds.xml": {
+      "role": "background-color",
+      "theme": "night"
+    },
+    "app/src/main/res/raw/keep_icon_studio_background.xml": {
+      "role": "background-keep"
     }
   },
   "assets": [
@@ -129,6 +148,7 @@
     "21afef56fc99a64969a88a951bef2e246395c14d081fcac633f4b246da2faecf",
     "3d9489aa4e758116ad034f7c7e1b83878323e1b901eab22c7d0572b33518a1b5",
     "504edb46c9346c99fa440237b7eefae51200dd8d535b9901b73a98d8973d537e",
+    "5463d61ee416de464edbe358e6223be972eb45f5bb42c7f0a805352b5cff031f",
     "5ae080c76eb219bdccbf504672a550176b4e2c689a322b12a32fc3202150b136",
     "677101cfc35f21364ab286bafeaec6d16c032fa763671eca76495f12a08db5ec",
     "7067f18c67c3aef33ce41983947d0a0f6cfed1ea9196872d0da67263ba537ffc",
@@ -137,8 +157,7 @@
     "9151728d0ec6528daaf783378ed6d99e923ae6b811272b6cb4f75813316d54df",
     "997e7e90bf000ed55e1035ebca2f13dcaef07ca940291168dd395a9f6306b6c5",
     "c8fa20c72a8e29da62e93c5afd0edc522fe2a8943e85d33dc6e355943f27b46a",
-    "f7649b293b6355e5fa8973324501825201b4b51e343f54140d957424f8d0e4be",
-    "5463d61ee416de464edbe358e6223be972eb45f5bb42c7f0a805352b5cff031f"
+    "f7649b293b6355e5fa8973324501825201b4b51e343f54140d957424f8d0e4be"
   ],
   "legacyGenerator": ".python/generate_launcher_icons.py",
   "originalSources": {
@@ -150,5 +169,9 @@
       "asset": "5ae080c76eb219bdccbf504672a550176b4e2c689a322b12a32fc3202150b136",
       "filename": "three-hanzi-ic-launcher-dark.png"
     }
+  },
+  "backgroundDefaults": {
+    "day": "#fafafa",
+    "night": "#212121"
   }
 }
