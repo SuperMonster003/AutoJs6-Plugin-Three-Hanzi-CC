@@ -17,7 +17,7 @@ The command performs these steps:
 3. Verifies that each APK contains exactly the native ABI set advertised by its variant.
 4. Verifies every APK signature and requires one signer certificate across all variants.
 5. Adds the version, ABI, and computed CRC32 to each output filename.
-6. Copies the packages atomically to `build/release/v<version>`.
+6. Copies the packages atomically to `build/release/v<version>`. On Windows the staging directory first gets the access rights of its parent, because `tempfile.mkdtemp()` limits them to SYSTEM, Administrators and the owner since Python 3.12.4 and 3.13.
 7. Generates `SHA256SUMS.txt` and an English `RELEASE_NOTES.md` from `.changelog/lang_en.json`.
 
 The command refuses missing variants, duplicate current-version variants, malformed current-version names, filename/content CRC mismatches, native ABI mismatches, unsigned APKs, and signer mismatches.
@@ -30,7 +30,7 @@ To validate an existing directory without rebuilding, use `--skip-build --input 
 py -m unittest discover -s scripts/release/tests -p "test_*.py"
 ```
 
-The fixture suite covers the complete five-package path, missing-package rejection, duplicate/mixed-package rejection, native ABI mismatch rejection, CRC mismatch rejection, version isolation, checksums, and release-note generation.
+The fixture suite covers the complete five-package path, missing-package rejection, duplicate/mixed-package rejection, native ABI mismatch rejection, CRC mismatch rejection, version isolation, Windows access rights of the bundle, checksums, and release-note generation.
 
 ## Signed in-place upgrade and minified runtime probe
 

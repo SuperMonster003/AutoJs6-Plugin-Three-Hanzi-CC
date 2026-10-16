@@ -350,6 +350,37 @@ def output_is_safe_to_replace(output_dir: Path, context: ReleaseContext) -> bool
     return output_dir.resolve() != release_root
 
 
+def inherit_parent_acl(path: Path) -> None:
+    """Give a staging directory the Windows access rights of a plain mkdir in its parent.
+
+    Since the CVE-2024-4030 fix (Python 3.12.4 and 3.13), tempfile.mkdtemp() on Windows sets a
+    protected DACL that allows only SYSTEM, Administrators and OWNER RIGHTS. Files created inside
+    inherit it and a rename keeps it, so the bundle would stay unreadable for other accounts. An
+    empty, unprotected DACL keeps only the entries inherited from the parent (what icacls /reset
+    does). Other platforms are left untouched.
+    """
+    if os.name != "nt":
+        return
+    import ctypes
+    from ctypes import wintypes
+
+    advapi32 = ctypes.WinDLL("advapi32", use_last_error=True)
+    initialize = advapi32.InitializeAcl
+    initialize.argtypes = (ctypes.c_void_p, wintypes.DWORD, wintypes.DWORD)
+    initialize.restype = wintypes.BOOL
+    apply = advapi32.SetNamedSecurityInfoW
+    apply.argtypes = (wintypes.LPCWSTR, ctypes.c_int, wintypes.DWORD) + (ctypes.c_void_p,) * 4
+    apply.restype = wintypes.DWORD
+    # An empty ACL, never a NULL one: a NULL DACL would grant everyone full access.
+    acl = ctypes.create_string_buffer(8)  # sizeof(ACL)
+    if not initialize(acl, len(acl), 2):  # ACL_REVISION
+        raise ctypes.WinError(ctypes.get_last_error())
+    # SE_FILE_OBJECT, DACL_SECURITY_INFORMATION | UNPROTECTED_DACL_SECURITY_INFORMATION
+    error = apply(str(path), 1, 0x20000004, None, None, acl, None)
+    if error:
+        raise OSError(None, ctypes.FormatError(error), str(path), error)
+
+
 def create_bundle(
     context: ReleaseContext,
     records: list[PackageRecord],
@@ -368,6 +399,8 @@ def create_bundle(
     output_dir.parent.mkdir(parents=True, exist_ok=True)
     stage = Path(tempfile.mkdtemp(prefix=f".{output_dir.name}-", dir=output_dir.parent))
     try:
+        # Before anything is written, so the bundle gets the access rights of its parent directory.
+        inherit_parent_acl(stage)
         for record in records:
             destination = stage / record.filename
             shutil.copy2(record.source, destination)
