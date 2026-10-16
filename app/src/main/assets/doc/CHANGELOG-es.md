@@ -6,9 +6,10 @@
 
 # v2.1.0
 
-###### 2026/10/16
+###### 2026/10/17
 
 * `Función` Con AutoJs6 6.8.0 o posterior, la conversión china de este plugin se ofrece como la herramienta opencc_convert a MCP Server (para asistentes de IA) y a plugins.tools en los scripts; los nombres de conversión son los mismos 32 que los del objeto opencc, hasta 16384 caracteres por llamada
+* `Corrección` En la interfaz en árabe, 3-Hanzi CC ya no aparece invertido como Hanzi CC-3
 
 # v2.0.1
 

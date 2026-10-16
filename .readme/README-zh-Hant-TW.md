@@ -329,9 +329,10 @@ OpenCC resources SHA-256: 9ea0d303219b34d014d5c116677b5d325043beafb2c8a62ee889ca
 
 #### v2.1.0
 
-_2026/10/16_
+_2026/10/17_
 
 - `新增` AutoJs6 6.8.0 及以上可把本外掛的中文轉換作為工具 opencc_convert 提供給 MCP Server (供 AI 助理呼叫) 與腳本中的 plugins.tools, 轉換類型的寫法與 opencc 物件相同 (32 種), 單次最多 16384 個字
+- `修復` 阿拉伯語介面中, 3-Hanzi CC 不再被倒序顯示成 Hanzi CC-3
 
 #### v2.0.1
 

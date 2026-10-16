@@ -329,9 +329,10 @@ OpenCC resources SHA-256: 9ea0d303219b34d014d5c116677b5d325043beafb2c8a62ee889ca
 
 #### v2.1.0
 
-_2026/10/16_
+_2026/10/17_
 
 - `機能` AutoJs6 6.8.0 以降では, このプラグインの中国語変換を opencc_convert ツールとして MCP Server (AI アシスタント向け) とスクリプトの plugins.tools に提供します. 変換名は opencc オブジェクトと同じ 32 種類で, 1 回あたり最大 16384 文字
+- `修正` アラビア語の画面で 3-Hanzi CC が Hanzi CC-3 と逆順に表示されなくなりました
 
 #### v2.0.1
 
