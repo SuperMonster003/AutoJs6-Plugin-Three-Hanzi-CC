@@ -5,6 +5,12 @@
   "changelog_label_improvement": "Улучшение",
   "changelog_label_dependency": "Зависимость",
   "$data": {
+    "v2.1.0": {
+      "released_date": "2026/10/16",
+      "feature": [
+        "В AutoJs6 6.8.0 и новее китайское преобразование этого плагина доступно как инструмент opencc_convert для MCP Server (для ИИ-ассистентов) и для plugins.tools в скриптах; названия преобразований те же 32, что и у объекта opencc, до 16384 символов за вызов"
+      ]
+    },
     "v2.0.1": {
       "released_date": "2026/10/05",
       "improvement": [

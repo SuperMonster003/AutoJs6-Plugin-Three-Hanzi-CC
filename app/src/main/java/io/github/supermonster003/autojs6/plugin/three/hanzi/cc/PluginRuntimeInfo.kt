@@ -9,6 +9,8 @@ import org.autojs.plugin.opencc.api.OpenccConversionTypes
 import org.autojs.plugin.opencc.api.OpenccPluginCapabilityKeys
 import org.autojs.plugin.opencc.api.OpenccPluginContract
 import org.autojs.plugin.opencc.api.OpenccPluginIds
+import org.autojs.plugin.tool.api.PluginToolCapabilityKeys
+import org.autojs.plugin.tool.api.PluginToolContract
 
 internal const val REQUIRED_HOST_VERSION = 3923
 internal const val PLUGIN_INSTRUCTION_REFERENCE = "@raw/plugin_instruction"
@@ -40,6 +42,7 @@ internal data class PluginRuntimeFields(
     val supportedAbis: List<String>,
     val requiredHostVersion: Int,
     val contractVersion: Int,
+    val toolContractVersion: Int,
     val supportedConversionTypes: List<String>,
     val openccVersion: String,
     val openccCommit: String,
@@ -71,6 +74,7 @@ internal fun pluginRuntimeFields(
     supportedAbis = supportedAbis,
     requiredHostVersion = REQUIRED_HOST_VERSION,
     contractVersion = OpenccPluginContract.VERSION_CURRENT,
+    toolContractVersion = PluginToolContract.CONTRACT_VERSION,
     supportedConversionTypes = OpenccConversionTypes.ALL,
     openccVersion = OpenccUpstream.version(),
     openccCommit = OpenccUpstream.commit(),
@@ -109,6 +113,7 @@ internal fun Context.pluginInfo(name: String, description: String): PluginInfo {
         capabilities = android.os.Bundle().apply {
             putInt(PluginCapabilityKeys.REQUIRES_HOST_VERSION, fields.requiredHostVersion)
             putInt(OpenccPluginCapabilityKeys.CONTRACT_VERSION, fields.contractVersion)
+            putInt(PluginToolCapabilityKeys.CONTRACT_VERSION, fields.toolContractVersion)
             putStringArrayList(
                 OpenccPluginCapabilityKeys.SUPPORTED_CONVERSION_TYPES,
                 ArrayList(fields.supportedConversionTypes),

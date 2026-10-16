@@ -67,9 +67,12 @@ internal class OpenccConversionCoordinator private constructor(context: Context)
         require(typeNames.size <= OpenccPluginContract.MAX_CHAIN_LENGTH) {
             "Conversion chain exceeds ${OpenccPluginContract.MAX_CHAIN_LENGTH} stages"
         }
-        val types = typeNames.map(::requireConversionType)
+        return convertSteps(text.orEmpty(), typeNames.map(::requireConversionType))
+    }
+
+    fun convertSteps(text: String, types: List<OpenccConversionType>): String {
         return synchronized(conversionLock) {
-            types.fold(text.orEmpty()) { converted, type ->
+            types.fold(text) { converted, type ->
                 engine.convert(converted, type)
             }
         }

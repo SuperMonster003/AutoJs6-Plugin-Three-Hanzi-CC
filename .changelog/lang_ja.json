@@ -5,6 +5,12 @@
   "changelog_label_improvement": "改善",
   "changelog_label_dependency": "依存関係",
   "$data": {
+    "v2.1.0": {
+      "released_date": "2026/10/16",
+      "feature": [
+        "AutoJs6 6.8.0 以降では, このプラグインの中国語変換を opencc_convert ツールとして MCP Server (AI アシスタント向け) とスクリプトの plugins.tools に提供します. 変換名は opencc オブジェクトと同じ 32 種類で, 1 回あたり最大 16384 文字"
+      ]
+    },
     "v2.0.1": {
       "released_date": "2026/10/05",
       "improvement": [

@@ -63,6 +63,7 @@ The standalone editor and the permission-protected AutoJs6 Binder service share 
 - One APK, two uses: open the launcher icon for visual text conversion without AutoJs6, or use the same installation through the AutoJs6 `opencc` script API.
 - 14 standard conversions: covers OpenCC Simplified-Traditional conversion, Hong Kong and Taiwan variants, and Japanese Shinjitai, including Taiwan idiom conversion (such as swapping `软件` and `軟體`).
 - 33 script methods: besides the general `opencc.convert(text, type)`, every conversion type has a shortcut method of the same name, plus 18 alias and composed methods such as `s2jp` and `tw2hk`.
+- Plugin tool: on AutoJs6 6.8.0 and later, the same installation also offers the `opencc_convert` tool to plugins such as MCP Server (for AI assistants) and to `plugins.tools` in scripts; `config` takes the same 32 names as `opencc`.
 - Text conversion uses local dictionaries and never uploads the text. The app has Internet permission for GitHub update checks. Automatic checks are enabled by default, at most once every 12 hours, including metered connections; disable them in Settings when needed.
 - Right-sized packages: 4 single-ABI packages and a `universal` package containing all ABIs, so each device installs only what it needs.
 - Multilingual: the standalone UI, plugin metadata, usage instructions, README, and changelog cover 10 languages.
@@ -326,6 +327,12 @@ The plugin's plans and progress are maintained as a checkable list in ROADMAP.md
 
 ******
 
+#### v2.1.0
+
+_2026/10/16_
+
+- `Feature` On AutoJs6 6.8.0 and later, the Chinese conversion of this plugin is offered as the tool opencc_convert to MCP Server (for AI assistants) and to plugins.tools in scripts; the conversion names are the same 32 as for the opencc object, up to 16384 characters per call
+
 #### v2.0.1
 
 _2026/10/05_
@@ -339,15 +346,6 @@ _2026/10/04_
 
 - `Hint` The application ID changes from io.github.supermonster003.autojs6.plugin.opencc to io.github.supermonster003.autojs6.plugin.three.hanzi.cc. Android installs this as a separate app; existing apps and data can remain, and settings are not migrated automatically
 - `Improvement` 3-Hanzi CC adopts the maintainer's Hanzi artwork across its home screen, launcher, documentation and Plugin Center
-
-#### v1.5.0
-
-_2026/09/30_
-
-- `Feature` Choose adaptive light, adaptive dark, automatic (default) or transparent launcher icons in Settings. Automatic colors and transparency depend on launcher support.
-- `Fix` App updates keep one launcher entry and preserve an explicitly chosen earlier icon. Host appearance is read in the background without replacing an active settings draft.
-- `Improvement` Consistent language, dark mode, theme color and launcher settings with neutral surfaces, themed controls and confirmation dialogs. Preview preset or HEX/RGB colors before applying; Cancel leaves the saved settings unchanged.
-- `Improvement` Consistent visual sizing for launcher and Plugin Center icons, with transparent backgrounds and neutral black, white or grayscale artwork
 
 ##### For more release history
 

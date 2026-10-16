@@ -63,6 +63,7 @@ L'éditeur autonome et le service Binder AutoJs6 protégé par autorisation part
 - Un APK, deux usages: ouvrez l'icône de lancement pour convertir visuellement du texte sans AutoJs6, ou utilisez la même installation via l'API de script `opencc` d'AutoJs6.
 - 14 conversions standard: couvre la conversion simplifié-traditionnel d'OpenCC, les variantes de Hong Kong et de Taïwan ainsi que le shinjitai japonais, y compris la conversion du vocabulaire courant de Taïwan (comme l'échange entre `软件` et `軟體`).
 - 33 méthodes de script: outre la méthode générale `opencc.convert(text, type)`, chaque type de conversion dispose d'une méthode raccourcie du même nom, plus 18 méthodes d'alias et méthodes composées telles que `s2jp` et `tw2hk`.
+- Outil de plugin: avec AutoJs6 6.8.0 et versions ultérieures, la même installation fournit aussi l'outil `opencc_convert` aux plugins comme MCP Server (pour les assistants IA) et à `plugins.tools` dans les scripts; `config` accepte les mêmes 32 noms que `opencc`.
 - La conversion utilise des dictionnaires locaux sans envoyer le texte. L'application accède à Internet pour vérifier les mises à jour GitHub. Les vérifications automatiques sont activées par défaut, au plus toutes les 12 heures, y compris sur les connexions limitées; elles peuvent être désactivées dans les paramètres.
 - Paquets au plus juste: 4 paquets à ABI unique et un paquet `universal` regroupant toutes les ABI, afin que chaque appareil n'installe que le nécessaire.
 - Multilingue: l'interface autonome, les métadonnées du plugin, les instructions, le README et le changelog couvrent 10 langues.
@@ -326,6 +327,12 @@ Les plans du plugin et leur avancement sont tenus à jour sous forme de liste co
 
 ******
 
+#### v2.1.0
+
+_2026/10/16_
+
+- `Fonctionnalité` Avec AutoJs6 6.8.0 et versions ultérieures, la conversion chinoise de ce plugin est proposée comme outil opencc_convert à MCP Server (pour les assistants IA) et à plugins.tools dans les scripts; les noms de conversion sont les mêmes 32 que pour l'objet opencc, jusqu'à 16384 caractères par appel
+
 #### v2.0.1
 
 _2026/10/05_
@@ -339,15 +346,6 @@ _2026/10/04_
 
 - `Note` L'identifiant passe de io.github.supermonster003.autojs6.plugin.opencc à io.github.supermonster003.autojs6.plugin.three.hanzi.cc. Android installe une application distincte; les anciennes applications et leurs données peuvent être conservées, sans migration automatique des paramètres
 - `Amélioration` 3-Hanzi CC utilise le dessin Hanzi fourni par le mainteneur dans son accueil, son lanceur, sa documentation et le centre de plugins
-
-#### v1.5.0
-
-_2026/09/30_
-
-- `Fonctionnalité` Choisissez une icône de lanceur adaptative claire, sombre, automatique (par défaut) ou transparente dans les paramètres. Les couleurs automatiques et la transparence dépendent du lanceur.
-- `Correctif` Les mises à jour conservent une seule entrée de lanceur et un choix d'icône antérieur explicite. L'apparence de l'hôte est lue en arrière-plan sans interrompre une sélection en cours.
-- `Amélioration` Paramètres de langue, de mode sombre, de couleur et d'icône harmonisés, avec surfaces neutres, contrôles thématiques et dialogues de confirmation. Prévisualisez les couleurs prédéfinies ou HEX/RGB avant de valider. Annuler conserve les paramètres enregistrés.
-- `Amélioration` Taille visuelle harmonisée des icônes du lanceur et du Centre de plugins, avec des fonds transparents et des motifs noirs, blancs ou gris neutres
 
 ##### Pour plus d'historique des versions
 

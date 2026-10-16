@@ -4,6 +4,12 @@
 
 ******
 
+# v2.1.0
+
+###### 2026/10/16
+
+* `Fonctionnalité` Avec AutoJs6 6.8.0 et versions ultérieures, la conversion chinoise de ce plugin est proposée comme outil opencc_convert à MCP Server (pour les assistants IA) et à plugins.tools dans les scripts; les noms de conversion sont les mêmes 32 que pour l'objet opencc, jusqu'à 16384 caractères par appel
+
 # v2.0.1
 
 ###### 2026/10/05

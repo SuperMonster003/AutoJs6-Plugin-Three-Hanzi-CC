@@ -1,10 +1,10 @@
 # AutoJs6 OpenCC 插件 Roadmap
 
-更新日期: 2026-09-10
+更新日期: 2026-10-16
 
 本文档是 OpenCC 插件从"单一转换服务"逐步演进为"文档完善, 工程可靠, 能力可扩展"的中文转换方案的执行清单. 每个条目只有在代码/文档与可验证的验收条件同时满足后才可勾选.
 
-关联记录 (2026-10-15): MCP Server 插件路线图 (`D:/idea-projects/AutoJs6-Plugin-MCP-Server/ROADMAP.md`) 的 P12 选定本插件为插件自描述工具契约的首批试点: 新增实现宿主 `plugin-api/plugin-tool-api` 的服务, 声明短名为 `opencc` 的工具 (如转换, 列出可用配置), 供 MCP, Agent 与脚本 API `plugins.tools` 调用, 并先用它走通目录, 调用, 校验与脚本 API 的主链路 (决策 D29 - D36). 契约尚在设计, 届时在本路线图另立条目.
+关联记录 (2026-10-15): MCP Server 插件路线图 (`D:/idea-projects/AutoJs6-Plugin-MCP-Server/ROADMAP.md`) 的 P12 选定本插件为插件自描述工具契约的首批试点: 新增实现宿主 `plugin-api/plugin-tool-api` 的服务, 声明短名为 `opencc` 的工具 (如转换, 列出可用配置), 供 MCP, Agent 与脚本 API `plugins.tools` 调用, 并先用它走通目录, 调用, 校验与脚本 API 的主链路 (决策 D29 - D36). 已在 M7 实施 (2.1.0).
 
 ## 状态与证据规则
 
@@ -23,6 +23,7 @@
 | M4 运行时与生态演进 | 已启动 | 官方 OpenCC 原生后端, 上游自动跟进, 16 KB 适配与词典生态 | 依赖/插件/测试/宿主/发布 |
 | M5 插件与独立 App 双形态 | 已完成 | v1.3.0 以同一 APK 正式提供共用官方后端的桌面文本转换 UI、原插件入口与十语言无障碍体验 | App/插件/测试/发布 |
 | M6 独立 App UI 重设计与设置体系 | 开发完成, 待设备矩阵与发布 | Material 3 统一视觉, 完整设置/关于/版本历史页面, 受控 GitHub 更新检查 | App/测试/发布 |
+| M7 AutoJs6 插件工具 opencc_convert | 开发完成, 待发布 | 实现宿主插件工具契约 v1, 供 MCP Server, Agent 与 `plugins.tools` 调用 (MCP Server P12 试点, 6.8.0 发布门) | 插件/测试/宿主 |
 
 依赖顺序:
 
@@ -329,11 +330,23 @@ M6 验收条件: 独立 App 全部页面共享同一设计语言与主题系统;
 均对应 M6 之前的 `b0d0aa25701e2be1c3972c801787b16e72d85e39`, 不能充当本次 M6 的远端设备证据.
 本机可发现 5 台 API 28/31/33/35 真机及 API 24/16 KB AVD 配置; 本轮只读盘点, 未执行设备安装或仪器测试.
 
+
+## M7: AutoJs6 插件工具 opencc_convert (2026-10-16, 开发完成, 待发布)
+
+MCP Server 路线图 P12 (插件自描述工具契约, 决策 D29 - D36, 发布门 D43) 的 OpenCC 试点: 本插件新增实现宿主 `plugin-api/plugin-tool-api` (契约 v1) 的服务, AutoJs6 6.8.0 汇总其目录后, 以 `opencc_convert` 供 MCP Server, Agent 与脚本 API `plugins.tools` 调用. 维护者 2026-10-16 选定: 只声明一个工具 (可选配置写在 schema 的 enum 中, 不另设列出配置的工具); `config` 接受与宿主 `opencc` 模块相同的 32 个名称 (14 个原生配置, `s2twi` / `twi2s` 两个别名, 16 个组合), 默认 `s2t`; 每次转换单段 `text`, 上限 16384 个字符 (码点).
+
+- [x] (插件/API) `libs/plugin-tool-api.aar` 取自宿主 `d993f9bf2` 的 `:plugin-api:plugin-tool-api:assembleRelease`, APK 门禁固定 SHA-256 `bb9f79ba1b8a0c1bdee79acd856156c9a88448e4cd35d225daa0c2826463babd`; `PluginInfo` 能力新增 `pluginToolContractVersion = 1`. 最低宿主不变 (旧宿主不发现新服务, 原 OpenCC 协议不受影响).
+- [x] (插件) `ThreeHanziCcToolService` (action `org.autojs.plugin.TOOL_PROVIDER`, 无 category, exported 且受 `org.autojs.permission.PLUGIN` 保护): 目录 `OpenccToolCatalog` (短名 `opencc`, 工具 `convert`, 英文标题与说明, 输入 schema 为封闭对象 `text` (maxLength 16384) 与 `config` (32 个 enum, 默认 `s2t`), 输出 schema `{text, config}`, risk readonly, 时限 10 s, 并发 4); `OpenccToolConfigs` 为 32 个名称到原生配置链的表 (照搬宿主 `OpenccConversionPlan`); 调用在单个工作线程上经 `OpenccConversionCoordinator.convertSteps` 执行, 并发调用排队而不报忙; 结果 `{text, config}`, 摘要文字为转换结果; 参数不合规, 未知工具, 契约版本不支持时立即拒绝 (INVALID_ARGUMENTS / UNKNOWN_TOOL / UNSUPPORTED_CONTRACT_VERSION); 排队中的调用可被取消, 已开始的转换为毫秒级不中断.
+- [x] (测试) JVM `OpenccToolCatalogTest` 4 项 (32 个名称与宿主顺序一致, 每条链的起止与名称一致, 默认值, 未知配置与码点计数的长度上限, 目录符合契约的命名, 大小与字段, JSON 转义), `PluginRuntimeInfoTest` 补能力字段, 共 31 项 JVM 测试通过; APK 门禁新增工具服务的清单与 DEX 检查及 AAR 固定, `scripts/ci/tests` 26 项通过; lint 0 error / 80 warnings (新增文件无警告); debug 与 signed release 各 5 个 APK 通过 APK 门禁 (16 KB 对齐, 资源, R8).
+- [x] (测试/设备) 新增 `scripts/ci/verify_plugin_tool_pilot.py` (安装, 插件 `ThreeHanziCcToolServiceTest`, 宿主 `OpenccPluginToolRoundTripTest`, 只输出每步结果与计数). 2026-10-16 只读模拟器 AVD_API_30 (API 30, x86_64): debug 包 6/6 步通过, 插件 `ThreeHanziCcToolServiceTest` 3/3 (经 AIDL Proxy/Parcel 的发现, 能力, 目录, 原生 / 别名 / 组合转换, 五类拒绝), 宿主 `OpenccPluginToolRoundTripTest` 2/2 (`plugins.tools` 下 32 个 config 的结果与宿主 `opencc.convert` 逐个一致, 信任为 official, 宿主 schema 拒绝未知 config 与超长文本; MCP 会话只凭 `plugin_tools` 令牌即可列出并调用, `s2twi` 把 "鼠标和打印机" 转为 "滑鼠和印表機"); signed release x86_64 包上宿主往返 2/2 通过 (插件自身的 debug 测试包不能对 minified release 运行, 属预期).
+- [x] (文档) 十语言 changelog v2.1.0 与 README 特性列表; 宿主协议文档的目录示例改为本插件的真实目录.
+- [ ] (发布) 2.1.0 签名发布与官方索引登记 (等待维护者指示).
+
 ## 边界 (非目标)
 
 - 不做中文与日文之间的翻译: JP 相关转换仅处理汉字字形 (繁体旧字体与日文新字体), 不涉及语言翻译.
 - M5 的独立界面只提供本地文本转换，不扩展为云同步、账号系统、在线翻译、富文本编辑器或任意第三方无权限调用接口；Binder 服务仍只接受 AutoJs6 插件权限保护的调用。
-- 不自定义宿主 API 形态: `opencc` 全局对象的方法集与组合逻辑由 AutoJs6 宿主定义, 插件侧忠实提供 14 种核心转换.
+- 不自定义宿主 API 形态: `opencc` 全局对象的方法集与组合逻辑由 AutoJs6 宿主定义, 插件侧忠实提供 14 种核心转换. M7 的插件工具 `opencc_convert` 照搬宿主的 32 个名称 (含别名与组合), 宿主 `OpenccConversionPlan` 仍是来源, 两者由宿主往返测试逐个对照.
 - 转换不依赖网络: 转换始终基于内置词典在设备本地完成, 输入与输出文本永不上传. 自 M6 起, 独立 App 仅为 "检查更新" 访问 GitHub Releases 公开接口 (自动检查可关闭且 12 小时节流), 不引入遥测, 统计或其他任何网络行为; Binder 插件路径不使用网络.
 
 ### 2026-09-13: M6 功能候选版本收口

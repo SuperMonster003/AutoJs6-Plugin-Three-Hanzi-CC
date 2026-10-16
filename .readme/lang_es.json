@@ -12,6 +12,7 @@
     "Un APK, dos usos: abra el icono del lanzador para convertir texto visualmente sin AutoJs6, o use la misma instalación mediante la API de scripts `opencc` de AutoJs6.",
     "14 conversiones estándar: cubre la conversión entre simplificado y tradicional de OpenCC, las variantes de Hong Kong y Taiwán y el shinjitai japonés, incluida la conversión al vocabulario habitual de Taiwán (como el intercambio entre `软件` y `軟體`).",
     "33 métodos de script: además del método general `opencc.convert(text, type)`, cada tipo de conversión tiene un método abreviado con el mismo nombre, más 18 métodos de alias y métodos compuestos como `s2jp` y `tw2hk`.",
+    "Herramienta de plugin: con AutoJs6 6.8.0 o posterior, la misma instalación también ofrece la herramienta `opencc_convert` a plugins como MCP Server (para asistentes de IA) y a `plugins.tools` en los scripts; `config` acepta los mismos 32 nombres que `opencc`.",
     "La conversión usa diccionarios locales y nunca sube el texto. La aplicación solicita Internet para consultar actualizaciones en GitHub. Las consultas automáticas están activadas por defecto, como máximo cada 12 horas, también con datos medidos; pueden desactivarse en Ajustes.",
     "Paquetes a medida: 4 paquetes de una sola ABI y un paquete `universal` con todas las ABI, de modo que cada dispositivo instala solo lo que necesita.",
     "Multilingüe: la interfaz independiente, los metadatos, las instrucciones, el README y el changelog cubren 10 idiomas.",

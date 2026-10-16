@@ -92,6 +92,9 @@ class VerifyApkVariantsTest(unittest.TestCase):
         info_service.attributes["name"] = f"{package_name}.ThreeHanziCcInfoService"
         info_service.children[0].children[0].attributes["name"] = "org.autojs.plugin.INFO"
         info_service.children[0].children[1].attributes["name"] = "three-hanzi-cc"
+        tool_service = deepcopy(service)
+        tool_service.attributes["name"] = f"{package_name}.ThreeHanziCcToolService"
+        tool_service.children[0].children = [element("action", {"name": "org.autojs.plugin.TOOL_PROVIDER"})]
         return element(
             "manifest",
             {"package": package_name},
@@ -109,7 +112,7 @@ class VerifyApkVariantsTest(unittest.TestCase):
                         "usesCleartextTraffic": False,
                         "localeConfig": 0x7F110001,
                     },
-                    [launcher, *aliases, wake, *internal_activities, service, info_service, update_receiver],
+                    [launcher, *aliases, wake, *internal_activities, service, info_service, tool_service, update_receiver],
                 ),
             ],
         )
@@ -131,6 +134,26 @@ class VerifyApkVariantsTest(unittest.TestCase):
             verify_apk_variants.OPENCC_API_SHA256,
         )
         verify_apk_variants.verify_api_artifact()
+
+    def test_plugin_tool_api_artifact_is_pinned(self) -> None:
+        self.assertEqual(
+            "bb9f79ba1b8a0c1bdee79acd856156c9a88448e4cd35d225daa0c2826463babd",
+            verify_apk_variants.PLUGIN_TOOL_API_SHA256,
+        )
+        marker = b"Lio/github/supermonster003/autojs6/plugin/three/hanzi/cc/ThreeHanziCcToolService;"
+        self.assertIn(marker, verify_apk_variants.REQUIRED_DEX_MARKERS)
+
+    def test_plugin_tool_provider_contract_is_required(self) -> None:
+        verify_apk_variants.verify_manifest_tree(self.expected_manifest(), "fixture.apk")
+        manifest = self.expected_manifest()
+        application = next(child for child in manifest.children if child.name == "application")
+        tool = next(child for child in application.children if child.attributes.get("name", "").endswith(".ThreeHanziCcToolService"))
+        tool.children[0].children.append(verify_apk_variants.ManifestElement("category", {"name": "opencc"}))
+        with self.assertRaisesRegex(verify_apk_variants.VerificationError, "plugin tool provider contract changed"):
+            verify_apk_variants.verify_manifest_tree(manifest, "fixture.apk")
+        application.children.remove(tool)
+        with self.assertRaisesRegex(verify_apk_variants.VerificationError, "service inventory mismatch"):
+            verify_apk_variants.verify_manifest_tree(manifest, "fixture.apk")
 
     def test_signed_release_uses_public_artifact_names(self) -> None:
         names = set(verify_apk_variants.expected_apks("release"))

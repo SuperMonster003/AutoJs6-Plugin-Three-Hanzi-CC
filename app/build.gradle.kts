@@ -105,6 +105,7 @@ android {
 dependencies {
     implementation(files("$rootDir/libs/common-plugin-api.aar"))
     implementation(files("$rootDir/libs/opencc-api.aar"))
+    implementation(files("$rootDir/libs/plugin-tool-api.aar"))
     implementation(project(":opencc-native"))
 
     implementation(libs.appcompat)

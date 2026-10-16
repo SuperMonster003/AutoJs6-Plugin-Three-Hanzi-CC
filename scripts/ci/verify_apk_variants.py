@@ -34,6 +34,9 @@ REQUIRED_DEX_MARKERS = {
     b"Lio/github/supermonster003/autojs6/plugin/three/hanzi/cc/ThreeHanziCcActivity;": (
         "standalone ThreeHanziCcActivity class descriptor"
     ),
+    b"Lio/github/supermonster003/autojs6/plugin/three/hanzi/cc/ThreeHanziCcToolService;": (
+        "plugin tool provider ThreeHanziCcToolService class descriptor"
+    ),
     b"Lio/github/supermonster003/autojs6/plugin/three/hanzi/cc/nativebridge/OpenccNativeEngine;": (
         "OpenccNativeEngine class descriptor"
     ),
@@ -53,6 +56,8 @@ DYNAMIC_RECEIVER_PERMISSION = f"{APPLICATION_ID}.DYNAMIC_RECEIVER_NOT_EXPORTED_P
 EXPECTED_PERMISSIONS = {PLUGIN_PERMISSION, INTERNET_PERMISSION, DYNAMIC_RECEIVER_PERMISSION}
 INTERNAL_ACTIVITY_NAMES = ("AppSettingsActivity", "AboutActivity", "ReleaseHistoryActivity")
 OPENCC_API_SHA256 = "5f3001e28fb4c4967b0a4faeb4547a41a679b35cbd209d272a6a79f7ba00ab45"
+# AutoJs6 plugin-api/plugin-tool-api (contract v1), built from host d993f9bf2.
+PLUGIN_TOOL_API_SHA256 = "bb9f79ba1b8a0c1bdee79acd856156c9a88448e4cd35d225daa0c2826463babd"
 NO_STRING_INDEX = 0xFFFFFFFF
 RES_XML_TYPE = 0x0003
 RES_STRING_POOL_TYPE = 0x0001
@@ -75,15 +80,16 @@ class ManifestElement:
 
 
 def verify_api_artifact() -> None:
-    path = REPOSITORY_ROOT / "libs" / "opencc-api.aar"
-    if not path.is_file():
-        raise VerificationError(f"Pinned opencc-api artifact is missing: {path}")
-    digest = sha256(path.read_bytes())
-    if digest != OPENCC_API_SHA256:
-        raise VerificationError(
-            "opencc-api artifact changed without a reviewed compatibility snapshot: "
-            f"expected={OPENCC_API_SHA256}, actual={digest}",
-        )
+    for name, expected in (("opencc-api", OPENCC_API_SHA256), ("plugin-tool-api", PLUGIN_TOOL_API_SHA256)):
+        path = REPOSITORY_ROOT / "libs" / f"{name}.aar"
+        if not path.is_file():
+            raise VerificationError(f"Pinned {name} artifact is missing: {path}")
+        digest = sha256(path.read_bytes())
+        if digest != expected:
+            raise VerificationError(
+                f"{name} artifact changed without a reviewed compatibility snapshot: "
+                f"expected={expected}, actual={digest}",
+            )
 
 
 def _chunk_header(data: bytes, offset: int, label: str) -> tuple[int, int, int]:
@@ -485,9 +491,11 @@ def verify_manifest_tree(root: ManifestElement, label: str) -> None:
     services = _component_map(application, "service")
     expected_service_name = f"{APPLICATION_ID}.ThreeHanziCcService"
     expected_info_name = f"{APPLICATION_ID}.ThreeHanziCcInfoService"
-    if set(services) != {expected_service_name, expected_info_name}:
+    expected_tool_name = f"{APPLICATION_ID}.ThreeHanziCcToolService"
+    expected_names = {expected_service_name, expected_info_name, expected_tool_name}
+    if set(services) != expected_names:
         raise VerificationError(
-            f"{label} service inventory mismatch: expected={[expected_service_name, expected_info_name]}, actual={sorted(services)}",
+            f"{label} service inventory mismatch: expected={sorted(expected_names)}, actual={sorted(services)}",
         )
     service = services[expected_service_name]
     _require_attributes(
@@ -505,6 +513,10 @@ def verify_manifest_tree(root: ManifestElement, label: str) -> None:
     _require_attributes(info, "ThreeHanziCcInfoService", {"exported": True, "permission": PLUGIN_PERMISSION}, {"process", "isolatedProcess", "stopWithTask"})
     if _intent_filters(info) != [(frozenset({"org.autojs.plugin.INFO"}), frozenset({"three-hanzi-cc"}))]:
         raise VerificationError(f"{label} protected common INFO contract changed")
+    tool = services[expected_tool_name]
+    _require_attributes(tool, "ThreeHanziCcToolService", {"exported": True, "permission": PLUGIN_PERMISSION}, {"process", "isolatedProcess", "stopWithTask"})
+    if _intent_filters(tool) != [(frozenset({"org.autojs.plugin.TOOL_PROVIDER"}), frozenset())]:
+        raise VerificationError(f"{label} plugin tool provider contract changed")
 
 
 def verify_manifest(data: bytes, label: str) -> None:

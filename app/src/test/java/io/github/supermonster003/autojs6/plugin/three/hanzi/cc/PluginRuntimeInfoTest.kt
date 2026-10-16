@@ -40,6 +40,7 @@ class PluginRuntimeInfoTest {
         )
         assertEquals(3923, fields.requiredHostVersion)
         assertEquals(OpenccPluginContract.VERSION_CURRENT, fields.contractVersion)
+        assertEquals(1, fields.toolContractVersion)
         assertEquals(OpenccConversionTypes.ALL, fields.supportedConversionTypes)
         val controlledAcceptance = OpenccUpstream.isControlledAcceptance()
         val expectedVersion = if (controlledAcceptance) "999.4.2" else "1.4.2"

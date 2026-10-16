@@ -5,6 +5,12 @@
   "changelog_label_improvement": "개선",
   "changelog_label_dependency": "의존성",
   "$data": {
+    "v2.1.0": {
+      "released_date": "2026/10/16",
+      "feature": [
+        "AutoJs6 6.8.0 이상에서는 이 플러그인의 중국어 변환을 opencc_convert 도구로 MCP Server (AI 어시스턴트용) 와 스크립트의 plugins.tools 에 제공합니다. 변환 이름은 opencc 객체와 같은 32 가지이며, 1 회 최대 16384 자"
+      ]
+    },
     "v2.0.1": {
       "released_date": "2026/10/05",
       "improvement": [

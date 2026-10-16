@@ -142,6 +142,16 @@
             </intent-filter>
         </service>
 
+        <!-- AutoJs6 plugin tool contract v1: the opencc_convert tool for MCP Server, agents and plugins.tools. -->
+        <service
+            android:name=".ThreeHanziCcToolService"
+            android:exported="true"
+            android:permission="org.autojs.permission.PLUGIN">
+            <intent-filter>
+                <action android:name="org.autojs.plugin.TOOL_PROVIDER" />
+            </intent-filter>
+        </service>
+
         <!-- Both libraries below ship auto-start components; this plugin must expose zero
              providers or library receivers (the update-only icon receiver is intentional). -->
         <provider
