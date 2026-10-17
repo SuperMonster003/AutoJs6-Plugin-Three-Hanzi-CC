@@ -140,7 +140,11 @@ class OpenccDualEntryTest {
         )
         assertEquals(
             "The final APK service inventory changed",
-            setOf(ThreeHanziCcService::class.java.name, ThreeHanziCcInfoService::class.java.name),
+            setOf(
+                ThreeHanziCcService::class.java.name,
+                ThreeHanziCcInfoService::class.java.name,
+                ThreeHanziCcToolService::class.java.name,
+            ),
             packageInfo.services.orEmpty().map { it.name }.toSet(),
         )
         assertEquals("Only the update-only launcher repair receiver is allowed", setOf(LauncherIconUpdateReceiver::class.java.name), packageInfo.receivers.orEmpty().map { it.name }.toSet())
@@ -191,12 +195,15 @@ class OpenccDualEntryTest {
         )
         assertTrue("The standalone Activity must not receive external paths or URIs", viewMatches.isEmpty())
 
-        val serviceInfo = packageManager.getServiceInfo(
-            ComponentName(context, ThreeHanziCcService::class.java),
-            0,
-        )
-        assertTrue("The plugin service must remain exported for AutoJs6", serviceInfo.exported)
-        assertEquals(PLUGIN_PERMISSION, serviceInfo.permission)
+        for (contractService in listOf(
+            ThreeHanziCcService::class.java,
+            ThreeHanziCcInfoService::class.java,
+            ThreeHanziCcToolService::class.java,
+        )) {
+            val serviceInfo = packageManager.getServiceInfo(ComponentName(context, contractService), 0)
+            assertTrue("${contractService.simpleName} must remain exported for AutoJs6", serviceInfo.exported)
+            assertEquals(contractService.simpleName, PLUGIN_PERMISSION, serviceInfo.permission)
+        }
 
         val wakeInfo = packageManager.getActivityInfo(
             ComponentName(context, WakeActivity::class.java),
