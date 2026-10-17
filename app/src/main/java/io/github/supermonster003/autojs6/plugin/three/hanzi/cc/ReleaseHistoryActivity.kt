@@ -3,6 +3,7 @@ package io.github.supermonster003.autojs6.plugin.three.hanzi.cc
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -35,6 +36,12 @@ internal object ReleaseHistoryAssetPolicy {
         "ru" -> "CHANGELOG-ru.md"
         else -> "CHANGELOG-en.md"
     }
+
+    /**
+     * Whether the asset is written right to left. Its paragraphs keep that direction even when they
+     * open with a Latin word such as README, which would otherwise make the whole line left to right.
+     */
+    fun isRightToLeft(assetName: String): Boolean = assetName == "CHANGELOG-ar.md"
 }
 
 internal data class ReleaseHistoryItem(val tag: String?, val text: String)
@@ -97,7 +104,9 @@ internal class ReleaseHistoryActivity : ConfiguredActivity() {
             R.string.standalone_release_history_title,
             contentPadding = ContentPadding.SCREEN,
         )
-        val entries = loadReleaseHistory()?.let(ReleaseHistoryParser::parse).orEmpty()
+        val assetName = ReleaseHistoryAssetPolicy.assetFor(resources.configuration.locales[0])
+        val rightToLeft = ReleaseHistoryAssetPolicy.isRightToLeft(assetName)
+        val entries = loadReleaseHistory(assetName)?.let(ReleaseHistoryParser::parse).orEmpty()
         if (entries.isEmpty()) {
             scaffold.content.addView(
                 emptyStateView(
@@ -111,20 +120,19 @@ internal class ReleaseHistoryActivity : ConfiguredActivity() {
             )
         } else {
             entries.forEach { entry ->
-                scaffold.content.addView(versionCard(entry), cardListParams())
+                scaffold.content.addView(versionCard(entry, rightToLeft), cardListParams())
             }
         }
         setContentView(scaffold.root)
     }
 
-    private fun loadReleaseHistory(): String? = runCatching {
-        val assetName = ReleaseHistoryAssetPolicy.assetFor(resources.configuration.locales[0])
+    private fun loadReleaseHistory(assetName: String): String? = runCatching {
         assets.open("doc/$assetName").use { stream ->
             stream.readBytes().toString(Charsets.UTF_8)
         }
     }.getOrNull()
 
-    private fun versionCard(entry: ReleaseHistoryEntry): LinearLayout {
+    private fun versionCard(entry: ReleaseHistoryEntry, rightToLeft: Boolean): LinearLayout {
         val card = cardContainer()
         card.addView(
             LinearLayout(this).apply {
@@ -136,6 +144,8 @@ internal class ReleaseHistoryActivity : ConfiguredActivity() {
                         setTextSize(TypedValue.COMPLEX_UNIT_SP, Ui.TEXT_TITLE)
                         typeface = Ui.mediumTypeface
                         setTextColor(appPalette.primaryText)
+                        // The Latin version would otherwise align by its own direction and run into the date in RTL.
+                        textAlignment = View.TEXT_ALIGNMENT_VIEW_START
                     },
                     LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f),
                 )
@@ -146,13 +156,17 @@ internal class ReleaseHistoryActivity : ConfiguredActivity() {
                             setTextSize(TypedValue.COMPLEX_UNIT_SP, Ui.TEXT_CAPTION)
                             setTextColor(appPalette.secondaryText)
                         },
+                        LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ).apply { marginStart = uiDp(Ui.SPACE_SM) },
                     )
                 }
             },
         )
         entry.items.forEach { item ->
             card.addView(
-                bulletRow(item),
+                bulletRow(item, rightToLeft),
                 LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -162,7 +176,7 @@ internal class ReleaseHistoryActivity : ConfiguredActivity() {
         return card
     }
 
-    private fun bulletRow(item: ReleaseHistoryItem): LinearLayout = LinearLayout(this).apply {
+    private fun bulletRow(item: ReleaseHistoryItem, rightToLeft: Boolean): LinearLayout = LinearLayout(this).apply {
         orientation = LinearLayout.HORIZONTAL
         if (item.tag != null) {
             addView(
@@ -189,6 +203,7 @@ internal class ReleaseHistoryActivity : ConfiguredActivity() {
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, Ui.TEXT_BODY)
                 setTextColor(appPalette.primaryText)
                 setLineSpacing(0f, Ui.LINE_SPACING_BODY)
+                if (rightToLeft) textDirection = View.TEXT_DIRECTION_RTL
             },
             LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f),
         )
