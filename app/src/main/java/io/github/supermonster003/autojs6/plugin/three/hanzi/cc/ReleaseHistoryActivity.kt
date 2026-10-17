@@ -54,10 +54,12 @@ internal data class ReleaseHistoryEntry(
 
 /**
  * Parses the narrow markdown dialect used by the bundled changelogs: `# vX.Y.Z` version
- * headings, `###### date` lines, and `` * `tag` text `` bullets. Anything else is ignored.
+ * headings, `###### date` lines, and `` * `tag` text `` bullets. Inline code markers inside the
+ * text are dropped. Anything else is ignored.
  */
 internal object ReleaseHistoryParser {
     private val BULLET_PATTERN = Regex("^\\*\\s+(?:`([^`]+)`\\s*)?(.*)$")
+    private val INLINE_CODE_PATTERN = Regex("`([^`]+)`")
 
     fun parse(markdown: String): List<ReleaseHistoryEntry> {
         val entries = mutableListOf<ReleaseHistoryEntry>()
@@ -83,7 +85,7 @@ internal object ReleaseHistoryParser {
                 line.startsWith("* ") && version != null -> {
                     val match = BULLET_PATTERN.matchEntire(line) ?: continue
                     val tag = match.groupValues[1].takeIf { it.isNotEmpty() }
-                    val text = match.groupValues[2].trim()
+                    val text = INLINE_CODE_PATTERN.replace(match.groupValues[2].trim(), "$1")
                     if (tag != null || text.isNotEmpty()) {
                         items.add(ReleaseHistoryItem(tag, text))
                     }

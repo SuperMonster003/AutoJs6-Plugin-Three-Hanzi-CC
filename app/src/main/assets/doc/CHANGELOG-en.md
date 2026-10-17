@@ -11,6 +11,7 @@
 * `Feature` On AutoJs6 6.8.0 and later, the Chinese conversion of this plugin is offered as the tool opencc_convert to MCP Server (for AI assistants) and to plugins.tools in scripts; the conversion names are the same 32 as for the opencc object, up to 16384 characters per call
 * `Fix` In the Arabic interface, 3-Hanzi CC no longer appears reversed as Hanzi CC-3
 * `Fix` In the Arabic interface, the version history page no longer runs the date into the version number, and entries that start with an English word such as README now read right to left like the rest
+* `Fix` On the version history page, names such as opencc and S2T in older versions no longer show stray backquote symbols, which in Arabic also landed at the wrong end of the line
 
 # v2.0.1
 

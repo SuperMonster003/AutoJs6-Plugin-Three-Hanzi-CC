@@ -11,6 +11,7 @@
 * `Función` Con AutoJs6 6.8.0 o posterior, la conversión china de este plugin se ofrece como la herramienta opencc_convert a MCP Server (para asistentes de IA) y a plugins.tools en los scripts; los nombres de conversión son los mismos 32 que los del objeto opencc, hasta 16384 caracteres por llamada
 * `Corrección` En la interfaz en árabe, 3-Hanzi CC ya no aparece invertido como Hanzi CC-3
 * `Corrección` En la interfaz en árabe, la página del historial de versiones ya no pega la fecha al número de versión, y las entradas que empiezan con una palabra en inglés como README se leen de derecha a izquierda como las demás
+* `Corrección` En la página del historial de versiones, los nombres como opencc y S2T de versiones anteriores ya no muestran acentos graves sobrantes, que en árabe además aparecían en el extremo opuesto de la línea
 
 # v2.0.1
 

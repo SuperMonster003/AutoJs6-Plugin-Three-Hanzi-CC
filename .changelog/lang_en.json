@@ -12,7 +12,8 @@
       ],
       "fix": [
         "In the Arabic interface, 3-Hanzi CC no longer appears reversed as Hanzi CC-3",
-        "In the Arabic interface, the version history page no longer runs the date into the version number, and entries that start with an English word such as README now read right to left like the rest"
+        "In the Arabic interface, the version history page no longer runs the date into the version number, and entries that start with an English word such as README now read right to left like the rest",
+        "On the version history page, names such as opencc and S2T in older versions no longer show stray backquote symbols, which in Arabic also landed at the wrong end of the line"
       ]
     },
     "v2.0.1": {

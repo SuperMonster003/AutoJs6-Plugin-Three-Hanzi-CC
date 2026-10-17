@@ -12,7 +12,8 @@
       ],
       "fix": [
         "Dans l'interface en arabe, 3-Hanzi CC ne s'affiche plus à l'envers sous la forme Hanzi CC-3",
-        "Dans l'interface en arabe, la page de l'historique des versions ne colle plus la date au numéro de version, et les entrées qui commencent par un mot anglais comme README se lisent de droite à gauche comme les autres"
+        "Dans l'interface en arabe, la page de l'historique des versions ne colle plus la date au numéro de version, et les entrées qui commencent par un mot anglais comme README se lisent de droite à gauche comme les autres",
+        "Sur la page de l'historique des versions, les noms comme opencc et S2T des anciennes versions n'affichent plus d'accents graves en trop, qui en arabe se retrouvaient en plus à l'autre bout de la ligne"
       ]
     },
     "v2.0.1": {
