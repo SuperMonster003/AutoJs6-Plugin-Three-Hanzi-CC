@@ -1,42 +1,32 @@
-# AutoJs6 3-Hanzi CC
+{{ instruction_p_what }}
 
-{{ p_introduction_what }}
+### {{ instruction_h3_start }}
 
-{{ p_instruction_backend }}
+{{ placeholder_instruction_start_steps }}
 
-### {{ h3_quick_start }}
+### {{ instruction_h3_features }}
 
-{{ p_quick_start_intro }}:
+{{ placeholder_instruction_features }}
 
-```javascript
+### {{ instruction_h3_script }}
+
+{{ instruction_p_script }}
+
+```js
 console.log(opencc.s2t("汉字转换"));     // => 漢字轉換
 console.log(opencc.t2s("漢字轉換"));     // => 汉字转换
 console.log(opencc.s2twp("鼠标和软件")); // => 滑鼠和軟體
 console.log(opencc.convert("汉字转换", "S2T")); // => 漢字轉換
 ```
 
-### {{ h3_conversion_types }}
+{{ placeholder_instruction_script_notes }}
 
-{{ p_conversion_types_intro }}:
+### {{ instruction_h3_requirements }}
 
-```text
-S2T   T2S   S2TW  TW2S  S2TWP  TW2SP  S2HK
-HK2S  T2TW  TW2T  T2HK  HK2T   T2JP   JP2T
-```
+{{ placeholder_instruction_requirements }}
 
-{{ p_conversion_types_phrase_note }}
+### {{ instruction_h3_faq }}
 
-### {{ h3_self_check }}
+{{ placeholder_instruction_faq }}
 
-{{ p_self_check_intro }}:
-
-```javascript
-console.log(opencc.s2t("汉字转换"));
-```
-
-{{ p_self_check_result }}
-
-{{ p_instruction_more }}
-
-
-{{ p_migration }}
+{{ instruction_p_more }}

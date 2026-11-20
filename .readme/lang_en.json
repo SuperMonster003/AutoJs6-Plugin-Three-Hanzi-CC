@@ -144,11 +144,54 @@
   "text_link_autojs6": "AutoJs6 project",
   "text_link_opencc_official": "OpenCC official project",
   "text_link_third_party_notices": "Third-party notices",
-  "p_instruction_more": "See the [AutoJs6 OpenCC documentation]({{ docs_opencc_url }}) and the [project README]({{ repo_url }}) for the full method list and conversion type reference.",
-  "p_instruction_backend": "The same APK can also be launched directly as an offline text-conversion App without AutoJs6. Both the standalone editor and this plugin entry use official OpenCC {{ opencc_version }} with pinned same-release dictionaries, and the native packages support Android devices with 16 KB memory pages.",
   "h3_standalone": "Get started",
   "p_standalone": "3-Hanzi CC adopts the maintainer's Hanzi artwork across its home screen, launcher, documentation and Plugin Center. Language, dark mode, theme color and four launcher icon choices are available in the shared settings layout.",
   "p_migration": "The application ID changes from `io.github.supermonster003.autojs6.plugin.opencc` to `io.github.supermonster003.autojs6.plugin.three.hanzi.cc`. Android installs this as a separate app; existing apps and data can remain, and settings are not migrated automatically.",
   "h3_sources": "Sources and acknowledgments",
-  "p_sources": "[THIRD_PARTY_NOTICES.md]({{ repo_url }}/blob/master/THIRD_PARTY_NOTICES.md) · [RIGHTS_AND_TAKEDOWN.md]({{ repo_url }}/blob/master/RIGHTS_AND_TAKEDOWN.md)"
+  "p_sources": "[THIRD_PARTY_NOTICES.md]({{ repo_url }}/blob/master/THIRD_PARTY_NOTICES.md) · [RIGHTS_AND_TAKEDOWN.md]({{ repo_url }}/blob/master/RIGHTS_AND_TAKEDOWN.md)",
+  "instruction_p_what": "3-Hanzi CC is an offline Chinese converter based on OpenCC. It converts text between Simplified Chinese, Traditional Chinese, Hong Kong Traditional, Taiwan Traditional and Japanese Shinjitai. You can use it on its own from the launcher, and it also gives AutoJs6 scripts the global object `opencc`.",
+  "instruction_h3_start": "Getting started",
+  "instruction_start_steps": [
+    "Open 3-Hanzi CC from the launcher and type text in \"Source text\", or tap \"Paste\" to read it from the clipboard.",
+    "Choose a direction in \"Conversion type\", then tap \"Convert\".",
+    "Read the output under \"Result\", then tap \"Copy\" or \"Share\" to use it.",
+    "In AutoJs6 scripts, call the global object `opencc` directly; see the example below."
+  ],
+  "instruction_h3_features": "Main features",
+  "instruction_features": [
+    "**14 conversions**: Cover the common directions between Simplified, Traditional, Hong Kong Traditional, Taiwan Traditional and Japanese Shinjitai. Types marked \"Taiwan terminology\" also replace words, for example \"鼠标\" becomes \"滑鼠\".",
+    "**Quick editing**: \"Invert\" switches to the opposite conversion direction, \"Swap\" exchanges the source text and the result, and \"Clear\" removes the text.",
+    "**Offline conversion**: Conversion runs on the device with built-in dictionaries and needs no network; text is never uploaded or saved.",
+    "**Personalization**: Adjust the language, dark mode, theme color and launcher icon. With \"Remember conversion type\" on, the last conversion type comes back the next time you open the app.",
+    "**Plugin tool**: In AutoJs6 6.8.0 or later, the plugin also provides the `opencc_convert` tool, which plugins such as MCP Server and the `plugins.tools` API of scripts can call."
+  ],
+  "instruction_h3_script": "Using it in scripts",
+  "instruction_p_script": "Use the global object `opencc` in AutoJs6 scripts without importing anything. Every conversion type has a method of the same name, and `convert` takes the type as an argument:",
+  "instruction_script_notes": [
+    "Conversion types are case-insensitive, for example `S2T`, `S2TWP`, `HK2S` and `T2JP`. Combined methods such as `s2jp` and `hk2tw` run several conversions in sequence.",
+    "Node.js scripts load it with `require('autojs6:opencc')` and Bun scripts use `host.opencc`; the methods are the same and all return a Promise."
+  ],
+  "instruction_h3_requirements": "Requirements",
+  "instruction_requirements": [
+    "Android {{ min_android_version }} or later. AutoJs6 is not needed when you use the app on its own from the launcher.",
+    "Scripts need AutoJs6 {{ required_host_version_name }} or later, with this plugin enabled in \"Plugin Center\".",
+    "Node.js scripts need the Node.js Runtime plugin 1.7.0 or later; Bun scripts need the Bun Runtime plugin 0.2.6 or later, with `text.opencc` left on in its settings page (on by default).",
+    "The network permission is used only to check for app updates. \"Automatically check for updates\" is on by default, checks at most once every 12 hours, and can be turned off in \"Settings\"."
+  ],
+  "instruction_h3_faq": "FAQ",
+  "instruction_faq": [
+    {
+      "q": "Using it without AutoJs6",
+      "a": "Open 3-Hanzi CC from the launcher to convert text; AutoJs6 is needed only when scripts call `opencc`."
+    },
+    {
+      "q": "The difference between `s2tw` and `s2twp`",
+      "a": "`s2tw` converts characters only, for example \"软件\" becomes \"軟件\"; `s2twp` also switches to common Taiwan vocabulary, for example \"软件\" becomes \"軟體\". `s2twi` is an alias of `s2twp`."
+    },
+    {
+      "q": "When a script reports a missing plugin",
+      "a": "Make sure this plugin is installed and enabled in \"Plugin Center\" of AutoJs6, then run the script again. AutoJs6 does not need a restart."
+    }
+  ],
+  "instruction_p_more": "See [AutoJs6 docs > OpenCC]({{ docs_opencc_url }}) for all methods and conversion types and the [project page]({{ repo_url }}) for more information."
 }

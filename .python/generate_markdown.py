@@ -3,11 +3,12 @@
 
 Source of truth:
   .readme/common.json              language-neutral facts (URLs, IDs, limits)
-  .readme/lang_<code>.json         localized README copy (10 languages)
+  .readme/lang_<code>.json         localized README copy and the instruction_* keys (10 languages)
   .readme/android_strings.json     localized standalone UI copy (10 languages)
   .readme/template_readme.md       README skeleton with {{ placeholder }} slots
   .readme/template_plugin_instruction.md
-                                    plugin-center instruction skeleton
+                                    plugin-center instruction skeleton; it can only use the instruction_* keys
+                                    (D:/idea-projects/AUTOJS6_PLUGIN_INSTRUCTION_AGENTS.md)
   .changelog/lang_<code>.json      localized changelog labels and $data entries
   .changelog/template_changelog.md changelog skeleton
   version.properties               VERSION_NAME (must match the newest changelog entry)
@@ -91,6 +92,23 @@ CHANGELOG_DATA_KEY = "$data"
 
 README_LIST_KEYS = ["features", "usage_steps", "security_points"]
 README_FAQ_KEY = "faq"
+
+# Plugin-center instruction copy lives in its own keys and never borrows README fields.
+INSTRUCTION_KEY_PREFIX = "instruction_"
+INSTRUCTION_LIST_KEYS = [
+    "instruction_start_steps",
+    "instruction_features",
+    "instruction_script_notes",
+    "instruction_requirements",
+]
+INSTRUCTION_FAQ_KEY = "instruction_faq"
+INSTRUCTION_REQUIRED_KEYS = [
+    "instruction_p_what",
+    "instruction_h3_start",
+    "instruction_start_steps",
+    "instruction_h3_requirements",
+    "instruction_requirements",
+]
 
 EXPECTED_ARTIFACT_COUNT = 47
 README_LATEST_RELEASES = 3
@@ -294,6 +312,33 @@ def validate_readme_language(code: str, content: dict[str, Any]) -> None:
         )
 
 
+def validate_instruction_language(code: str, content: dict[str, Any]) -> None:
+    for key in INSTRUCTION_REQUIRED_KEYS:
+        require(key in content, f"Instruction language {code!r} is missing {key!r}")
+    for key, value in content.items():
+        if not key.startswith(INSTRUCTION_KEY_PREFIX):
+            continue
+        if key in INSTRUCTION_LIST_KEYS:
+            require(isinstance(value, list) and value, f"Instruction {code!r} field {key!r} must be a non-empty list")
+            for item in value:
+                require(isinstance(item, str) and item, f"Instruction {code!r} field {key!r} must contain non-empty strings only")
+        elif key == INSTRUCTION_FAQ_KEY:
+            require(isinstance(value, list) and value, f"Instruction {code!r} field {key!r} must be a non-empty list")
+            for index, item in enumerate(value):
+                require(
+                    isinstance(item, dict) and set(item) == {"q", "a"} and all(isinstance(text, str) and text for text in item.values()),
+                    f"Instruction {code!r} {key}[{index}] must be an object with non-empty 'q' and 'a'",
+                )
+        else:
+            require(isinstance(value, str) and value, f"Instruction {code!r} field {key!r} must be non-empty text")
+        # UI names are quoted with ASCII double quotes; an odd count means a quote was swallowed on the way in.
+        texts = [value] if isinstance(value, str) else [
+            text for item in value for text in (item.values() if isinstance(item, dict) else [item])
+        ]
+        for text in texts:
+            require(text.count('"') % 2 == 0, f"Instruction {code!r} field {key!r} has an unpaired double quote: {text[:60]!r}")
+
+
 def validate_changelog_language(code: str, content: dict[str, Any]) -> None:
     expected_keys = set(CHANGELOG_LABEL_KEYS) | {CHANGELOG_DATA_KEY}
     require(
@@ -394,8 +439,8 @@ def validate_android_string_sources(strings: dict[str, dict[str, Any]]) -> None:
     reference = strings[LANGUAGE_CODE_DEFAULT]
     require("error_unsupported_conversion_type" in reference, "Android strings are missing the service error")
     require(
-        all(key == "error_unsupported_conversion_type" or key.startswith(("standalone_", "launcher_icon_", "theme_picker_")) for key in reference),
-        "Android string sources may contain only the service error and standalone UI keys",
+        all(key == "error_unsupported_conversion_type" or key.startswith(("standalone_", "launcher_icon_", "theme_picker_", "release_history_")) for key in reference),
+        "Android string sources may contain only the service error and standalone UI keys (release_history_* are the shared release history page keys)",
     )
     for code, localized in strings.items():
         for key, value in localized.items():
@@ -477,6 +522,22 @@ def markdown_link(label: str, url: str) -> str:
     return f"[{label}]({url})"
 
 
+def instruction_faq(items: list[dict[str, str]]) -> str:
+    return "\n\n".join(f"**{item['q']}**\n\n{item['a']}" for item in items)
+
+
+def build_instruction_values(code: str, languages: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    """Only instruction_* keys reach the instruction template, so it cannot borrow README copy."""
+    values = {key: value for key, value in languages[code].items() if key.startswith(INSTRUCTION_KEY_PREFIX)}
+    for key in INSTRUCTION_LIST_KEYS:
+        if key in values:
+            render = numbered_list if key == "instruction_start_steps" else bullet_list
+            values[f"placeholder_{key}"] = render(values[key])
+    if INSTRUCTION_FAQ_KEY in values:
+        values[f"placeholder_{INSTRUCTION_FAQ_KEY}"] = instruction_faq(values[INSTRUCTION_FAQ_KEY])
+    return values
+
+
 # ---------------------------------------------------------------------------
 # Source assembly
 # ---------------------------------------------------------------------------
@@ -496,6 +557,7 @@ def load_languages(root: Path) -> tuple[dict[str, dict[str, Any]], dict[str, dic
     validate_android_string_sources(raw_android_strings)
     for code in LANGUAGE_CODES:
         validate_readme_language(code, raw_languages[code])
+        validate_instruction_language(code, raw_languages[code])
         validate_changelog_language(code, raw_changelogs[code])
     validate_changelog_shapes(raw_changelogs)
     validate_version_alignment(root, raw_changelogs)
@@ -610,7 +672,7 @@ def build_artifacts(root: Path) -> dict[Path, str]:
             artifacts[root / "README.md"] = output
 
     for code in LANGUAGE_CODES:
-        output = render_template(instruction_template, build_readme_values(code, languages, changelogs))
+        output = render_template(instruction_template, build_instruction_values(code, languages))
         directory = ANDROID_INSTRUCTION_DIRECTORIES[code]
         artifacts[android_resource_dir / directory / "plugin_instruction.md"] = output
         if code == ANDROID_DEFAULT_LANGUAGE:

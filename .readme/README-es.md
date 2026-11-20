@@ -327,6 +327,15 @@ Los planes del complemento y su grado de avance se mantienen como una lista marc
 
 ******
 
+#### v2.1.1
+
+_2026/11/20_
+
+- `Mejora` La página Historial de versiones se expande y contrae por versión: una versión contraída muestra su fecha y el número de entradas por categoría, una expandida nombra cada categoría una sola vez; todas las versiones se pueden expandir o contraer a la vez, la más reciente se abre expandida y el subtítulo muestra el nombre del plugin
+- `Mejora` Se reescribieron las instrucciones del Centro de plugins en cinco partes: primeros pasos, funciones principales, uso en scripts, requisitos y preguntas frecuentes
+- `Dependencia` Se añadió Jetpack Compose BOM 2026.09.00 (página Historial de versiones)
+- `Dependencia` Se actualizaron los plugins de compilación compartidos versión 1.9.0 -> 1.9.7
+
 #### v2.1.0
 
 _2026/10/17_
@@ -342,13 +351,6 @@ _2026/10/05_
 
 - `Mejora` Los iconos del centro de plugins usan los tamaños, posiciones, imágenes claras y oscuras y fondos circulares ajustados en Icon Studio, conservando fuentes y parámetros reproducibles
 - `Mejora` Los iconos de información de la aplicación de Android comparten las imágenes y los fondos claros y oscuros de Icon Studio, conservando las imágenes transparentes del centro de plugins y las opciones del lanzador
-
-#### v2.0.0
-
-_2026/10/04_
-
-- `Aviso` El identificador cambia de io.github.supermonster003.autojs6.plugin.opencc a io.github.supermonster003.autojs6.plugin.three.hanzi.cc. Android lo instala como una aplicación independiente; se pueden conservar las aplicaciones y los datos anteriores, sin migración automática de ajustes
-- `Mejora` 3-Hanzi CC utiliza el diseño Hanzi proporcionado por el mantenedor en el inicio, lanzador, documentación y centro de plugins
 
 ##### Para ver más historial de versiones
 

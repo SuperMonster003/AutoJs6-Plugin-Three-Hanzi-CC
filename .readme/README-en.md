@@ -327,6 +327,15 @@ The plugin's plans and progress are maintained as a checkable list in ROADMAP.md
 
 ******
 
+#### v2.1.1
+
+_2026/11/20_
+
+- `Improvement` The Version history page is now the Release history page and expands and collapses by version: a collapsed version shows its date and the number of entries per category, an expanded one names each category once; all versions can be expanded or collapsed at once, the newest one opens expanded and the subtitle shows the plugin name
+- `Improvement` Rewrote the instructions shown in Plugin center in five parts: getting started, main features, using it in scripts, requirements and FAQ
+- `Dependency` Added Jetpack Compose BOM 2026.09.00 (release history page)
+- `Dependency` Upgraded shared build plugins version 1.9.0 -> 1.9.7
+
 #### v2.1.0
 
 _2026/10/17_
@@ -342,13 +351,6 @@ _2026/10/05_
 
 - `Improvement` Plugin Center icons use the sizes, positions, light and dark artwork, and circular backgrounds adjusted in Icon Studio, retaining reproducible sources and parameters
 - `Improvement` Android App info icons share Icon Studio artwork and light/dark backgrounds while preserving transparent Plugin Center artwork and existing launcher choices
-
-#### v2.0.0
-
-_2026/10/04_
-
-- `Hint` The application ID changes from io.github.supermonster003.autojs6.plugin.opencc to io.github.supermonster003.autojs6.plugin.three.hanzi.cc. Android installs this as a separate app; existing apps and data can remain, and settings are not migrated automatically
-- `Improvement` 3-Hanzi CC adopts the maintainer's Hanzi artwork across its home screen, launcher, documentation and Plugin Center
 
 ##### For more release history
 

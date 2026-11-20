@@ -144,11 +144,54 @@
   "text_link_autojs6": "AutoJs6 프로젝트",
   "text_link_opencc_official": "OpenCC 공식 프로젝트",
   "text_link_third_party_notices": "서드 파티 고지",
-  "p_instruction_more": "메서드 목록과 변환 유형의 전체 레퍼런스는 [AutoJs6 OpenCC 문서]({{ docs_opencc_url }})와 [프로젝트 README]({{ repo_url }})를 참고하세요.",
-  "p_instruction_backend": "같은 APK를 AutoJs6 없이 오프라인 변환 앱으로 직접 실행할 수도 있습니다. 독립 편집기와 이 플러그인 항목은 공식 OpenCC {{ opencc_version }}와 같은 릴리스에 고정된 사전을 공유하며, 네이티브 패키지는 Android 16 KB 메모리 페이지를 지원합니다.",
   "h3_standalone": "시작하기",
   "p_standalone": "3-Hanzi CC의 홈, 런처, 문서 및 플러그인 센터에 관리자가 제공한 한자 아이콘 적용. 공통 설정 화면에서 언어, 야간 모드, 테마 색상 및 네 가지 런처 아이콘 선택 가능.",
   "p_migration": "앱 ID가 `io.github.supermonster003.autojs6.plugin.opencc`에서 `io.github.supermonster003.autojs6.plugin.three.hanzi.cc`(으)로 변경됩니다. Android는 별도 앱으로 설치하며 기존 앱과 데이터를 유지할 수 있고 설정은 자동으로 이전되지 않습니다.",
   "h3_sources": "출처 및 감사의 말",
-  "p_sources": "[THIRD_PARTY_NOTICES.md]({{ repo_url }}/blob/master/THIRD_PARTY_NOTICES.md) · [RIGHTS_AND_TAKEDOWN.md]({{ repo_url }}/blob/master/RIGHTS_AND_TAKEDOWN.md)"
+  "p_sources": "[THIRD_PARTY_NOTICES.md]({{ repo_url }}/blob/master/THIRD_PARTY_NOTICES.md) · [RIGHTS_AND_TAKEDOWN.md]({{ repo_url }}/blob/master/RIGHTS_AND_TAKEDOWN.md)",
+  "instruction_p_what": "3-Hanzi CC는 OpenCC 기반의 오프라인 중국어 변환 도구로, 간체자, 번체자, 홍콩 번체자, 대만 번체자, 일본어 신자체 사이에서 텍스트를 변환합니다. 런처에서 단독으로 사용할 수 있고, AutoJs6 스크립트에 전역 객체 `opencc`도 제공합니다.",
+  "instruction_h3_start": "시작하기",
+  "instruction_start_steps": [
+    "런처에서 3-Hanzi CC를 열고 \"원본 텍스트\"에 텍스트를 입력하거나, \"붙여넣기\"를 눌러 클립보드에서 읽어옵니다.",
+    "\"변환 유형\"에서 변환 방향을 고른 다음 \"변환\"을 누릅니다.",
+    "\"결과\"에서 결과를 확인하고 \"복사\" 또는 \"공유\"를 눌러 사용합니다.",
+    "AutoJs6 스크립트에서는 전역 객체 `opencc`를 바로 호출합니다. 사용법은 아래를 참고하세요."
+  ],
+  "instruction_h3_features": "주요 기능",
+  "instruction_features": [
+    "**14가지 변환**: 간체자, 번체자, 홍콩 번체자, 대만 번체자, 일본어 신자체 사이의 주요 변환 방향을 지원합니다. \"대만 용어\"가 붙은 유형은 어휘도 바꾸며, 예를 들어 \"鼠标\"를 \"滑鼠\"로 바꿉니다.",
+    "**빠른 편집**: \"반전\"은 반대 변환 방향으로 바꾸고, \"바꾸기\"는 원본 텍스트와 결과를 서로 바꾸며, \"지우기\"는 텍스트를 지웁니다.",
+    "**오프라인 변환**: 내장 사전으로 기기에서 변환하므로 네트워크가 필요 없으며, 텍스트를 업로드하거나 저장하지 않습니다.",
+    "**개인 설정**: 언어, 다크 모드, 테마 색상, 런처 아이콘을 바꿀 수 있습니다. \"변환 유형 기억\"을 켜면 다음에 열 때 마지막 변환 유형으로 돌아갑니다.",
+    "**플러그인 도구**: AutoJs6 6.8.0 이상에서는 `opencc_convert` 도구도 제공하며, MCP Server 같은 플러그인이나 스크립트의 `plugins.tools`에서 호출할 수 있습니다."
+  ],
+  "instruction_h3_script": "스크립트에서 사용하기",
+  "instruction_p_script": "AutoJs6 스크립트에서는 가져오기 없이 전역 객체 `opencc`를 사용합니다. 변환 유형마다 같은 이름의 메서드가 있으며, `convert`로 유형을 지정할 수도 있습니다:",
+  "instruction_script_notes": [
+    "변환 유형은 대소문자를 구분하지 않습니다 (예: `S2T`, `S2TWP`, `HK2S`, `T2JP`). `s2jp`, `hk2tw` 같은 조합 메서드는 여러 변환을 차례로 실행합니다.",
+    "Node.js 스크립트에서는 `require('autojs6:opencc')`로 불러오고, Bun 스크립트에서는 `host.opencc`를 사용합니다. 메서드는 같으며 모두 Promise를 반환합니다."
+  ],
+  "instruction_h3_requirements": "요구 사항",
+  "instruction_requirements": [
+    "Android {{ min_android_version }} 이상. 런처에서 단독으로 사용할 때는 AutoJs6가 필요 없습니다.",
+    "스크립트에서 사용하려면 AutoJs6 {{ required_host_version_name }} 이상이 필요하며, \"플러그인 센터\"에서 이 플러그인이 사용 설정되어 있어야 합니다.",
+    "Node.js 스크립트에는 Node.js Runtime 플러그인 1.7.0 이상, Bun 스크립트에는 Bun Runtime 플러그인 0.2.6 이상이 필요합니다. Bun Runtime 설정 페이지에서 `text.opencc`를 켜 둔 상태로 유지하세요 (기본값: 켜짐).",
+    "네트워크 권한은 앱 업데이트 확인에만 사용합니다. \"자동으로 업데이트 확인\"은 기본으로 켜져 있고 12시간에 최대 한 번 확인하며, \"설정\"에서 끌 수 있습니다."
+  ],
+  "instruction_h3_faq": "자주 묻는 질문",
+  "instruction_faq": [
+    {
+      "q": "AutoJs6 없이 사용하는 경우",
+      "a": "런처에서 3-Hanzi CC를 열면 텍스트를 변환할 수 있으며, 스크립트에서 `opencc`를 호출할 때만 AutoJs6가 필요합니다."
+    },
+    {
+      "q": "`s2tw`와 `s2twp`의 차이",
+      "a": "`s2tw`는 자형만 변환하며, 예를 들어 \"软件\"을 \"軟件\"으로 바꿉니다. `s2twp`는 대만에서 흔히 쓰는 어휘로도 바꾸며, 예를 들어 \"软件\"을 \"軟體\"로 바꿉니다. `s2twi`는 `s2twp`의 별칭입니다."
+    },
+    {
+      "q": "스크립트에서 플러그인이 없다고 알릴 때",
+      "a": "이 플러그인이 설치되어 있고 AutoJs6의 \"플러그인 센터\"에서 사용 설정되어 있는지 확인한 다음 스크립트를 다시 실행하세요. AutoJs6를 다시 시작할 필요는 없습니다."
+    }
+  ],
+  "instruction_p_more": "모든 메서드와 변환 유형은 [AutoJs6 문서 > OpenCC]({{ docs_opencc_url }}), 그 밖의 정보는 [프로젝트 페이지]({{ repo_url }})를 참고하세요."
 }

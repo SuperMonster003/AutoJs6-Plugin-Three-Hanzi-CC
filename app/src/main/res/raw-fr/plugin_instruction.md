@@ -1,42 +1,53 @@
-# AutoJs6 3-Hanzi CC
+3-Hanzi CC est un convertisseur de chinois hors ligne basé sur OpenCC. Il convertit le texte entre chinois simplifié, chinois traditionnel, traditionnel de Hong Kong, traditionnel de Taïwan et shinjitai japonais. Vous pouvez l'utiliser seul depuis le lanceur, et il fournit aussi l'objet global `opencc` aux scripts AutoJs6.
 
-3-Hanzi CC réunit dans une seule installation deux accès à la conversion de texte chinois basée sur [OpenCC](https://github.com/BYVoid/OpenCC). Lancez directement l'application Android entièrement hors ligne, ou laissez AutoJs6 reconnaître le même APK comme plugin et utilisez l'objet global `opencc` dans les scripts. Les deux voies couvrent le chinois simplifié, le chinois traditionnel, les variantes de Hong Kong et de Taïwan, ainsi que le shinjitai japonais.
+### Prise en main
 
-Le même APK peut aussi être lancé directement comme application de conversion hors ligne, sans AutoJs6. L'éditeur autonome et cette entrée plugin utilisent OpenCC officiel 1.4.2 avec les dictionnaires verrouillés de la même version; les paquets natifs prennent en charge les pages mémoire Android de 16 KB.
+1. Ouvrez 3-Hanzi CC depuis le lanceur, saisissez du texte dans "Texte source" ou appuyez sur "Coller" pour lire le presse-papiers.
+2. Choisissez une direction dans "Type de conversion", puis appuyez sur "Convertir".
+3. Consultez la sortie dans "Résultat", puis appuyez sur "Copier" ou "Partager" pour l'utiliser.
+4. Dans les scripts AutoJs6, appelez directement l'objet global `opencc`; l'exemple se trouve plus bas.
 
-### Démarrage rapide
+### Fonctionnalités principales
 
-Après l'installation, le script suivant s'exécute tel quel; les commentaires indiquent la sortie attendue:
+- **14 conversions**: couvrent les directions courantes entre simplifié, traditionnel, traditionnel de Hong Kong, traditionnel de Taïwan et shinjitai japonais. Les types marqués "Terminologie de Taïwan" remplacent aussi le vocabulaire, par exemple "鼠标" devient "滑鼠".
+- **Édition rapide**: "Inverser" passe à la direction de conversion opposée, "Permuter" échange le texte source et le résultat, et "Effacer" supprime le texte.
+- **Conversion hors ligne**: la conversion s'effectue sur l'appareil avec des dictionnaires intégrés, sans réseau; le texte n'est jamais envoyé ni enregistré.
+- **Personnalisation**: réglez la langue, le mode sombre, la couleur du thème et l'icône du lanceur. Avec "Mémoriser le type de conversion" activé, le dernier type de conversion est rétabli à la prochaine ouverture.
+- **Outil de plugin**: dans AutoJs6 6.8.0 ou version ultérieure, le plugin fournit aussi l'outil `opencc_convert`, que des plugins comme MCP Server et l'API `plugins.tools` des scripts peuvent appeler.
 
-```javascript
+### Utilisation dans les scripts
+
+Dans les scripts AutoJs6, utilisez l'objet global `opencc` sans rien importer. Chaque type de conversion a une méthode du même nom, et `convert` accepte le type en argument:
+
+```js
 console.log(opencc.s2t("汉字转换"));     // => 漢字轉換
 console.log(opencc.t2s("漢字轉換"));     // => 汉字转换
 console.log(opencc.s2twp("鼠标和软件")); // => 滑鼠和軟體
 console.log(opencc.convert("汉字转换", "S2T")); // => 漢字轉換
 ```
 
-### Types de conversion
+- Les types de conversion ne sont pas sensibles à la casse, par exemple `S2T`, `S2TWP`, `HK2S` et `T2JP`. Les méthodes combinées comme `s2jp` et `hk2tw` enchaînent plusieurs conversions.
+- Les scripts Node.js le chargent avec `require('autojs6:opencc')` et les scripts Bun utilisent `host.opencc`; les méthodes sont les mêmes et renvoient toutes une Promise.
 
-La méthode `convert` et les méthodes raccourcies du même nom prennent en charge les 14 types de conversion standard OpenCC suivants, où S désigne le chinois simplifié, T le chinois traditionnel (norme OpenCC), HK le chinois traditionnel de Hong Kong, TW le chinois traditionnel de Taïwan et JP le shinjitai japonais:
+### Prérequis
 
-```text
-S2T   T2S   S2TW  TW2S  S2TWP  TW2SP  S2HK
-HK2S  T2TW  TW2T  T2HK  HK2T   T2JP   JP2T
-```
+- Android 7.0 ou version ultérieure. AutoJs6 n'est pas nécessaire pour utiliser l'application seule depuis le lanceur.
+- Les scripts nécessitent AutoJs6 6.7.1 Alpha4 ou version ultérieure, avec ce plugin activé dans "Centre des plugins".
+- Les scripts Node.js nécessitent le plugin Node.js Runtime 1.7.0 ou version ultérieure; les scripts Bun nécessitent le plugin Bun Runtime 0.2.6 ou version ultérieure, avec `text.opencc` laissé activé dans sa page de paramètres (activé par défaut).
+- L'autorisation réseau sert uniquement à rechercher les mises à jour de l'application. "Rechercher automatiquement les mises à jour" est activé par défaut, vérifie au plus une fois toutes les 12 heures et peut être désactivé dans "Paramètres".
 
-Les types portant le suffixe `P` effectuent aussi une substitution de vocabulaire en plus de la conversion des caractères, afin que le résultat paraisse naturel aux lecteurs locaux; les types sans `P` ne convertissent que les formes de caractères, sans toucher au vocabulaire.
+### Questions fréquentes
 
-### Autodiagnostic rapide
+**Utilisation sans AutoJs6**
 
-Après avoir confirmé que le plugin est installé et activé dans le centre de plugins, exécutez ce script d'une seule ligne pour une vérification de bout en bout:
+Ouvrez 3-Hanzi CC depuis le lanceur pour convertir du texte; AutoJs6 n'est nécessaire que lorsque des scripts appellent `opencc`.
 
-```javascript
-console.log(opencc.s2t("汉字转换"));
-```
+**La différence entre `s2tw` et `s2twp`**
 
-Une sortie `漢字轉換` signifie que toute la chaîne du plugin fonctionne. Si le script échoue, suivez le message d'erreur: installez ce plugin s'il signale un plugin manquant, activez le commutateur correspondant dans le centre de plugins s'il signale un plugin désactivé ou non autorisé, et mettez AutoJs6 à jour s'il exige un hôte plus récent.
+`s2tw` convertit uniquement les caractères, par exemple "软件" devient "軟件"; `s2twp` remplace aussi le vocabulaire par les termes courants à Taïwan, par exemple "软件" devient "軟體". `s2twi` est un alias de `s2twp`.
 
-Consultez la [documentation AutoJs6 OpenCC](https://docs.autojs6.com/#/opencc) et le [README du projet](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC) pour la liste complète des méthodes et la référence des types de conversion.
+**Lorsqu'un script signale un plugin manquant**
 
+Vérifiez que ce plugin est installé et activé dans "Centre des plugins" d'AutoJs6, puis relancez le script. Il n'est pas nécessaire de redémarrer AutoJs6.
 
-L'identifiant passe de `io.github.supermonster003.autojs6.plugin.opencc` à `io.github.supermonster003.autojs6.plugin.three.hanzi.cc`. Android installe une application distincte; les anciennes applications et leurs données peuvent être conservées, sans migration automatique des paramètres.
+Toutes les méthodes et tous les types de conversion figurent dans [Documentation AutoJs6 > OpenCC](https://docs.autojs6.com/#/opencc), et les autres informations sur la [page du projet](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC).

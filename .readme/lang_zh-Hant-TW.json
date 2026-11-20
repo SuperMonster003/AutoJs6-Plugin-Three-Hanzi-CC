@@ -144,11 +144,54 @@
   "text_link_autojs6": "AutoJs6 專案",
   "text_link_opencc_official": "OpenCC 官方專案",
   "text_link_third_party_notices": "第三方聲明",
-  "p_instruction_more": "更多方法與完整轉換類型說明請參閱 [AutoJs6 OpenCC 文件]({{ docs_opencc_url }}) 與 [專案 README]({{ repo_url }}).",
-  "p_instruction_backend": "同一個 APK 也可在不安裝 AutoJs6 時從桌面直接啟動, 作為離線文字轉換 App 使用. 獨立編輯器與本外掛入口均使用官方 OpenCC {{ opencc_version }} 及固定於同一發行版的詞典, 原生安裝套件支援 16 KB 記憶體頁面的 Android 裝置.",
   "h3_standalone": "開始使用",
   "p_standalone": "3-Hanzi CC 的首頁, 啟動器, 文件和外掛程式中心統一使用維護者提供的漢字圖稿. 統一設定頁提供語言, 夜間模式, 主題色及四種啟動器圖示選項.",
   "p_migration": "應用程式 ID 從 `io.github.supermonster003.autojs6.plugin.opencc` 改為 `io.github.supermonster003.autojs6.plugin.three.hanzi.cc`. Android 將其視為獨立應用程式, 原應用程式與資料可以保留, 設定不會自動遷移.",
   "h3_sources": "來源與致謝",
-  "p_sources": "[THIRD_PARTY_NOTICES.md]({{ repo_url }}/blob/master/THIRD_PARTY_NOTICES.md) · [RIGHTS_AND_TAKEDOWN.md]({{ repo_url }}/blob/master/RIGHTS_AND_TAKEDOWN.md)"
+  "p_sources": "[THIRD_PARTY_NOTICES.md]({{ repo_url }}/blob/master/THIRD_PARTY_NOTICES.md) · [RIGHTS_AND_TAKEDOWN.md]({{ repo_url }}/blob/master/RIGHTS_AND_TAKEDOWN.md)",
+  "instruction_p_what": "3-Hanzi CC 是基於 OpenCC 的離線中文轉換工具, 可以在簡體, 繁體, 香港繁體, 台灣繁體與日文新字體之間轉換文字. 它既可以從啟動器單獨使用, 也為 AutoJs6 指令碼提供全域物件 `opencc`.",
+  "instruction_h3_start": "開始使用",
+  "instruction_start_steps": [
+    "從啟動器開啟 3-Hanzi CC, 在 \"來源文字\" 中輸入文字, 或點選 \"貼上\" 讀取剪貼簿.",
+    "在 \"轉換類型\" 中選擇轉換方向, 然後點選 \"轉換\".",
+    "在 \"轉換結果\" 中查看結果, 點選 \"複製\" 或 \"分享\" 使用它.",
+    "在 AutoJs6 指令碼中直接呼叫全域物件 `opencc`, 用法見下文."
+  ],
+  "instruction_h3_features": "主要功能",
+  "instruction_features": [
+    "**14 種轉換**: 涵蓋簡體, 繁體, 香港繁體, 台灣繁體與日文新字體之間的常用方向; 帶 \"台灣用語\" 的類型還會替換用詞, 例如把 \"鼠标\" 轉為 \"滑鼠\".",
+    "**快速編輯**: \"反向\" 切換為相反的轉換方向, \"交換\" 互換來源文字與轉換結果, \"清除\" 清空文字.",
+    "**離線轉換**: 轉換使用內建詞典在本機完成, 無需連網, 文字不會被上傳或儲存.",
+    "**個人化設定**: 可以調整語言, 夜間模式, 主題色與啟動器圖示; 開啟 \"記住轉換方向\" 後, 下次開啟時會還原上次的轉換類型.",
+    "**外掛工具**: 在 AutoJs6 6.8.0 或更高版本中, 本外掛還提供 `opencc_convert` 工具, 可由 MCP Server 等外掛或指令碼的 `plugins.tools` 呼叫."
+  ],
+  "instruction_h3_script": "在指令碼中使用",
+  "instruction_p_script": "在 AutoJs6 指令碼中直接使用全域物件 `opencc`, 無需匯入. 每種轉換類型都有同名方法, 也可以用 `convert` 指定類型:",
+  "instruction_script_notes": [
+    "轉換類型不區分大小寫, 例如 `S2T`, `S2TWP`, `HK2S` 與 `T2JP`; 另有 `s2jp`, `hk2tw` 等組合方法, 會依序執行多步轉換.",
+    "Node.js 指令碼用 `require('autojs6:opencc')` 載入, Bun 指令碼透過 `host.opencc` 使用, 方法相同, 皆回傳 Promise."
+  ],
+  "instruction_h3_requirements": "執行需求",
+  "instruction_requirements": [
+    "Android {{ min_android_version }} 或更高版本. 從啟動器單獨使用時無需 AutoJs6.",
+    "在指令碼中使用需要 AutoJs6 {{ required_host_version_name }} 或更高版本, 且本外掛在 \"外掛中心\" 中處於啟用狀態.",
+    "Node.js 指令碼需要 Node.js Runtime 外掛 1.7.0 或更高版本; Bun 指令碼需要 Bun Runtime 外掛 0.2.6 或更高版本, 且其設定頁中的 `text.opencc` 保持開啟 (預設開啟).",
+    "網路權限只用於檢查應用程式更新; \"自動檢查更新\" 預設開啟, 每 12 小時最多檢查一次, 可以在 \"設定\" 中關閉."
+  ],
+  "instruction_h3_faq": "常見問題",
+  "instruction_faq": [
+    {
+      "q": "未安裝 AutoJs6 時是否可用",
+      "a": "可以. 從啟動器開啟 3-Hanzi CC 即可轉換文字, 只有在指令碼中呼叫 `opencc` 時才需要 AutoJs6."
+    },
+    {
+      "q": "`s2tw` 與 `s2twp` 的區別",
+      "a": "`s2tw` 只轉換字形, 例如把 \"软件\" 轉為 \"軟件\"; `s2twp` 還會改用台灣常用詞彙, 例如把 \"软件\" 轉為 \"軟體\". `s2twi` 是 `s2twp` 的別名."
+    },
+    {
+      "q": "指令碼提示缺少外掛時的處理",
+      "a": "確認本外掛已安裝, 並在 AutoJs6 的 \"外掛中心\" 中處於啟用狀態, 然後重新執行指令碼, 無需重新啟動 AutoJs6."
+    }
+  ],
+  "instruction_p_more": "全部方法與轉換類型見 [AutoJs6 文件 > OpenCC]({{ docs_opencc_url }}), 其他資訊見 [專案主頁]({{ repo_url }})."
 }

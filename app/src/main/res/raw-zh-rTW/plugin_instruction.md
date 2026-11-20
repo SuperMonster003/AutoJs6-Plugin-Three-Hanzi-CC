@@ -1,42 +1,53 @@
-# AutoJs6 3-Hanzi CC
+3-Hanzi CC 是基於 OpenCC 的離線中文轉換工具, 可以在簡體, 繁體, 香港繁體, 台灣繁體與日文新字體之間轉換文字. 它既可以從啟動器單獨使用, 也為 AutoJs6 指令碼提供全域物件 `opencc`.
 
-3-Hanzi CC 只需安裝一個 APK, 即可透過兩種入口使用基於 [OpenCC](https://github.com/BYVoid/OpenCC) 的中文文字轉換: 直接從桌面啟動完全離線的 Android App, 或讓 AutoJs6 將同一個 APK 識別為外掛並在腳本中使用全域物件 `opencc`. 兩條路徑都涵蓋簡體, 通用繁體, 香港繁體, 台灣正體與日文新字體.
+### 開始使用
 
-同一個 APK 也可在不安裝 AutoJs6 時從桌面直接啟動, 作為離線文字轉換 App 使用. 獨立編輯器與本外掛入口均使用官方 OpenCC 1.4.2 及固定於同一發行版的詞典, 原生安裝套件支援 16 KB 記憶體頁面的 Android 裝置.
+1. 從啟動器開啟 3-Hanzi CC, 在 "來源文字" 中輸入文字, 或點選 "貼上" 讀取剪貼簿.
+2. 在 "轉換類型" 中選擇轉換方向, 然後點選 "轉換".
+3. 在 "轉換結果" 中查看結果, 點選 "複製" 或 "分享" 使用它.
+4. 在 AutoJs6 指令碼中直接呼叫全域物件 `opencc`, 用法見下文.
 
-### 快速上手
+### 主要功能
 
-安裝完成後, 以下腳本可直接執行, 註解為預期輸出:
+- **14 種轉換**: 涵蓋簡體, 繁體, 香港繁體, 台灣繁體與日文新字體之間的常用方向; 帶 "台灣用語" 的類型還會替換用詞, 例如把 "鼠标" 轉為 "滑鼠".
+- **快速編輯**: "反向" 切換為相反的轉換方向, "交換" 互換來源文字與轉換結果, "清除" 清空文字.
+- **離線轉換**: 轉換使用內建詞典在本機完成, 無需連網, 文字不會被上傳或儲存.
+- **個人化設定**: 可以調整語言, 夜間模式, 主題色與啟動器圖示; 開啟 "記住轉換方向" 後, 下次開啟時會還原上次的轉換類型.
+- **外掛工具**: 在 AutoJs6 6.8.0 或更高版本中, 本外掛還提供 `opencc_convert` 工具, 可由 MCP Server 等外掛或指令碼的 `plugins.tools` 呼叫.
 
-```javascript
+### 在指令碼中使用
+
+在 AutoJs6 指令碼中直接使用全域物件 `opencc`, 無需匯入. 每種轉換類型都有同名方法, 也可以用 `convert` 指定類型:
+
+```js
 console.log(opencc.s2t("汉字转换"));     // => 漢字轉換
 console.log(opencc.t2s("漢字轉換"));     // => 汉字转换
 console.log(opencc.s2twp("鼠标和软件")); // => 滑鼠和軟體
 console.log(opencc.convert("汉字转换", "S2T")); // => 漢字轉換
 ```
 
-### 轉換類型
+- 轉換類型不區分大小寫, 例如 `S2T`, `S2TWP`, `HK2S` 與 `T2JP`; 另有 `s2jp`, `hk2tw` 等組合方法, 會依序執行多步轉換.
+- Node.js 指令碼用 `require('autojs6:opencc')` 載入, Bun 指令碼透過 `host.opencc` 使用, 方法相同, 皆回傳 Promise.
 
-`convert` 方法與同名快捷方法支援以下 14 種 OpenCC 標準轉換類型, 類型名稱中 S 表示簡體, T 表示繁體 (OpenCC 標準), HK 表示香港繁體, TW 表示台灣正體, JP 表示日文新字體:
+### 執行需求
 
-```text
-S2T   T2S   S2TW  TW2S  S2TWP  TW2SP  S2HK
-HK2S  T2TW  TW2T  T2HK  HK2T   T2JP   JP2T
-```
+- Android 7.0 或更高版本. 從啟動器單獨使用時無需 AutoJs6.
+- 在指令碼中使用需要 AutoJs6 6.7.1 Alpha4 或更高版本, 且本外掛在 "外掛中心" 中處於啟用狀態.
+- Node.js 指令碼需要 Node.js Runtime 外掛 1.7.0 或更高版本; Bun 指令碼需要 Bun Runtime 外掛 0.2.6 或更高版本, 且其設定頁中的 `text.opencc` 保持開啟 (預設開啟).
+- 網路權限只用於檢查應用程式更新; "自動檢查更新" 預設開啟, 每 12 小時最多檢查一次, 可以在 "設定" 中關閉.
 
-帶 `P` 後綴的類型在逐字轉換之外還會進行詞彙替換, 使結果更符合當地表達習慣; 不帶 `P` 的類型只轉換字形, 不更動用詞.
+### 常見問題
 
-### 快速自我檢查
+**未安裝 AutoJs6 時是否可用**
 
-確認外掛已安裝並在外掛中心處於啟用狀態後, 執行以下單行腳本即可完成端對端驗證:
+可以. 從啟動器開啟 3-Hanzi CC 即可轉換文字, 只有在指令碼中呼叫 `opencc` 時才需要 AutoJs6.
 
-```javascript
-console.log(opencc.s2t("汉字转换"));
-```
+**`s2tw` 與 `s2twp` 的區別**
 
-輸出 `漢字轉換` 即表示外掛整體流程完整可用. 若腳本回報錯誤, 請按提示排查: 提示缺少外掛時安裝本外掛; 提示未啟用或未授權時到外掛中心開啟對應開關; 提示需要更高版本的主程式環境時升級 AutoJs6.
+`s2tw` 只轉換字形, 例如把 "软件" 轉為 "軟件"; `s2twp` 還會改用台灣常用詞彙, 例如把 "软件" 轉為 "軟體". `s2twi` 是 `s2twp` 的別名.
 
-更多方法與完整轉換類型說明請參閱 [AutoJs6 OpenCC 文件](https://docs.autojs6.com/#/opencc) 與 [專案 README](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC).
+**指令碼提示缺少外掛時的處理**
 
+確認本外掛已安裝, 並在 AutoJs6 的 "外掛中心" 中處於啟用狀態, 然後重新執行指令碼, 無需重新啟動 AutoJs6.
 
-應用程式 ID 從 `io.github.supermonster003.autojs6.plugin.opencc` 改為 `io.github.supermonster003.autojs6.plugin.three.hanzi.cc`. Android 將其視為獨立應用程式, 原應用程式與資料可以保留, 設定不會自動遷移.
+全部方法與轉換類型見 [AutoJs6 文件 > OpenCC](https://docs.autojs6.com/#/opencc), 其他資訊見 [專案主頁](https://github.com/SuperMonster003/AutoJs6-Plugin-Three-Hanzi-CC).
