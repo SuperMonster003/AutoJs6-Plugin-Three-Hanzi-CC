@@ -21,6 +21,10 @@ EXPECTED_VARIANTS = {
 }
 
 EXPECTED_NATIVE_LIBRARY = "libopencc_jni.so"
+# Jetpack Compose (release history page) depends on androidx.graphics:graphics-path, which packages this library for
+# every ABI. It is stored uncompressed and 16 KB aligned like the OpenCC library, and the ELF checks below apply to it.
+COMPOSE_NATIVE_LIBRARY = "libandroidx.graphics.path.so"
+EXPECTED_NATIVE_LIBRARIES = (EXPECTED_NATIVE_LIBRARY, COMPOSE_NATIVE_LIBRARY)
 FORBIDDEN_NATIVE_LIBRARIES = {
     "libChineseConverter.so",
     "libopencc.so",
@@ -635,8 +639,9 @@ def verify_apk(path: Path, expected_abis: set[str], upstream: dict[str, str]) ->
                 if info.filename.startswith("lib/") and info.filename.endswith(".so")
             }
             expected_entries = {
-                f"lib/{abi}/{EXPECTED_NATIVE_LIBRARY}"
+                f"lib/{abi}/{library}"
                 for abi in expected_abis
+                for library in EXPECTED_NATIVE_LIBRARIES
             }
             if set(native_infos) != expected_entries:
                 raise VerificationError(
@@ -796,7 +801,7 @@ def verify(directory: Path, build_type: str = "debug", unsigned: bool = False) -
             )
         print(
             f"APK_OK {filename} abis={','.join(sorted(actual_abis))} "
-            f"native={EXPECTED_NATIVE_LIBRARY} min_elf_align=0x{minimum_alignment:x} "
+            f"native={'+'.join(EXPECTED_NATIVE_LIBRARIES)} min_elf_align=0x{minimum_alignment:x} "
             f"opencc={upstream['OPENCC_VERSION']} bytes={path.stat().st_size}",
         )
 

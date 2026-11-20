@@ -11,6 +11,10 @@
     <string name="launcher_icon_transparent">透明背景圖示</string>
     <string name="launcher_icon_transparent_note">部分啟動器會自行新增背景或遮罩, 透明效果可能無法保留.</string>
     <string name="plugin_description">可獨立使用並相容 AutoJs6 的離線 OpenCC 中文轉換器</string>
+    <string name="release_history_collapse_all">收起全部</string>
+    <string name="release_history_collapsed">已收起</string>
+    <string name="release_history_expand_all">展開全部</string>
+    <string name="release_history_expanded">已展開</string>
     <string name="standalone_about_app_summary">版本資訊, 開放原始碼授權與專案連結</string>
     <string name="standalone_about_developer_home">開發者頁面</string>
     <string name="standalone_about_license_summary">Mozilla Public License 2.0 (MPL-2.0)</string>
@@ -54,8 +58,8 @@
     <string name="standalone_open_link_failed">無法開啟連結</string>
     <string name="standalone_paste_action">貼上</string>
     <string name="standalone_progress_description">正在轉換文字</string>
-    <string name="standalone_release_history_load_failed">無法載入版本記錄</string>
-    <string name="standalone_release_history_title">版本記錄</string>
+    <string name="standalone_release_history_load_failed">無法載入發行歷史</string>
+    <string name="standalone_release_history_title">發行歷史</string>
     <string name="standalone_result_hint">轉換後的文字會顯示在這裡</string>
     <string name="standalone_result_label">轉換結果</string>
     <string name="standalone_runtime_identity">OpenCC %1$s - %2$s\n資源 %3$s</string>
@@ -119,7 +123,7 @@
     <string name="standalone_update_manage_ignored">管理已忽略更新</string>
     <string name="standalone_update_no_ignored">目前沒有已忽略的發行版</string>
     <string name="standalone_update_open_failed">無法開啟發行頁面</string>
-    <string name="standalone_update_release_history_summary">檢視應用程式內建的版本記錄</string>
+    <string name="standalone_update_release_history_summary">檢視應用程式內建的發行歷史</string>
     <string name="standalone_update_stop_ignoring">不再忽略</string>
     <string name="standalone_update_up_to_date">已是最新版本</string>
     <string name="standalone_update_view_release">檢視發行版</string>

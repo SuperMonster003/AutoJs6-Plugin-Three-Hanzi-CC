@@ -11,6 +11,10 @@
     <string name="launcher_icon_transparent">Transparent background icon</string>
     <string name="launcher_icon_transparent_note">Some launchers add their own background or mask, so transparency may not be preserved.</string>
     <string name="plugin_description">Offline OpenCC Chinese converter for standalone use and AutoJs6</string>
+    <string name="release_history_collapse_all">Collapse all</string>
+    <string name="release_history_collapsed">Collapsed</string>
+    <string name="release_history_expand_all">Expand all</string>
+    <string name="release_history_expanded">Expanded</string>
     <string name="standalone_about_app_summary">Version details, open source license, and project links</string>
     <string name="standalone_about_developer_home">Developer page</string>
     <string name="standalone_about_license_summary">Mozilla Public License 2.0 (MPL-2.0)</string>
@@ -54,8 +58,8 @@
     <string name="standalone_open_link_failed">Could not open the link</string>
     <string name="standalone_paste_action">Paste</string>
     <string name="standalone_progress_description">Conversion in progress</string>
-    <string name="standalone_release_history_load_failed">Unable to load the version history</string>
-    <string name="standalone_release_history_title">Version history</string>
+    <string name="standalone_release_history_load_failed">Unable to load the release history</string>
+    <string name="standalone_release_history_title">Release history</string>
     <string name="standalone_result_hint">The converted text appears here</string>
     <string name="standalone_result_label">Result</string>
     <string name="standalone_runtime_identity">OpenCC %1$s - %2$s\nResources %3$s</string>
@@ -119,7 +123,7 @@
     <string name="standalone_update_manage_ignored">Manage ignored updates</string>
     <string name="standalone_update_no_ignored">No releases are currently ignored</string>
     <string name="standalone_update_open_failed">Could not open the release page</string>
-    <string name="standalone_update_release_history_summary">Read the version history included with this app</string>
+    <string name="standalone_update_release_history_summary">Read the release history included with this app</string>
     <string name="standalone_update_stop_ignoring">Stop ignoring</string>
     <string name="standalone_update_up_to_date">Up to date</string>
     <string name="standalone_update_view_release">View release</string>

@@ -7,6 +7,7 @@ plugins {
     id("org.autojs.build.signs")
     id("org.autojs.build.jvm-convention")
     id("com.android.application")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 val globalApplicationId = "io.github.supermonster003.autojs6.plugin.three.hanzi.cc"
@@ -97,6 +98,7 @@ android {
 
     buildFeatures {
         aidl = true
+        compose = true
         resValues = true
     }
 
@@ -110,10 +112,25 @@ dependencies {
 
     implementation(libs.appcompat)
     implementation(libs.material)
+    // Jetpack Compose, only for the release history page (AUTOJS6_PLUGIN_RELEASE_HISTORY_AGENTS.md); the BOM is the
+    // single version source and also manages activity-compose.
+    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.runtime)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.animation)
+    implementation(libs.compose.activity)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.test.ext.junit)
     androidTestImplementation(libs.test.runner)
+    androidTestImplementation(platform(libs.compose.bom))
+    androidTestImplementation(libs.compose.ui.test.junit4)
+    // ui-test-junit4 brings espresso-core 3.5.0, which fails on API 36; pin the version the repository already uses.
+    androidTestImplementation(libs.test.espresso.core)
+    // No ui-test-manifest: the page tests start the real activity (createEmptyComposeRule), and the debug APK keeps the
+    // exact activity inventory that OpenccDualEntryTest checks.
 }
 
 tasks {

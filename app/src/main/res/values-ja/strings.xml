@@ -11,6 +11,10 @@
     <string name="launcher_icon_transparent">透明背景のアイコン</string>
     <string name="launcher_icon_transparent_note">ランチャーが背景やマスクを追加する場合, 透明な背景は維持されないことがあります.</string>
     <string name="plugin_description">単独でも AutoJs6 でも使えるオフライン OpenCC 中国語変換</string>
+    <string name="release_history_collapse_all">すべて折りたたむ</string>
+    <string name="release_history_collapsed">折りたたみ中</string>
+    <string name="release_history_expand_all">すべて展開する</string>
+    <string name="release_history_expanded">展開中</string>
     <string name="standalone_about_app_summary">バージョン情報, オープンソースライセンス, プロジェクトのリンク</string>
     <string name="standalone_about_developer_home">開発者ページ</string>
     <string name="standalone_about_license_summary">Mozilla Public License 2.0 (MPL-2.0)</string>
@@ -54,8 +58,8 @@
     <string name="standalone_open_link_failed">リンクを開けませんでした</string>
     <string name="standalone_paste_action">貼り付け</string>
     <string name="standalone_progress_description">テキストを変換中</string>
-    <string name="standalone_release_history_load_failed">バージョン履歴を読み込めませんでした</string>
-    <string name="standalone_release_history_title">バージョン履歴</string>
+    <string name="standalone_release_history_load_failed">リリース履歴を読み込めませんでした</string>
+    <string name="standalone_release_history_title">リリース履歴</string>
     <string name="standalone_result_hint">変換されたテキストがここに表示されます</string>
     <string name="standalone_result_label">変換結果</string>
     <string name="standalone_runtime_identity">OpenCC %1$s - %2$s\nリソース %3$s</string>
@@ -119,7 +123,7 @@
     <string name="standalone_update_manage_ignored">無視した更新の管理</string>
     <string name="standalone_update_no_ignored">現在無視しているリリースはありません</string>
     <string name="standalone_update_open_failed">リリースページを開けませんでした</string>
-    <string name="standalone_update_release_history_summary">アプリに含まれるバージョン履歴を表示します</string>
+    <string name="standalone_update_release_history_summary">アプリに含まれるリリース履歴を表示します</string>
     <string name="standalone_update_stop_ignoring">無視を解除</string>
     <string name="standalone_update_up_to_date">最新の状態です</string>
     <string name="standalone_update_view_release">リリースを表示</string>

@@ -11,6 +11,10 @@
     <string name="launcher_icon_transparent">Icono con fondo transparente</string>
     <string name="launcher_icon_transparent_note">Algunos lanzadores agregan un fondo o una máscara. Puede que no se conserve la transparencia.</string>
     <string name="plugin_description">Conversor chino OpenCC sin conexión, independiente y compatible con AutoJs6</string>
+    <string name="release_history_collapse_all">Contraer todo</string>
+    <string name="release_history_collapsed">Contraído</string>
+    <string name="release_history_expand_all">Expandir todo</string>
+    <string name="release_history_expanded">Expandido</string>
     <string name="standalone_about_app_summary">Detalles de versión, licencia de código abierto y enlaces del proyecto</string>
     <string name="standalone_about_developer_home">Página del desarrollador</string>
     <string name="standalone_about_license_summary">Mozilla Public License 2.0 (MPL-2.0)</string>
