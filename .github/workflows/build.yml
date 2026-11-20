@@ -125,7 +125,11 @@ jobs:
           target: google_apis
           arch: x86_64
           profile: pixel_7
-          script: EXPECTED_PAGE_SIZE=4096 sh scripts/ci/verify_binder_round_trip.sh "${{ matrix.abi }}"
+          # A freshly booted emulator may show "System UI isn't responding", whose dialog takes the window focus that the
+          # device tests wait for; hide_error_dialogs keeps such dialogs from appearing.
+          script: |
+            adb shell settings put global hide_error_dialogs 1
+            EXPECTED_PAGE_SIZE=4096 sh scripts/ci/verify_binder_round_trip.sh "${{ matrix.abi }}"
 
   verify-min-sdk:
     name: Debug/release runtime (x86, API 24 minSdk)
@@ -156,7 +160,10 @@ jobs:
           target: google_apis
           arch: x86
           profile: Nexus 5
+          # A freshly booted emulator may show "System UI isn't responding", whose dialog takes the window focus that the
+          # device tests wait for; hide_error_dialogs keeps such dialogs from appearing.
           script: |
+            adb shell settings put global hide_error_dialogs 1
             EXPECTED_PAGE_SIZE=4096 sh scripts/ci/verify_binder_round_trip.sh x86
             EXPECTED_VERSION_NAME="$(sed -n 's/^VERSION_NAME=//p' version.properties)" EXPECTED_VERSION_CODE="$(sed -n 's/^VERSION_BUILD=//p' version.properties)" EXPECTED_PAGE_SIZE=4096 sh scripts/ci/verify_minified_release_runtime.sh x86
 
@@ -192,4 +199,8 @@ jobs:
           # The 16 KB Google APIs image breached its guest LMK watermark twice at the
           # profile default of 2560 MB while a 156-183 MB foreground test process ran.
           ram-size: 4096M
-          script: EXPECTED_PAGE_SIZE=16384 sh scripts/ci/verify_binder_round_trip.sh x86_64
+          # A freshly booted emulator may show "System UI isn't responding", whose dialog takes the window focus that the
+          # device tests wait for; hide_error_dialogs keeps such dialogs from appearing.
+          script: |
+            adb shell settings put global hide_error_dialogs 1
+            EXPECTED_PAGE_SIZE=16384 sh scripts/ci/verify_binder_round_trip.sh x86_64
